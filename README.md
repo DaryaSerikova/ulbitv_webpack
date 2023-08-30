@@ -23,7 +23,7 @@ Webpack.js.com => Guides => Busic Setup
 
 ### entry
 
-entry - стартовая точка нашего приложения. 
+`entry` - стартовая точка нашего приложения. 
 В нашем случае это `'./src/index.js'`
 ```
 module.exports = {
@@ -83,7 +83,7 @@ zsh: command not found: webpack
 Затем запустите через `npm run start`
 ![И вуа-ля!](/images/webpack_error.jpg)
 
-Видим ворнинг, потому что мы не указали 'mode' (production/development)
+Видим ворнинг, потому что мы не указали `mode` (`production`/`development`)
 Видим, что у нас появилась папочка `build` и в ней лежит `bundle.js`:
 ```
 (()=>{"use strict";console.log("RANDOM FUNCTION")})();
