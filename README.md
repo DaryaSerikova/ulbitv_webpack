@@ -207,7 +207,7 @@ output: {
 
 <a name="HTMLWebpackPlugin"></a>
 
-### html-webpack-plugin
+### HTMLWebpackPlugin
 
 ```
 npm i -D html-webpack-plugin@5.5.0
@@ -254,7 +254,10 @@ module.exports = {
 }
 ```
 
-Давайте выполним скрипт `webpack`, чтобы выполнить сборку
+Давайте выполним скрипт `webpack`, чтобы выполнить сборку: `npm run start`
+В папке `build` видим файлик `index.html` - это как раз работа `HTMLWebpackPlugin`'а.\
+мы видим дефольную структуру файла, но без блока root
+![htmlWebpackPlugin_index](/images/htmlWebpackPlugin_index.jpg)
 
 
 
