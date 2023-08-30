@@ -16,6 +16,7 @@ module.exports = {
   },
   plugins: [
     new HTMLWebpackPlugin(),
+    new webpack.ProgressPlugin(),
   ],
 
 }

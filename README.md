@@ -10,6 +10,7 @@
 
 [Подключение плагинов](#setPlugins)
 - [HTMLWebpackPlugin](#HTMLWebpackPlugin)
+- [webpack.ProgressPlugin](#ProgressPlugin)
 
 
 ## Usage
@@ -256,8 +257,50 @@ module.exports = {
 
 Давайте выполним скрипт `webpack`, чтобы выполнить сборку: `npm run start`
 В папке `build` видим файлик `index.html` - это как раз работа `HTMLWebpackPlugin`'а.\
-мы видим дефольную структуру файла, но без блока root
+мы видим дефольную структуру файла, но без блока div с классом root
 ![htmlWebpackPlugin_index](/images/htmlWebpackPlugin_index.jpg)
+
+Но если присмотреть, видим script, у которогов src тот самый файл, который webpack получил в результате сборки
+Т е нам не пришлось его подключать вручную
+
+```
+<script defer src="main.d34e9f13b9f2412d7324.js"></script>
+```
+
+Если скриптов много, нам не приходится следить за их порядком и не приходится добовлять их вручную
+
+Опять возврвщаемся к документации подключим еще один плагин
+
+<a name="ProgressPlugin"></a>
+
+### webpack.ProgressPlugin
+
+Сайт webpack'а: => Plugins (слева, sidebar)
+Суть плагина. Сейчас у нас сборка происходит за доли секунды. 
+Но когда проект разрастется, сборка может занимать 10, 20, 30 секунд, минуту..
+И по-хорошему нужно за сборкой как-то следить, понимать сколько процентов сборки уже произошло
+
+![webpackPlugin2.jpg](/images/webpackPlugin2.jpg.jpg)
+
+Добавим этот плагин в наш список
+
+```
+  plugins: [
+    new HTMLWebpackPlugin(),
+    new webpack.ProgressPlugin(),
+  ],
+```
+
+Как видите, он по дефолту идет в пакете вебпак
+
+### Настройка HTMLWebpackPlugin'а
+Теперь решим проблему с тем, что блок root не появляется
+
+Сайт Webpack'а: => Plugins (сверху в шапочке) => [HTMLWebpackPlugin](https://webpack.js.org/plugins/html-webpack-plugin)\
+
+
+
+
 
 
 
