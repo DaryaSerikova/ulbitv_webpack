@@ -319,23 +319,23 @@ module.exports = {
 ## Typescript
 
 Следующая проблема, которую нам надо решить: типизация
-Сейчас мы можем работать с js, но не с ts
-Поэтому нам надо подготовить webpack
+Сейчас мы можем работать с `Javascript`, но не с `Typescript`
+Поэтому нам надо подготовить `webpack`
 На сайте webpack'а: [Typescript](https://webpack.js.org/guides/typescript/)
 ```
 npm i -D typescript@4.5.5 ts-loader@9.2.6
 ```
-Теперь нам необходимо создать конфиг `tsconfig.json`, а во-вторых поменять расширение файлов на .ts
-ну и чтобы убелиться, что typescript у нас будет работать, перепишем файлик index.ts:
+Теперь нам необходимо создать конфиг `tsconfig.json`, а во-вторых поменять расширение файлов на `.ts`
+ну и чтобы убелиться, что `typescript` у нас будет работать, перепишем файлик `index.ts`:
 ```
 export function someFn(arg: number): string {
   console.log('RANDOM FUNCTION')
   return '';
 }
 ```
-В entry point меняем .js на .ts
+В `entry` point меняем `.js` на `.ts`
 
-tsconfig.js копируем из документации:
+`tsconfig.js` копируем из документации:
 ```
 {
   "compilerOptions": {
@@ -349,7 +349,7 @@ tsconfig.js копируем из документации:
   }
 }
 ```
-копируем в webpack.config.js
+копируем в `webpack.config.js`
 ```
   module: {
     rules: [
