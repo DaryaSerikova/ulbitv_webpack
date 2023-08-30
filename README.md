@@ -2,9 +2,8 @@
 
 ## Содержание
 - [Usage](#)
-- [Start](#)
-- [entry](#entry)
-- [output](#output)
+- [Entry](#entry)
+- [Output](#output)
 - [ЧТОБЫ ЗАПУСТИТЬ СБОРКУ](#Запуск)
 - [Шаблоны. Динамические названия для файлов](#Шаблоны)
 
@@ -13,12 +12,11 @@
 
 `npm run start` - запуск webpack
 
-## START
 Webpack.js.com => Guides => Busic Setup
 
 <a name="entry"></a> 
 
-## entry
+## Entry
 
 entry - стартовая точка нашего приложения. 
 В нашем случае это './src/index.js'
@@ -44,7 +42,7 @@ module.exports = {
 
 <a name="output"></a> 
 
-## output
+## Output
 output - 'то настройка того, куда и как мы будем делать сборку нашего приложения
  - filename - название главного файла сборки нашего приложения ('bundle.js')
  - path - путь, куда сборка должна происходить (build/dist)
