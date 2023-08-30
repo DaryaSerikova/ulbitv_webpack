@@ -296,7 +296,10 @@ module.exports = {
 ### Настройка HTMLWebpackPlugin'а
 Теперь решим проблему с тем, что блок root не появляется
 
-Сайт Webpack'а: => Plugins (сверху в шапочке) => [HTMLWebpackPlugin](https://webpack.js.org/plugins/html-webpack-plugin)\
+Сайт Webpack'а: => Plugins (сверху в шапочке) => [HTMLWebpackPlugin](https://webpack.js.org/plugins/html-webpack-plugin) => [Configuration (под ней ссылочка на доку)](https://github.com/jantimon/html-webpack-plugin#options)
+
+здесь есть список опций: `filename`, `title`, `template` и т д
+И сейчас нас конкретно интересует `template`
 
 
 
