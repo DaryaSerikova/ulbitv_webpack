@@ -174,7 +174,10 @@ output: {
 - и в итоге выдавать нам минимизированный или development код
 
 Но. так же в нашем приложении, поскольку мы разрабатываем frontend, у нас должен быть html-файлик\
-Для этого мы создадим папку `public` и в ней `index.html`: ` ! + Enter `
+Для этого мы создадим папку `public` и в ней `index.html`: ` !+Enter `\
+Это будет наш корневой html-файл, с которого будет начинаться наше приложение\
+Сразу создадим в body блок с классом root. В него мы будем имплементировать наше react-приложение
+
 ```
 <!DOCTYPE html>
 <html lang="en">
@@ -184,10 +187,68 @@ output: {
   <title>Document</title>
 </head>
 <body>
-  
+  <div class="root"></div>
 </body>
 </html>
 ```
 <!-- lesson 3: 8:23 -->
+Теперь webpack'у необходимо сообщить, где этот файлик лежит.\
+И помимо того в этот файлик надо будет встраивать те самые js-скрипты, которые мы будем писать\
+И для этого у webpack'а есть потрясающий механизм плагинов, которые могут выполнять различные операции\
+(Сайт webpack'а: Concepts => Plugins)
+
+## html-webpack-plugin
+
+```
+npm i -D html-webpack-plugin@5.5.0
+```
+Плагин установили, тем его нужно подключить в наш webpack\
+Для этого есть свойство `plugins` - это массив, т к плагинов мб много\
+Но для того, чтобы подключить установленный плагин, в первую очередь его нужно сюда импортировать:\
+
+```
+const HTMLWebpackPlugin = require('html-webpack-plugin');
+```
+
+Так же сразу импортируем сюда webpack, чуть позже нам это понадобится.
+
+```
+const webpack = require('webpack');
+```
+
+Сайт Webpack'а: => Plugins (сверху в шапочке)\
+Здесь весь официао=льный список плагинов\
+В поиске пишем `HTMLWebpackPlugin`, открываем страницу и здесь подробное описание, того как он работает и как его настраивать\
+
+`HTMLWebpackPlugin`, который мы импортировали - это класс.\ 
+Нам необходимо создать объект из этого класса, поэтому мы используем конструкцию:\
+`new HTMLWebpackPlugin()`
+
+```
+const path = require('path');
+const HTMLWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
+
+
+module.exports = {
+  mode: 'development',
+  entry: path.resolve(__dirname, 'src', 'index.js'),
+  output: {
+    filename: '[name].[contenthash].js',
+    path: path.resolve(__dirname, 'build'),
+    clean: true,
+  },
+  plugins: [
+    new HTMLWebpackPlugin(),
+  ],
+
+}
+```
+
+Давайте выполним скрипт иебпак, чтобы выполнить сборку
+
+
+
+
 
 
