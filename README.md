@@ -1,7 +1,7 @@
 # UlbiTV
 
 ## Содержание
-[Usage](#) /
+[Usage](#)\
 [Basic setup](#basicSetup)
 - [entry](#entry)
 - [output](#output)
