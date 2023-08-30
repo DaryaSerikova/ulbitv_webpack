@@ -11,6 +11,7 @@
 [Подключение плагинов](#setPlugins)
 - [HTMLWebpackPlugin](#HTMLWebpackPlugin)
 - [webpack.ProgressPlugin](#ProgressPlugin)
+- [Настройка HTMLWebpackPlugin'а (template для root)](#HTMLWebpackPluginTemplate)
 
 
 ## Usage
@@ -292,14 +293,26 @@ module.exports = {
 ```
 
 Как видите, он по дефолту идет в пакете вебпак
+<a name="HTMLWebpackPluginTemplate"></a> 
 
-### Настройка HTMLWebpackPlugin'а
+### Настройка HTMLWebpackPlugin'а (template для root)
 Теперь решим проблему с тем, что блок root не появляется
 
 Сайт Webpack'а: => Plugins (сверху в шапочке) => [HTMLWebpackPlugin](https://webpack.js.org/plugins/html-webpack-plugin) => [Configuration (под ней ссылочка на доку)](https://github.com/jantimon/html-webpack-plugin#options)
 
 здесь есть список опций: `filename`, `title`, `template` и т д
 И сейчас нас конкретно интересует `template`
+Мф хотим html из папки public использовать, как шаблон, чтобы в него встраивались скрипты
+Указываем путь к этому файлу `template: path.resolve(__dirname, 'public', 'index.html')`:
+
+```
+  plugins: [
+    new HTMLWebpackPlugin({
+      template: path.resolve(__dirname, 'public', 'index.html')
+    }),
+    new webpack.ProgressPlugin(),
+  ],
+```
 
 
 
