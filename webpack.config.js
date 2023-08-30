@@ -6,7 +6,19 @@ const webpack = require('webpack');
 module.exports = {
   mode: 'development',
   //entry - стартовая точка нашего приложения. В нашем случае это './src/index.js',
-  entry: path.resolve(__dirname, 'src', 'index.js'),
+  entry: path.resolve(__dirname, 'src', 'index.ts'),
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
+    ],
+  },
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js'],
+  },
 
   // output - 'то настройка того, куда и как мы будем делать сборку нашего приложения
   output: {

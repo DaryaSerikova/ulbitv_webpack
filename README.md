@@ -13,6 +13,7 @@
 - [webpack.ProgressPlugin](#ProgressPlugin)
 - [Настройка HTMLWebpackPlugin'а (template для root)](#HTMLWebpackPluginTemplate)
 
+[Typescript](#Typescript)
 
 ## Usage
 
@@ -313,6 +314,59 @@ module.exports = {
     new webpack.ProgressPlugin(),
   ],
 ```
+<a name="Typescript"></a> 
+
+## Typescript
+
+Следующая проблема, которую нам надо решить: типизация
+Сейчас мы можем работать с js, но не с ts
+Поэтому нам надо подготовить webpack
+На сайте webpack'а: [Typescript](https://webpack.js.org/guides/typescript/)
+```
+npm i -D typescript@4.5.5 ts-loader@9.2.6
+```
+Теперь нам необходимо создать конфиг `tsconfig.json`, а во-вторых поменять расширение файлов на .ts
+ну и чтобы убелиться, что typescript у нас будет работать, перепишем файлик index.ts:
+```
+export function someFn(arg: number): string {
+  console.log('RANDOM FUNCTION')
+  return '';
+}
+```
+В entry point меняем .js на .ts
+
+tsconfig.js копируем из документации:
+```
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "noImplicitAny": true,
+    "module": "es6",
+    "target": "es5",
+    "jsx": "react",
+    "allowJs": true,
+    "moduleResolution": "node"
+  }
+}
+```
+копируем в webpack.config.js
+```
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
+    ],
+  },
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js'],
+  },
+```
+
+<!-- 15:37 еще ошибка не передан аргумент typescript, и мб где еще не сменен js на ts -->
+
 
 
 
