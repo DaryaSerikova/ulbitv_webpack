@@ -322,9 +322,9 @@ module.exports = {
 
 ## Typescript
 
-Следующая проблема, которую нам надо решить: типизация
-Сейчас мы можем работать с `Javascript`, но не с `Typescript`
-Поэтому нам надо подготовить `webpack`
+Следующая проблема, которую нам надо решить: типизация.\
+Сейчас мы можем работать с `Javascript`, но не с `Typescript`.\
+Поэтому нам надо подготовить `webpack`.\
 На сайте webpack'а: [Typescript](https://webpack.js.org/guides/typescript/)
 ```
 npm i -D typescript@4.5.5 ts-loader@9.2.6
@@ -396,12 +396,12 @@ import Component from './component'
   ],
 ```
 
-- test - указываем регулярное выражение, по которому мы будем находить файлы, которые надо пропустить через loader.\ 
+- `test` - указываем регулярное выражение, по которому мы будем находить файлы, которые надо пропустить через loader.\ 
 (`test: /\.tsx?$/,` в данном случае это файлы с расширением `.tsx`).\
 [regex101.com](https://regex101.com/)
 Если подсвечивается синим, то регулярка его ловит (т е `.ts` и `.tsx`)\
-- use -  указывается loader, который необходимо использовать (`use: 'ts-loader',`)
-- exclude - исключаем `node_modules` (`exclude: /node_modules/,`)
+- `use` -  указывается loader, который необходимо использовать (`use: 'ts-loader',`)
+- `exclude` - исключаем `node_modules` (`exclude: /node_modules/,`)
 
 <!-- 18:28 -->
 
