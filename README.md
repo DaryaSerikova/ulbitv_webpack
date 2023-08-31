@@ -208,6 +208,10 @@ output: {
 
 ## Подключение плагинов
 
+- [HTMLWebpackPlugin](#HTMLWebpackPlugin)
+- [webpack.ProgressPlugin](#ProgressPlugin)
+- [Настройка HTMLWebpackPlugin'а (template для root)](#HTMLWebpackPluginTemplate)
+
 <a name="HTMLWebpackPlugin"></a>
 
 ### HTMLWebpackPlugin
@@ -366,6 +370,45 @@ export function someFn(arg: number): string {
 ```
 
 <!-- 15:37 еще ошибка не передан аргумент typescript, и мб где еще не сменен js на ts -->
+
+### resolve
+В поле resolve мы указываем расширения, для которых при импорте мы не будем указывать расширение, т е по сути это файл с исходням кодом
+```
+import Component from './component'
+```
+
+### rules 
+Это одно из самых важных полей в `webpack`'е, здесь мы конфигурируем loader'ы.\
+Они предназначены для того, чтобы обрабаотывать файлы, которые выходят за рамки `javascript`, т е это png, jpeg, gif, svg, css, scss.\
+Т е любая обработка файла, которая выходит за рамки `javascript`.\
+Мы добавим много loader'ов.
+Добавим loader для typescript
+
+### ts-loader
+
+```
+  rules: [
+    {
+      test: /\.tsx?$/,
+      use: 'ts-loader',
+      exclude: /node_modules/,
+    },
+  ],
+```
+
+- test - указываем регулярное выражение, по которому мы будем находить файлы, которые надо пропустить через loader.\ 
+(`test: /\.tsx?$/,` в данном случае это файлы с расширением .tsx)\
+[regex101.com](https://regex101.com/)
+Если подсвечивается синим, то регулярка его ловит (т е .ts и .tsx)\
+- use -  указывается loader, который необходимо использовать (`use: 'ts-loader',`)
+- exclude - исключаем `node_modules` (`exclude: /node_modules/,`)
+
+<!-- 18:28 -->
+
+
+
+
+
 
 
 
