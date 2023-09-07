@@ -57,7 +57,7 @@ entry: path.resolve(__dirname, 'src', 'index.js')
 ```
 
 ```
-<!-- //entry RANDOM.js -->
+//entry RANDOM.js
 entry: {
   RANDOM: path.resolve(__dirname, 'src', 'index.js') 
 }
