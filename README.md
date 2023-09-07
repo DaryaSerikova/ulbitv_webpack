@@ -469,17 +469,18 @@ import Component from './component'
 <!-- npm install --save-dev typescript ts-node @types/node @types/webpack -->
 npm i -D typescript@4.5.5 ts-node@10.4.0 @types/node@20.5.9 @types/webpack@5.28.2
 ```
-А КАКИЕ У ULBI ВЕРСИИ ???????
+
+А КАКИЕ У ULBI ВЕРСИИ ???????\
 Итак с этого момента я угадываю версии UlbiTV, возможно они будут отличаться. Но с этими версиями у меня сборка прошла успешно.\
 
 
 
-Пакеты установились, теперь нужно поменять расширение файла webpack.config.js с .js на .ts
+Пакеты установились, теперь нужно поменять расширение файла `webpack.config.js` с `.js` на `.ts`.\
 
-Проверяем, что ничего не сломали (webpack)
+Проверяем, что ничего не сломали (`webpack`)
 
 
-Сейчас конфиг webpack'а выглядит вот так:\
+Сейчас конфиг `webpack`'а выглядит вот так:\
 
 ```
 const path = require('path');
@@ -517,7 +518,7 @@ module.exports = {
 }
 ```
 
-Давайте поменяем эти require'ы на привычные export'ы и import'ы.\
+Давайте поменяем эти `require`'ы на привычные `export`'ы и `import`'ы.\
 Заменяем вот эту красоту:
 
 ```
