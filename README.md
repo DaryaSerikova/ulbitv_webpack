@@ -441,14 +441,14 @@ import Component from './component'
 <!-- 18:28 -->
 
 Итак `loader` мы подключили, расширение поменяли, `extension`'ы внизу настроили. И в принципе этого уже должно быть достаточно, чтобы `Typescript` у нас работал.\
-Запускаем сборку, проверяем в консольке, что все успешно (В папке build есть файлик index.html, тащим его в браузер: по сути мы просто открываем файл index.html в браузере).\
+Запускаем сборку, проверяем в консольке, что все успешно (В папке build есть файлик index.html, тащим его в браузер: по сути мы просто открываем файл index.html в браузере).
 
 Видим в итоге вот это:
 
 ![index_check_1.jpg](/images/index_check_1.jpg)
 ![index_check_2.jpg](/images/index_check_2.jpg)
 
-Итак, двигаемся дальше.\
+Итак, двигаемся дальше.
 
 
 <a name="configurationLanguages"></a> 
@@ -458,8 +458,7 @@ import Component from './component'
 Сейчас мы сделали `webpack` для исходного кода, но хотелось бы писать сам `config` для `webpack`'а писать на `typescript`. \
 Для этого нужны дополнительные махинации.
 
-Забиваем в гугле: `webpack typescrip config file`, открываем первую ссылку:\
-Здесь мы видим [Configuration Languages](https://webpack.js.org/configuration/configuration-languages/)\
+Забиваем в гугле: `webpack typescrip config file`, открываем первую ссылку. Здесь мы видим: [Configuration Languages](https://webpack.js.org/configuration/configuration-languages/)\
 И нам нужен именно `typescript`.
 
 Сакцентирую на том, что видете, я это все не запоминаю.\
