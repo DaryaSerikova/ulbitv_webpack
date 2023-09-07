@@ -14,7 +14,10 @@
 - [Настройка HTMLWebpackPlugin'а (template для root)](#HTMLWebpackPluginTemplate)
 
 [Typescript](#Typescript)
-
+- [resolve](#resolve)
+- [rules](#rules)
+- [ts-loader](#tsLoader)
+- [Configuration Languages. Настройка typescript для webpack.config](#configurationLanguages)
 ## Usage
 
 `npm run start` - запуск webpack
@@ -339,6 +342,7 @@ module.exports = {
     new webpack.ProgressPlugin(),
   ],
 ```
+
 <a name="Typescript"></a> 
 
 ## Typescript
@@ -392,11 +396,15 @@ export function someFn(arg: number): string {
 
 <!-- 15:37 еще ошибка не передан аргумент typescript, и мб где еще не сменен js на ts -->
 
+<a name="resolve"></a> 
+
 ### resolve
 В поле `resolve` мы указываем расширения, для которых при импорте мы не будем указывать расширение, т е по сути это файл с исходням кодом
 ```
 import Component from './component'
 ```
+
+<a name="rules"></a> 
 
 ### rules 
 Это одно из самых важных полей в `webpack`'е, здесь мы конфигурируем `loader`'ы.\
@@ -404,6 +412,8 @@ import Component from './component'
 Т е любая обработка файла, которая выходит за рамки `javascript`.\
 Мы добавим много `loader`'ов.
 Добавим `loader` для `typescript`
+
+<a name="tsLoader"></a> 
 
 ### ts-loader
 
@@ -432,14 +442,102 @@ import Component from './component'
 
 Итак `loader` мы подключили, расширение поменяли, `extension`'ы внизу настроили. И в принципе этого уже должно быть достаточно, чтобы `Typescript` у нас работал.\
 Запускаем сборку, проверяем в консольке, что все успешно (В папке build есть файлик index.html, тащим его в браузер: по сути мы просто открываем файл index.html в браузере).\
+
 Видим в итоге вот это:
 
 ![index_check_1.jpg](/images/index_check_1.jpg)
 ![index_check_2.jpg](/images/index_check_2.jpg)
 
 Итак, двигаемся дальше.\
+
+
+<a name="configurationLanguages"></a> 
+
+### Configuration Languages. Настройка typescript для webpack.config
+
 Сейчас мы сделали `webpack` для исходного кода, но хотелось бы писать сам `config` для `webpack`'а писать на `typescript`. Для этого нужны дополнительные махинации.\
 
+Забиваем в гугле: `webpack typescrip config file`, открываем первую ссылку
+Здесь мы видим [Configuration Languages](https://webpack.js.org/configuration/configuration-languages/)
+И нам нужен именно typescript.
+
+Сакцентирую на том, что видете, я это все не запоминаю
+Я вот точно так же открываю доку и прям по пунктам иду. Потому что запоминать это абсолютно смысла нет
+
+Итак документация советует нам установить скрипт, копируем, вставляем:
+```
+<!-- npm install --save-dev typescript ts-node @types/node @types/webpack -->
+npm i -D typescript@4.5.5 ts-node@10.4.0 @types/node@20.5.9 @types/webpack@5.28.2
+```
+А КАКИЕ У ULBI ВЕРСИИ ???????
+Итак с этого момента я угадываю версии UlbiTV, возможно они будут отличаться. Но с этими версиями у меня сборка прошла успешно.\
+
+
+
+Пакеты установились, теперь нужно поменять расширение файла webpack.config.js с .js на .ts
+
+Проверяем, что ничего не сломали (webpack)
+
+
+Сейчас конфиг webpack'а выглядит вот так:\
+
+```
+const path = require('path');
+const HTMLWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
+
+
+module.exports = {
+  mode: 'development',
+  entry: path.resolve(__dirname, 'src', 'index.ts'),
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
+    ],
+  },
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js'],
+  },
+  output: {
+    filename: '[name].[contenthash].js',
+    path: path.resolve(__dirname, 'build'),
+    clean: true,
+  },
+  plugins: [
+    new HTMLWebpackPlugin({
+      template: path.resolve(__dirname, 'public', 'index.html')
+    }),
+    new webpack.ProgressPlugin(),
+  ],
+
+}
+```
+
+Давайте поменяем эти require'ы на привычные export'ы и import'ы.\
+Заменяем вот эту красоту:
+
+```
+// webpack.config.js
+const path = require('path');
+const HTMLWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
+```
+
+на вот эту:
+
+```
+// webpack.config.ts
+import * as path from 'path';
+import * as  webpack from 'webpack';
+import * as HtmlWebpackPlugin from 'html-webpack-plugin';
+```
+
+Импортируем все через `* as` - многие наверняка с этим не встрнчались.
+Дело в том, что эти пакеты изначально предназначены для `Node.js`, `tsconfig` у нас для обычных импортов сейчас не предназначен
 
 
 
