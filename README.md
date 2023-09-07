@@ -463,8 +463,8 @@ import Component from './component'
 >Сакцентирую на том, что видете, Я ЭТО ВСЕ НЕ ЗАПОМИНАЮ. Я вот точно так же открываю доку и прям иду по пунктам. Потому что запоминать это абсолютно  смысла нет.
 
 Итак документация советует нам установить скрипт, копируем, вставляем:
+>Небольшая ремарка: `npm install --save-dev typescript ts-node @types/node @types/webpack` по ссылке вы увидете что-то вроде этого, но пока идет этот курс пишем конкретные версии. Поэтому копируем версии ниже
 ```
-<!-- npm install --save-dev typescript ts-node @types/node @types/webpack -->
 npm i -D typescript@4.5.5 ts-node@10.4.0 @types/node@20.5.9 @types/webpack@5.28.2
 ```
 
