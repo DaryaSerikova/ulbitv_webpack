@@ -50,18 +50,7 @@ module.exports = {
   entry: path.resolve(__dirname, 'src', 'index.js') 
 }
 ```
-`entry` - по дефолту называется main, но это название мы можем поправить и даже указать несколько entry point'ов, если такие существуют
-```
-//entry это main.js
-entry: path.resolve(__dirname, 'src', 'index.js') 
-```
 
-```
-//entry RANDOM.js
-entry: {
-  RANDOM: path.resolve(__dirname, 'src', 'index.js') 
-}
-```
 <a name="output"></a> 
 
 ### output
@@ -158,8 +147,21 @@ module.exports = {
 ```
 
 Видим в `build` `main.js` - это дефолтное название для entry point'а\
+`entry` - по дефолту называется `main.js`, но это название мы можем поправить и даже указать несколько entry point'ов, если такие существуют
+```
+//entry это main.js
+entry: path.resolve(__dirname, 'src', 'index.js') 
+```
+
+```
+//entry RANDOM.js
+entry: {
+  RANDOM: path.resolve(__dirname, 'src', 'index.js') 
+}
+```
 Entry point'ов мб несколько или один с другим названием например:
 ![random](/images/random.jpg)
+
 Но нам это не нужно, и один entry point нас вполне устраивает\
 Итак вернемся к проблеме с кэшированием:\
 Если у нас каждый раз одно и то же название файла, браузер каждыый раз его кэширует
@@ -422,7 +424,23 @@ import Component from './component'
 - `use` -  указывается loader, который необходимо использовать (`use: 'ts-loader',`)
 - `exclude` - исключаем `node_modules` (`exclude: /node_modules/,`)
 
+#### Совет: 
+Не пытайтесь все это запомнить. Поймите общую концепцию, и вы потом по документации все это повторить сможете.\
+Запоминать отдельные названия полей, плагинов не стоит. Запоминайте концепуию и тогда обучение у вас будет легким.
+
 <!-- 18:28 -->
+
+Итак `loader` мы подключили, расширение поменяли, `extension`'ы внизу настроили. И в принципе этого уже должно быть достаточно, чтобы `Typescript` у нас работал.\
+Запускаем сборку, проверяем в консольке, что все успешно (В папке build есть файлик index.html, тащим его в браузер: по сути мы просто открываем файл index.html в браузере).\
+Видим в итоге вот это:
+
+![index_check_1.jpg](/images/index_check_1.jpg)
+![index_check_2.jpg](/images/index_check_2.jpg)
+
+Итак, двигаемся дальше.\
+Сейчас мы сделали `webpack` для исходного кода, но хотелось бы писать сам `config` для `webpack`'а писать на `typescript`. Для этого нужны дополнительные махинации.\
+
+
 
 
 
