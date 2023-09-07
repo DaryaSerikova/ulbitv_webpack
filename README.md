@@ -56,8 +56,8 @@ module.exports = {
 entry: path.resolve(__dirname, 'src', 'index.js') 
 ```
 
+<span color="#gray">//entry RANDOM.js</span>
 ```
-<font color="#gray">//entry RANDOM.js</font>
 entry: {
   RANDOM: path.resolve(__dirname, 'src', 'index.js') 
 }
