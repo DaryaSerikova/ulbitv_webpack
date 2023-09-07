@@ -50,7 +50,18 @@ module.exports = {
   entry: path.resolve(__dirname, 'src', 'index.js') 
 }
 ```
+`entry` - по дефолту называется main, но это название мы можем поправить и даже указать несколько entry point'ов, если такие существуют
+```
+//entry это main.js
+entry: path.resolve(__dirname, 'src', 'index.js') 
+```
 
+```
+//entry RANDOM.js
+entry: {
+  RANDOM: path.resolve(__dirname, 'src', 'index.js') 
+}
+```
 <a name="output"></a> 
 
 ### output
@@ -82,6 +93,8 @@ zsh: command not found: webpack
 Напишите в `package.json`, в `scripts`:
 
 ```
+//package.json
+
 "scripts": {
    "start": "webpack"
 },
@@ -97,6 +110,8 @@ zsh: command not found: webpack
 
 Пофиксим ворнинг с `mode`:
 ```
+//webpack.config.js
+
 const path = require('path');
 
 
@@ -129,6 +144,8 @@ Concepts => Output => Multiple Entry Points
 позволяют достаточно быстро их отдавать из кэша, не загружая их каждый раз откуда-то с сервера
 
 ```
+//webpack.config.js
+
 module.exports = {
   mode: 'development',
   entry: path.resolve(__dirname, 'src', 'index.js'),
@@ -151,6 +168,8 @@ Entry point'ов мб несколько или один с другим наз�
 В таком случае можно отдать вот такой вот шаблон `filename: '[name].[contenthash].js'`:
 
 ```
+//webpack.config.js
+
 module.exports = {
   mode: 'development',
   entry: path.resolve(__dirname, 'src', 'index.js'),
