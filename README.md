@@ -458,8 +458,7 @@ import Component from './component'
 Сейчас мы сделали `webpack` для исходного кода, но хотелось бы писать сам `config` для `webpack`'а писать на `typescript`. \
 Для этого нужны дополнительные махинации.
 
-Забиваем в гугле: `webpack typescrip config file`, открываем первую ссылку. Здесь мы видим: [Configuration Languages](https://webpack.js.org/configuration/configuration-languages/)\
-И нам нужен именно `typescript`.
+Забиваем в гугле: `webpack typescrip config file`, открываем первую ссылку. Здесь мы видим: [Configuration Languages](https://webpack.js.org/configuration/configuration-languages/). (И нам нужен именно `typescript`)
 
 Сакцентирую на том, что видете, я это все не запоминаю.\
 Я вот точно так же открываю доку и прям по пунктам иду. Потому что запоминать это абсолютно смысла нет.
