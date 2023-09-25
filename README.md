@@ -21,6 +21,8 @@
 
 [2 Декомпозиция конфига. Опции конфигурации](#decompositionConfig)
 - [buildPlugins](#buildPlugins)
+- [buildLoaders](#buildLoaders)
+- [buildResolvers](#buildResolvers)
 
 
 
@@ -735,7 +737,7 @@ export default config;
 И сразу же пробуем сделать сборку еще раз (webpack - в видео/npm run start - в моем проекте)
 Теперь мы можем писать большой, полноценный сложный конфиг с использованием `typescript`'а
 
-#### Итог: 
+### Итог: 
 Мы настроили небольшой конфиг, научились работать с `typescript` и при этом перевели нашу конфигурацию (наш webpack.config) так же на `typescript`.
 И сконфигурировали небольшой `tsconfig`
 
@@ -757,7 +759,7 @@ export default config;
 
 ![buildPlugins.jpg](/images/buildPlugins.jpg)
 
-<!-- [buildPlugins](#buildPlugins) -->
+
 <a name="buildPlugins"></a> 
 
 ### buildPlugins
@@ -780,4 +782,55 @@ export function buildPlugins():webpack.WebpackPluginInstance[] {
 ```
 А в основном конфиге пишем так `plugins: buildPlugins(),`;
 
+
+<a name="buildLoaders"></a> 
+
+### buildLoaders
+
 То же самое мы делаем с loader'ами. Создаем отдельный файлик 
+![buildLoaders.jpg](/images/buildLoaders.jpg)
+Вырезаем эти лоадеры, вставляем вместо них `buildLoaders()`.
+Вырезанные лоадеры вставляем в `buildLoaders`. и не забываем про типизацию, чтобы среда разработки сама нам подсказывала
+```
+//webpack.config.ts
+  module: {
+    rules: buildLoaders(),
+  },
+```
+```
+//buildLoaders.ts
+import webpack from 'webpack';
+
+export function buildLoaders(): webpack.RuleSetRule[] {
+  return [
+    {
+      test: /\.tsx?$/,
+      use: 'ts-loader',
+      exclude: /node_modules/,
+    },
+  ]
+}
+```
+
+Еще один важный момент, на который надо сакцентрировать внимание - это то, что порядок, в котором лоадеры возвращаются в массиве имеет значение.
+И по-хорошему выносить вот так вот отдельные лоадеры в переменные нужно, чтобы потом чутко видеть последовательность этих лоадеров в массиве.
+```
+import webpack from 'webpack';
+
+export function buildLoaders(): webpack.RuleSetRule[] {
+  const typescriptLoader = {
+    test: /\.tsx?$/,
+    use: 'ts-loader',
+    exclude: /node_modules/,
+  };
+
+  return [
+    typescriptLoader,
+  ]
+}
+```
+
+<!-- [buildResolvers](#buildResolvers) -->
+<a name="buildResolvers"></a> 
+
+### buildResolvers
