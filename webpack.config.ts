@@ -1,16 +1,8 @@
-// const path = require('path');
-// const HTMLWebpackPlugin = require('html-webpack-plugin');
-// const webpack = require('webpack');
-
-// import * as path from 'path';
-// import * as webpack from 'webpack';
-// import * as HtmlWebpackPlugin from 'html-webpack-plugin';
-
 import path from 'path';
 import webpack from 'webpack';
-// import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { buildPlugins } from './config/build/buildPlugins';
 import { buildLoaders } from './config/build/buildLoaders';
+import { buildResolvers } from './config/build/buildResolvers';
 
 const config: webpack.Configuration = {
   mode: 'development',
@@ -19,9 +11,7 @@ const config: webpack.Configuration = {
   module: {
     rules: buildLoaders(),
   },
-  resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
-  },
+  resolve: buildResolvers(),
 
   // output - 'то настройка того, куда и как мы будем делать сборку нашего приложения
   output: {

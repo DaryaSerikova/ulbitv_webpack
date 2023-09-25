@@ -23,7 +23,7 @@
 - [buildPlugins](#buildPlugins)
 - [buildLoaders](#buildLoaders)
 - [buildResolvers](#buildResolvers)
-
+- [buildWebpackConfig.ts - общая функция конфгурации с опциями](#buildWebpackConfig)
 
 
 
@@ -830,7 +830,94 @@ export function buildLoaders(): webpack.RuleSetRule[] {
 }
 ```
 
-<!-- [buildResolvers](#buildResolvers) -->
 <a name="buildResolvers"></a> 
 
 ### buildResolvers
+Делаем все по аналогии. Копируем этот кусок в функцию buildresolvers.
+
+![buildresolvers.jpg](/images/buildresolvers.jpg)
+
+Вместо него втавляем `buildResolvers()`
+
+```
+import { ResolveOptions } from "webpack";
+
+export function buildResolvers(): ResolveOptions {
+  return {
+      extensions: ['.tsx', '.ts', '.js'],
+    }
+}
+```
+
+```
+import path from 'path';
+import webpack from 'webpack';
+import { buildPlugins } from './config/build/buildPlugins';
+import { buildLoaders } from './config/build/buildLoaders';
+import { buildResolvers } from './config/build/buildResolvers';
+
+const config: webpack.Configuration = {
+  mode: 'development',
+  //entry - стартовая точка нашего приложения. В нашем случае это './src/index.js',
+  entry: path.resolve(__dirname, 'src', 'index.ts'),
+  module: {
+    rules: buildLoaders(),
+  },
+  resolve: buildResolvers(),
+
+  // output - 'то настройка того, куда и как мы будем делать сборку нашего приложения
+  output: {
+    filename: '[name].[contenthash].js',
+    path: path.resolve(__dirname, 'build'),
+    clean: true,
+  },
+  plugins: buildPlugins(),
+
+}
+
+export default config;
+```
+
+<!-- [buildWebpackConfig.ts - общая функция конфгурации с опциями](#buildWebpackConfig) -->
+<a name="buildWebpackConfig"></a> 
+
+### buildWebpackConfig.ts
+
+Запускаем сборку и видим ошибку
+![decompositionError.jpg](/images/decompositionError.jpg)
+
+По сообщению об ошибке можно понять, что не удается распознать файлик index.html
+И это логично, т к мы перенесли плагин (он теперь находится в другой папке, по другому пути) и этот путь больше неактуален (`path.resolve(__dirname, 'public', 'index.html')`)
+![pathError.jpg](/images/pathError.jpg)
+Можно его, конечно, тут захардкодить, но мы хотим сделать качественно. Поэтому создадим такой механизм, по которому мы сможем эти пути задавать еще до сборки. Т е  конфигурировать конфиг, задавать опции из-вне. Например, порт, пути, адрес ip, режим (developmemt/production) - т е всем этим хорошо бы уметь управлять из-вне.
+И первое с чего мы начнем это создадим тип, в котором опишем вот эти вот опции.
+
+Создадим в папке `build` папку `types` и в ней файл `config.ts`.
+Первая опция - это `mode` соответственно `developmemt` или `prodaction`
+`paths` - путь до `entry point`'а, путь до папки (куда мы делаем сборку), путь до html - т е любые пути, которые будут использоваться в нашей сборке, в нашей конфигурации, будут располагаться как раз вот в этом свойстве.
+`entry` - первый путь до `entry point`'а
+`build` - второй до папки со сборкой (это папка `build`)
+`html` - путь до файлика `html`, который лежит в папке `public`
+
+```
+//config => build => types => config.ts
+export type BuildMode = 'prodaction' | 'development';
+
+export interface BuildPath {
+  entry: string;
+  build: string;
+  html: string;
+}
+
+export interface BuildOptions {
+  mode?: BuildMode;
+  paths: BuildPath;
+}
+```
+
+Следующим этапом создадим в папке `build` файлик `buildWebpackConfig.ts`. 
+И сюда перенесем всю конфигурацию, которую мы делали в корне проекта.
+И вот как раз вот эта вот функция, которая будет конфиг собирать, она будет принимать набор опций, для которых мы собрали соответствующий тип `BuildOptions`.
+B разумеется, что эта функция будет возвращать тип `webpack.Configuration`.
+
+![configuration.jpg](/images/configuration.jpg)
