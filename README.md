@@ -735,7 +735,8 @@ export default config;
 И сразу же пробуем сделать сборку еще раз (webpack - в видео/npm run start - в моем проекте)
 Теперь мы можем писать большой, полноценный сложный конфиг с использованием `typescript`'а
 
-Итог: мы настроили небольшой конфиг, научились работать с `typescript` и при этом перевели нашу конфигурацию (наш webpack.config) так же на `typescript`.
+#### Итог: 
+Мы настроили небольшой конфиг, научились работать с `typescript` и при этом перевели нашу конфигурацию (наш webpack.config) так же на `typescript`.
 И сконфигурировали небольшой `tsconfig`
 
 <a name="decompositionConfig"></a> 
@@ -750,8 +751,10 @@ export default config;
 В корне проекта создадим папочку `congig`. Здесь будет храниться вся конфигурация приложения: тестовой среды, `Storybook`'а, `Webpack`.
 Внутри папки config уже будут лежать подпапки, в которых мы будем конфигурировать ту или иную среду. Например, `jest`, `eslint`, `build`.
 ![decompositionConfig.jpg](/images/decompositionConfig.jpg)
+
 В папке `build` мы будем описывать какие-то сценарии конфигурации нашего `webpack.config`'а.
 Здесь для каждого вебпак-свойства мы будем создавать отдельный файлик. 
+
 ![buildPlugins.jpg](/images/buildPlugins.jpg)
 
 <!-- [buildPlugins](#buildPlugins) -->
