@@ -2,7 +2,7 @@
 
 ## Содержание
 [Usage](#)\
-1 [Basic setup](#basicSetup)
+[1 Basic setup](#basicSetup)
 - [entry](#entry)
 - [output](#output)
 - [ЧТОБЫ ЗАПУСТИТЬ СБОРКУ](#Запуск)
@@ -19,7 +19,10 @@
 - [ts-loader](#tsLoader)
 - [Configuration Languages. Настройка typescript для webpack.config](#configurationLanguages)
 
-2 [Декомпозиция конфига. Опции конфигурации]
+[2 Декомпозиция конфига. Опции конфигурации](#decompositionConfig)
+- [buildPlugins](#buildPlugins)
+
+
 
 
 ## Usage
@@ -735,6 +738,7 @@ export default config;
 Итог: мы настроили небольшой конфиг, научились работать с `typescript` и при этом перевели нашу конфигурацию (наш webpack.config) так же на `typescript`.
 И сконфигурировали небольшой `tsconfig`
 
+<a name="decompositionConfig"></a> 
 
 ## 2. Декомпозиция конфига. Опции конфигурации
 
@@ -748,5 +752,29 @@ export default config;
 ![decompositionConfig.jpg](/images/decompositionConfig.jpg)
 В папке `build` мы будем описывать какие-то сценарии конфигурации нашего `webpack.config`'а.
 Здесь для каждого вебпак-свойства мы будем создавать отдельный файлик. 
-Например, buildPlugins - это простая функция, которая будет возвращать нам список плагинов.
 ![buildPlugins.jpg](/images/buildPlugins.jpg)
+
+<!-- [buildPlugins](#buildPlugins) -->
+<a name="buildPlugins"></a> 
+
+### buildPlugins
+
+Например, buildPlugins - это простая функция, которая будет возвращать нам список плагинов.
+Давайте из конфига этот массив просто вырежем и перенесем в buildPlugins и добавим импорты. Не забываем про тип 
+```
+import path from 'path';
+import webpack from 'webpack';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+
+export function buildPlugins():webpack.WebpackPluginInstance[] {
+  return [
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, 'public', 'index.html')
+    }),
+    new webpack.ProgressPlugin(),
+  ]
+}
+```
+А в основном конфиге пишем так `plugins: buildPlugins(),`;
+
+То же самое мы делаем с loader'ами. Создаем отдельный файлик 
