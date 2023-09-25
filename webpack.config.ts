@@ -1,12 +1,16 @@
 // const path = require('path');
 // const HTMLWebpackPlugin = require('html-webpack-plugin');
 // const webpack = require('webpack');
-import * as path from 'path';
-import * as  webpack from 'webpack';
-import * as HtmlWebpackPlugin from 'html-webpack-plugin';
 
+// import * as path from 'path';
+// import * as webpack from 'webpack';
+// import * as HtmlWebpackPlugin from 'html-webpack-plugin';
 
-module.exports = {
+import path from 'path';
+import webpack from 'webpack';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+
+const config: webpack.Configuration = {
   mode: 'development',
   //entry - стартовая точка нашего приложения. В нашем случае это './src/index.js',
   entry: path.resolve(__dirname, 'src', 'index.ts'),
@@ -37,3 +41,5 @@ module.exports = {
   ],
 
 }
+
+export default config;

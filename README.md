@@ -2,7 +2,7 @@
 
 ## Содержание
 [Usage](#)\
-[Basic setup](#basicSetup)
+1 [Basic setup](#basicSetup)
 - [entry](#entry)
 - [output](#output)
 - [ЧТОБЫ ЗАПУСТИТЬ СБОРКУ](#Запуск)
@@ -18,6 +18,10 @@
 - [rules](#rules)
 - [ts-loader](#tsLoader)
 - [Configuration Languages. Настройка typescript для webpack.config](#configurationLanguages)
+
+2 [Декомпозиция конфига. Опции конфигурации]
+
+
 ## Usage
 
 `npm run start` - запуск webpack
@@ -527,6 +531,7 @@ const webpack = require('webpack');
 
 ```
 // webpack.config.ts
+
 import * as path from 'path';
 import * as  webpack from 'webpack';
 import * as HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -535,19 +540,213 @@ import * as HtmlWebpackPlugin from 'html-webpack-plugin';
 Импортируем все через `* as` - многие наверняка с этим не встрнчались.
 Дело в том, что эти пакеты изначально предназначены для `Node.js`, `tsconfig` у нас для обычных импортов сейчас не предназначен
 
+Читаем вот это вот сообщение в [документации](https://webpack.js.org/configuration/configuration-languages/)
+![typescript_spec.jpg](/images/typescript_spec.jpg)
+
+Значит, нам нужно добавить два флага (`esModuleInterop` и `allowSyntheticDefaultImports`) в ts.config.json и именно они сделают наши импорты более привычными.
+```
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "noImplicitAny": true,
+    "module": "es6",
+    "target": "es5",
+    "jsx": "react",
+    "allowJs": true,
+    "moduleResolution": "node",
+    
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+  }
+}
+```
+
+`esModuleInterop` - позволяет работать с пакетамиБ которые используют common js как с обычными пакета с помощью import export (require() module.export) = commomjs.
+
+`allowSyntheticDefaultImports` - позволяет использовать default'ный импорты, даже если в используемой библиотеке их нет. Без `* as`
+Многие библиотеки, особенно те, которые написаны на ноде не поддерживают дефолтный импорт. И нам нужно явно писать `* as`, сообщая что мы хотим явно все импортировать из этого пакета (т е с нодой мы должны писать `import * as path from 'path';`, но теперь можно так `import path from 'path';`). 
+
+`moduleResolution` - это простое свойство. Оно определяет, какие импорты будут. Здесь всего два свойтва: `node` и `classic`. И в 99% случаев используется `node`
+
+`allowJs` - позволяет обрабатывать не только `ts`-файлы, но и `js`
+
+`jsx` - это у нас `React`. Это делается для того, чтобы мы писать конструкции `jsx`
+
+`target` - в `target` указывается версия стандарта ECMAScript, в которую по итогу код будет компилироваться. Обычно компилируется либо в 5ую, либо в 6ую версию. Делается это для того, чтобы большинство браузеров могло поддерживать наш код
+
+`module` - в `module` указывается модульная система. Это как раз `CommonJS`, `es6`, `ESNext` - различные способы модульной сборки. Обычно используют `ESNext` или `es6`. На backend'е можно использовать `CommonJS`.
+
+`noImplicitAny` - не позволяет нам использвать переменные без явного указания типа (можно указать any, но лучше так не делать) 
+
+`outDir` - то, куда производится сборка `"outDir": "./dist/",`. В нашем случае она не так важна, потому что собирается она с помощью вебпака.
+
+<!-- 25:19 -->
+`tsconfig` мы разобрали. Со временем мы будем пополнять, расширять, усложнять.
+Вернемся к нашему `webpack.config`'у
+
+Используя `allowSyntheticDefaultImports` перепишем это:
+```
+import * as path from 'path';
+import * as webpack from 'webpack';
+import * as HtmlWebpackPlugin from 'html-webpack-plugin';
+```
+На это:
+```
+import path from 'path';
+import webpack from 'webpack';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+```
+
+Сейчас наш webpack.config выглядит так: 
+
+```
+import path from 'path';
+import webpack from 'webpack';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+
+module.exports = {
+  mode: 'development',
+  entry: path.resolve(__dirname, 'src', 'index.ts'),
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
+    ],
+  },
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js'],
+  },
+  output: {
+    filename: '[name].[contenthash].js',
+    path: path.resolve(__dirname, 'build'),
+    clean: true,
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, 'public', 'index.html')
+    }),
+    new webpack.ProgressPlugin(),
+  ],
+
+}
+```
+
+Для конфига создадим отдельную переменную `config`.
+и закинем в нее наш объект с конфигурацией.
+И теперь мы используем не `module.exports`, а `export default`.\
+и так же по-хорошему для конфига нужно указать тип (`const config: webpack.Configuration`), чтобы пользоваться прелестями автокомплита.
+Этот тип импортируется из вебпака и называется он `Configuration`.\
+
+```
+import path from 'path';
+import webpack from 'webpack';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+
+const config: webpack.Configuration = {
+  mode: 'development',
+  //entry - стартовая точка нашего приложения. В нашем случае это './src/index.js',
+  entry: path.resolve(__dirname, 'src', 'index.ts'),
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
+    ],
+  },
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js'],
+  },
+
+  // output - 'то настройка того, куда и как мы будем делать сборку нашего приложения
+  output: {
+    filename: '[name].[contenthash].js',
+    path: path.resolve(__dirname, 'build'),
+    clean: true,
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, 'public', 'index.html')
+    }),
+    new webpack.ProgressPlugin(),
+  ],
+
+}
+
+export default config;
+```
+
+Теперь все типы, среда разработки сама подсказывает. И разрабатывать мы будем не интуитивно, а понимая чано где и какой тип нам нужен.
+Но как видите при попытке собрать проект, у нас все равно сборка падает.
+И если мы почитаем сообщение, то увидим, что как раз ругается на эти импорты:
+```
+  SyntaxError: Cannot use import statement outside a module
+```
+Но давайте вернемся обратно к [документации](https://webpack.js.org/configuration/configuration-languages/), потому что секцию мы еще не закончили.
+
+![noteCommonJs.jpg](/images/noteCommonJs.jpg)
+Здесь написано, что если в `module` мы указали `commomJS`, то настройка окончена. 
+Если нет, то нужна дополнительная настройка, потому что `ts-node` по умолчанию понимает только `commomJS`.
+
+У нас есть 3 пути:\
+Изменить `tsconfig.json`.
+Изменить `tsconfig.json` и добавить настрйоки для `ts-node`.
+Установить `tsconfig-paths`.
+
+Но самый простой случай - это оставить `ESNext` и добавить лополнительные настройки для `ts-node`.
+копируем эти строки из документации:
+```
+"ts-node": {
+  "compilerOptions": {
+    "module": "CommonJS"
+  }
+}
+```
+Теперь наш tsconfig выглядит так:
+```
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "noImplicitAny": true,
+    "module": "es6",
+    "target": "es5",
+    "jsx": "react",
+    "allowJs": true,
+    "moduleResolution": "node",
+    
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
+
+  },
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
+  }
+}
+```
+И сразу же пробуем сделать сборку еще раз (webpack - в видео/npm run start - в моем проекте)
+Теперь мы можем писать большой, полноценный сложный конфиг с использованием `typescript`'а
+
+Итог: мы настроили небольшой конфиг, научились работать с `typescript` и при этом перевели нашу конфигурацию (наш webpack.config) так же на `typescript`.
+И сконфигурировали небольшой `tsconfig`
 
 
+## 2. Декомпозиция конфига. Опции конфигурации
 
+Продолжаем конфигурировать наше приложение. И на текущий момент, конфиг начинает разрастаться. 
+Хотя по сути мы только начали конфигурировать наше приложение: есть всего 2 плагина и 1 loader.
+Плюс ко всему рано или поздно нам придется разделать prodaction и dev-сборку и конфиг будет совсем страшным.
+Поэтому сейчас мы будем его декомпозировать и приводить к читабельному, хорошему виду.
 
-
-
-
-
-
-
-
-
-
-
-
-
+В корне проекта создадим папочку `congig`. Здесь будет храниться вся конфигурация приложения: тестовой среды, `Storybook`'а, `Webpack`.
+Внутри папки config уже будут лежать подпапки, в которых мы будем конфигурировать ту или иную среду. Например, `jest`, `eslint`, `build`.
+![decompositionConfig.jpg](/images/decompositionConfig.jpg)
+В папке `build` мы будем описывать какие-то сценарии конфигурации нашего `webpack.config`'а.
+Здесь для каждого вебпак-свойства мы будем создавать отдельный файлик. 
+Например, buildPlugins - это простая функция, которая будет возвращать нам список плагинов.
+![buildPlugins.jpg](/images/buildPlugins.jpg)
