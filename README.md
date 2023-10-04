@@ -2,10 +2,7 @@
 
 ## Содержание
 [Usage](#)\
-[1 Basic setup](#basicSetup)
-- [entry](#entry)
-- [output](#output)
-- [ЧТОБЫ ЗАПУСТИТЬ СБОРКУ](#Запуск)
+[1. Basic setup](#basicSetup) ([entry](#entry), [output](#output), [ЧТОБЫ ЗАПУСТИТЬ СБОРКУ](#Запуск))
 - [Шаблоны. Динамические названия для файлов](#Шаблоны)
 
 [Подключение плагинов](#setPlugins)
@@ -19,7 +16,7 @@
 - [ts-loader](#tsLoader)
 - [Configuration Languages. Настройка typescript для webpack.config](#configurationLanguages)
 
-[2 Декомпозиция конфига. Опции конфигурации](#decompositionConfig)
+[2. Декомпозиция конфига. Опции конфигурации](#decompositionConfig)
 - [buildPlugins](#buildPlugins)
 - [buildLoaders](#buildLoaders)
 - [buildResolvers](#buildResolvers)
@@ -29,7 +26,7 @@
 - [inline-source-map](#inlineSourceMap) - карта исходного кода для поиска ошибок в едином объединенном файле html
 - [webpack-dev-server](#webpackDevServer) - автооткрывание страницы
 
-[4.React и первое подключение стилей (scss)](#reactAndScss)
+[4. React и первое подключение стилей (scss)](#reactAndScss)
 - [react](#react)
 - [scss](#scss)
 
