@@ -8,7 +8,6 @@
     - [HTMLWebpackPlugin](#HTMLWebpackPlugin)
     - [webpack.ProgressPlugin](#ProgressPlugin) - полоса загрузки
     - [Настройка HTMLWebpackPlugin'а (template для root)](#HTMLWebpackPluginTemplate)
-
   * [Typescript](#Typescript)
     - [resolve](#resolve)
     - [rules](#rules)
@@ -26,8 +25,8 @@
 - [webpack-dev-server](#webpackDevServer) - автооткрывание страницы
 
 [4. React и первое подключение стилей (scss)](#reactAndScss)
-- [react](#react)
-- [scss](#scss)
+- [react](#react) - ts: typescriptLoader(уже обрабатывает), js: babel-loader
+- [scss](#scss) - style-loader, css-loader, sass-loader
 
 
 
