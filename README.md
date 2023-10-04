@@ -25,6 +25,10 @@
 - [buildResolvers](#buildResolvers)
 - [buildWebpackConfig.ts - общая функция конфгурации с опциями](#buildWebpackConfig)
 
+[3. Webpack-dev-server. Переменные оружения](#mainWebpackDevServer)
+- [inline-source-map](#inlineSourceMap)
+- [webpack-dev-server](#webpackDevServer)
+
 
 
 ## Usage
@@ -878,7 +882,6 @@ const config: webpack.Configuration = {
 export default config;
 ```
 
-<!-- [buildWebpackConfig.ts - общая функция конфгурации с опциями](#buildWebpackConfig) -->
 <a name="buildWebpackConfig"></a> 
 
 ### buildWebpackConfig.ts
@@ -1067,6 +1070,9 @@ const config: webpack.Configuration = buildWebpackConfig({
 сделали опции, с помощью которых мы можем управлять сборкой \
 И это все в дальнейшем сильно упростит жизнь, наш конфиг будет читабельным, он не будет разрастаться до огромных масштабов, которые поддерживать просто нереально.
 
+
+<a name="mainWebpackDevServer"></a> 
+
 ## 3. Webpack-dev-server. Переменные оружения
 
 Сейчас мы будем настраивать dev-server. \
@@ -1084,6 +1090,9 @@ const config: webpack.Configuration = buildWebpackConfig({
 
 Заходим в `development guide` и прям идем по порядку. \
 Листамем вниз, видим, что нам рекомендуют установить `developmet mode` и так же какие-то `source map`. \
+
+
+<a name="inlineSourceMap"></a> 
 
 ### inline-source-map
 
@@ -1120,6 +1129,9 @@ export function buildWebpackConfig(options: BuildOptions): webpack.Configuration
 
 Теперь мы сможем четко видеть, где в коде у нас произошла ошибка.
 
+[webpack-dev-server](#webpackDevServer)
+
+<a name="webpackDevServer"></a> 
 
 ### webpack-dev-server
 Следующим шагом нам предлагают выбрать инструмент для разработки.
