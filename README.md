@@ -920,4 +920,640 @@ export interface BuildOptions {
 И вот как раз вот эта вот функция, которая будет конфиг собирать, она будет принимать набор опций, для которых мы собрали соответствующий тип `BuildOptions`.\
 B разумеется, что эта функция будет возвращать тип `webpack.Configuration`.\
 
+Вырезаем конфигурацию из webpack.config.ts в корне проекта
 ![configuration.jpg](/images/configuration.jpg)
+Вставляем в buildWebpackConfig:
+```
+import { BuildOptions } from "./types/config";
+import webpack from 'webpack';
+import path from 'path';
+import { buildPlugins } from "./buildPlugins";
+import { buildLoaders } from "./buildLoaders";
+import { buildResolvers } from "./buildResolvers";
+
+export function buildWebpackConfig(options: BuildOptions): webpack.Configuration {
+ return {
+    mode: 'development',
+    entry: path.resolve(__dirname, 'src', 'index.ts'),
+    module: {
+      rules: buildLoaders(),
+    },
+    resolve: buildResolvers(),
+
+    output: {
+      filename: '[name].[contenthash].js',
+      path: path.resolve(__dirname, 'build'),
+      clean: true,
+    },
+    plugins: buildPlugins(),
+
+  }
+}
+```
+
+Тем временем в webpack.config.ts:
+```
+const config: webpack.Configuration = buildWebpackConfig({
+
+});
+```
+
+Теперь при вызове функции `buildWebpackConfig`, нам необходимо передать следующие опции:\ 
+`'developmemnt'` или `'prodaction'` `mode`\
+и список путей `paths`\
+```
+//webpack.config.ts
+import path from 'path';
+import webpack from 'webpack';
+import { buildWebpackConfig } from './config/build/buildWebpackConfig';
+import { BuildPath } from './config/build/types/config';
+
+
+const paths: BuildPath = {
+  entry: path.resolve(__dirname, 'src', 'index.ts'),
+  build: path.resolve(__dirname, 'build'),
+  html: path.resolve(__dirname, 'public', 'index.html'),
+}
+
+const config: webpack.Configuration = buildWebpackConfig({
+  mode: 'development',
+  paths
+});
+
+export default config;
+```
+
+Вернемся к `buildWebpackConfig`. Первое, что сделаем: деструктуризировать объект с опциями, чтобы использовать свойства более удобно.\
+
+Заменяем в нем `mode` и `paths` на переменные
+
+```
+import { BuildOptions } from "./types/config";
+import webpack from 'webpack';
+import { buildPlugins } from "./buildPlugins";
+import { buildLoaders } from "./buildLoaders";
+import { buildResolvers } from "./buildResolvers";
+
+export function buildWebpackConfig(options: BuildOptions): webpack.Configuration {
+
+  const {paths, mode} = options;
+
+  return {
+    mode: mode,
+    entry: paths.entry,
+    module: {
+      rules: buildLoaders(),
+    },
+    resolve: buildResolvers(),
+
+    output: {
+      filename: '[name].[contenthash].js',
+      path: paths.build,
+      clean: true,
+    },
+    plugins: buildPlugins(),
+
+  }
+}
+```
+Осталось только заменить путь для `html`, в файле `buildPlugins `
+buildPlugins.ts: `{paths}: BuildOptions` - добавили options (точнее деструктуризацию из `options` - `paths` и тип)
+buildWebpackCoтfig.ts: `plugins: buildPlugins(options)` - добавили options
+
+```
+import path from 'path';
+import webpack from 'webpack';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import { BuildOptions } from './types/config';
+
+export function buildPlugins({paths}: BuildOptions):webpack.WebpackPluginInstance[] {
+  return [
+    new HtmlWebpackPlugin({
+      template: paths.html,
+    }),
+    new webpack.ProgressPlugin(),
+  ]
+}
+```
+Таким образом пути мы нигде не указываем явным образом, только передаем из-вне как аргумент в функцию `buildWebpackConfig`.\
+Так же предлагаю добавить еще одно поле в опции (options) - это isDev (исключительно для удобства)
+```
+// config => build => types => config.ts
+export interface BuildOptions {
+  mode?: BuildMode;
+  paths: BuildPath;
+  isDev: boolean;
+}
+```
+
+```
+//webpack.config.ts
+...
+
+const mode = 'development';
+const isDev = mode === 'development'; 
+
+const config: webpack.Configuration = buildWebpackConfig({
+  mode: 'development',
+  paths,
+  isDev, //это поле нужно исключительно для удобства
+});
+```
+
+Пробуем собрать. Сборка успешна
+
+### Итог: 
+Мы декомпозировали конфиг, \
+сделали опции, с помощью которых мы можем управлять сборкой \
+И это все в дальнейшем сильно упростит жизнь, наш конфиг будет читабельным, он не будет разрастаться до огромных масштабов, которые поддерживать просто нереально.
+
+## 3. Webpack-dev-server. Переменные оружения
+
+Сейчас мы будем настраивать dev-server. \
+Но сначала поймем, для чего он нам нужен.\
+
+1. Откроем файлик index.html в браузере видим в консоли `'RANDOM FUNCTION'`.
+2. Допишем изменим это значение на `'RANDOM FUNCTION 123456789'`.
+3. И чтобы увидеть в браузере изменения, которые мы добавили, нам нужно заново сделать сборку и заново открыть html-файлик и только потом мы увидим изменения, которые мы добавили в код.
+
+Вот для этого `Webpack-dev-server` и нужен. Он будет автоматически перезапускать сборку и отдавать нам уже обновленные файлы.
+
+Поисковая строка гугла: `webpack dev server` \
+
+Открываем документацию: [DevServer](https://webpack.js.org/configuration/dev-server/) => [development guide](https://webpack.js.org/guides/development/) (ссылка в первых предложениях, подсвеченная фраза) \
+
+Заходим в `development guide` и прям идем по порядку. \
+Листамем вниз, видим, что нам рекомендуют установить `developmet mode` и так же какие-то `source map`. \
+
+### inline-source-map
+
+Что такое `source map` (кратко)? \
+
+Когда webpack делает сборку, у нас много файлов, например 10. А на выходе мы можем иметь всего один файл. \
+Так вот отследить, где произошла ошибка, в таком случе становится сложно. \
+Именно поэтому webpack делает вот такие (`devtool: 'inline-source-map'`) карты исходного кода, по которым мы можем четко по `stack trace`'у четку увидеть: где, в какой функции, в каком файле произошла ошибка и соответственно эту ошибку поправить.
+
+Поэтому давайте в `config => build => buildWebpackConfig.ts` добавим в конце `return`'а `devtool: 'inline-source-map',`
+
+```
+export function buildWebpackConfig(options: BuildOptions): webpack.Configuration {
+
+  const {paths, mode} = options;
+
+  return {
+    mode: mode,
+    entry: paths.entry,
+    module: {
+      rules: buildLoaders(),
+    },
+    resolve: buildResolvers(),
+    output: {
+      filename: '[name].[contenthash].js',
+      path: paths.build,
+      clean: true,
+    },
+    plugins: buildPlugins(options),
+    devtool: 'inline-source-map',
+  }
+}
+```
+
+Теперь мы сможем четко видеть, где в коде у нас произошла ошибка.
+
+
+### webpack-dev-server
+Следующим шагом нам предлагают выбрать инструмент для разработки.
+
+1. `webpack's Watch Mode` (простой)
+2. `webpack-dev-server` (средний)
+3. `webpack-dev-middleware` (продвинутый)
+
+`webpack-dev-server` (средний) и удволетворит все наши потребности. Копируем ссылку на установку и добавляем `@types`
+```
+npm i -D webpack-dev-server@4.7.4 @types/webpack-dev-server@4.7.2
+```
+
+Не забываем ставить флаги `devDepemdencies`. Это важно! Чтобы все эти пакеты, которые весят немало случайно не попали в `production`.
+
+Теперь будем настраивать наш `dev-server`. \
+
+Cоздаем новый файлик `buildDevServer`. Пишем аналогично одноименную функцию.
+Типы у options такие же BildOptions. Тип для функциии `import { Configuration } from "webpack-dev-server"`, но у нас уже есть тип с таким названием (из `webpack`), поэтому переименуем его `import { Configuration as DevServerConfiguration } from "webpack-dev-server"`;
+
+```
+import { BuildOptions } from "./types/config";
+import { Configuration as DevServerConfiguration } from "webpack-dev-server";
+
+export function buildDevServer(options: BuildOptions): DevServerConfiguration {
+  // return 
+}
+
+```
+
+Теперь опишем `return`
+
+`port`
+`port` хотелось бы устанавливать на уровне `build`-опций
+```
+//config => build => types => congig.ts
+export interface BuildOptions {
+  mode?: BuildMode;
+  paths: BuildPath;
+  isDev: boolean;
+  
+  port: number;
+}
+```
+И вот здесь из-вне будем это свойство передавать. Добавляем в `webpack.config.ts`:  `const PORT = 3000; ` и `port: PORT,`
+```
+//webpack.config.ts
+const PORT = 3000; 
+
+const config: webpack.Configuration = buildWebpackConfig({
+  mode: 'development',
+  paths,
+  isDev, //это поле нужно исключительно для удобства
+  
+  port: PORT,
+});
+```
+Чуть позже мыы будем его передавать из переменных окружения.
+
+Вернемся к buildDevServer, теперь мы можем доставать `port` из `options`.
+```
+//buildDevServer
+...
+
+export function buildDevServer(options: BuildOptions): DevServerConfiguration {
+  return {
+    port: options.port,
+    
+  }
+}
+```
+
+`open` - оно будет автоматически открывать страницу в браузере с нашим приложением
+
+В принципе этого достаточно. Чуть позже мы будем этот dev-server дополнять.
+
+В основной конфиг (`buildWebpackConfig.ts`) добавляем свойство `devServer` и вызываем функцию (`buildDevServer`), которую мы сделали:
+`devServer: buildDevServer(options),`
+
+```
+//buildWebpackConfig.ts
+export function buildWebpackConfig(options: BuildOptions): webpack.Configuration {
+
+  const {paths, mode} = options;
+
+  return {
+    mode: mode,
+    entry: paths.entry,
+    module: {
+      rules: buildLoaders(),
+    },
+    resolve: buildResolvers(),
+    output: {
+      filename: '[name].[contenthash].js',
+      path: paths.build,
+      clean: true,
+    },
+    plugins: buildPlugins(options),
+    devtool: 'inline-source-map',
+
+    devServer: buildDevServer(options),
+  }
+}
+```
+Вернемся к [документации](https://webpack.js.org/guides/development/), посмотрим, как мы можем этот devServer запустить.
+Листаем чуть ниже, видим `package.json`: 
+```
+//package.json в документации
+"scripts": {
+  ...
+  "start": "webpack serve --open",
+  ...
+},
+```
+Флаг `--open` в нашем случае необязательно передавать, потому что мы задали его уже на уровне конфигурации 
+Открываем наш package.json и добавляем скрипт:
+```
+"scripts": {
+  ...
+  "start": "webpack serve",
+  ...
+},
+```
+
+Запускаем сборку. И, все идет не по плану, у меня ошибка, а в курсе все нормально.
+![devServerError.jpg](/images/devServerError.jpg)
+
+Шарим в гугле, есть предложение повысить версию с `"webpack-cli": "^4.9.2"` до `"webpack-cli": "4.10.0",`
+Повышать версию бы не хотелось, потому что мы слишком жестко привязаны к каждой версии пакета.
+
+Шарим еще, и узнаем, что скорее всего похерились пути. И это логично. У нас установлен `webpack`, но `zsh: command not found: webpack`.
+bin, path и все дела - надо это добро настроить.
+
+блаблабла, короче выбираем варинт с поднятием версии webpacl-cli, запускаем, все работает, двигаем дальше
+
+Теперь посмотрим: как работает dev-server на прктике. Добавляем в index.ts строчку `document.body.innerHTML ='<div>HELLO WORLD!</div>'`
+Нажимаем ctrl+s. Смотрим localhost:3000 и видим HELLO WORLD!
+Можно без ctrl+s
+
+Следующи этапом хотелось бы разделять dev-сборку от prodaction-сборки. Сейчас мы это все хардкодим в фвйлике `webpacl.config.ts`
+Но хотело бы управлять этим на уровне скриптов и Для этого у нас есть переменные окружения
+Которые активно используются и на бэке, и на фронте и используются при сборке. 
+
+В поисковике: `webpack env variables`
+Попадаем в [документацию](https://webpack.js.org/guides/environment-variables/)
+
+В webpack'е использовать переменные окружения достатно легко
+Когда мы выполняем сборку мы можем передать флаг `--env` и сколь угодно много переменных окружения при запуске передать
+
+Из строчки документации:
+`npx webpack --env goal=local --env production --progress`
+скопируем кусок `--env goal=local --env production` и перенесем в наш `package.json`
+
+До изменений:
+```
+  "start": "webpack serve",
+```
+После изменений:
+```
+"start": "webpack serve --env port=3000",
+"build:prod": "webpack --env mode=production",
+"build:dev": "webpack --env mode=development",
+```
+
+Итак скрипты мы сделали. Теперь необходимо эти переменные окружения при сборке получать
+Возвращаемся в [документацию](https://webpack.js.org/guides/environment-variables/) 
+Здесь есть явные примеры. Мы экспортируем не сам конфиг, а функцию. И эта функция как раз переменные окружения аргументом  и принимает
+
+`webpack.config.ts`
+
+```
+export default config;
+```
+
+```
+export default (env) => {
+  return config;
+}
+```
+
+```
+//webpack.config.ts
+export default (env: BuildEnv) => {
+  const paths: BuildPath = {
+    entry: path.resolve(__dirname, 'src', 'index.ts'),
+    build: path.resolve(__dirname, 'build'),
+    html: path.resolve(__dirname, 'public', 'index.html'),
+  }
+  
+  const mode = env.mode || 'development';
+  const PORT = env.port || 3000; 
+
+  const isDev = mode === 'development';
+  
+  const config: webpack.Configuration = buildWebpackConfig({
+    mode: mode,
+    paths,
+    isDev, //это поле нужно исключительно для удобства
+    port: PORT,
+  });
+
+  return config;
+}
+```
+
+npm run build:prod
+
+Вилим в папке build index.html минимизированный файл, значит все ок
+
+Но в js файлике вы можете заметить вот такой вот комментарий
+`//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibWFpbi45ZTBmOTBhMzBhNTQ1YWE5YWViOC5qcyIsIm1hcHBpbmdzIjoibUJBQ0lBLFFBQVFDLElBQUksbUJDQ2hCQyxTQUFTQyxLQUFLQyxVQUFZLGlEIiwic291cmNlcyI6WyJ3ZWJwYWNrOi8vV2VicGFjay8uL3NyYy90ZXN0LnRzIiwid2VicGFjazovL1dlYnBhY2svLi9zcmMvaW5kZXgudHMiXSwic291cmNlc0NvbnRlbnQiOlsiZXhwb3J0IGZ1bmN0aW9uIHNvbWVGbihhcmcpIHtcbiAgICBjb25zb2xlLmxvZygnUkFORE9NIEZVTkNUSU9OJyk7XG4gICAgcmV0dXJuICcnO1xufVxuIiwiaW1wb3J0IHsgc29tZUZuIH0gZnJvbSBcIi4vdGVzdFwiO1xuc29tZUZuKDEyMyk7XG5kb2N1bWVudC5ib2R5LmlubmVySFRNTCA9IFwiPGRpdiBzdHlsZT0nYmFja2dyb3VuZDogcmVkJz5IRUxMTyBXT1JMRCE8L2Rpdj5cIjtcbiJdLCJuYW1lcyI6WyJjb25zb2xlIiwibG9nIiwiZG9jdW1lbnQiLCJib2R5IiwiaW5uZXJIVE1MIl0sInNvdXJjZVJvb3QiOiIifQ==`
+
+Это те самые source map^ которые нам нужны чтобы отслеживать ошибки
+но в прод сборке нам не нужен source map и dev server, поэтому:
+config => build => buildWebpackConfig.ts
+
+`const {paths, mode} = options;` => `  const {paths, mode, isDev} = options;`
+```
+  devtool: 'inline-source-map',
+  devServer: buildDevServer(options),
+```
+
+```
+  devtool: isDev ? 'inline-source-map' : undefined,
+  devServer: isDev ? buildDevServer(options) : undefined,
+```
+
+## React
+
+```
+npm i react@17.0.2 react-dom@17.0.2
+npm i -D @types/react@17.0.39 @types/react-dom@17.0.11 
+```
+т к мы используем в нашем приложении jsx, нам нужно подключить специальные лоадеры, но поскольку мы используем typescript
+нам достаточно typescriptLoader - он уже умеет обрабатывать jsx
+Если бы мы писали на нативном js, то нам бы еще понадобился babel-loader (он еще работает с jsx)
+
+Откроем index.ts файл.
+
+Стираем это
+```
+import { someFn } from "./test";
+
+someFn(123);
+
+document.body.innerHTML = `<div style='background: red'>HELLO WORLD!</div>`
+```
+
+И попробуем отрендерить наш первый react-компонент: rend + Enter (снипет)
+```
+import { render } from "react-dom";
+
+render(
+  <div></div>
+)
+```
+
+VSCode начинает ругаться, что у нас не то расширение
+
+`Expected 2-3 arguments, but got 1.ts(2554)
+index.d.ts(69, 9): An argument for 'container' was not provided.
+Cannot find name 'div'.ts(2304)
+type div = /*unresolved*/ any`
+
+Но по сообщению это непонятно.
+Меняем расширение ts на tsx у файла index.ts. И нам нужно поменять путь до entry point'а
+
+```
+//webpack.config.ts
+  ...
+  const paths: BuildPath = {
+    entry: path.resolve(__dirname, 'src', 'index.ts'),
+    build: path.resolve(__dirname, 'build'),
+    html: path.resolve(__dirname, 'public', 'index.html'),
+  }
+  ...
+```
+Меняем ts на tsx 
+`entry: path.resolve(__dirname, 'src', 'index.ts'),` => `entry: path.resolve(__dirname, 'src', 'index.tsx'),`
+
+```
+//webpack.config.ts
+  ...
+  const paths: BuildPath = {
+    entry: path.resolve(__dirname, 'src', 'index.tsx'),
+    build: path.resolve(__dirname, 'build'),
+    html: path.resolve(__dirname, 'public', 'index.html'),
+  }
+  ...
+```
+
+Продолжим. Пишем блок div с рандомным текстом и добавляем то, куда будет рендериться наш текст (по умолчанию это блок root, который находится в index.html `<div class="root"></div>` - только поправим ошибку: `<div id="root"></div>`)
+```
+import { render } from "react-dom";
+
+render(
+  <div>kkfnkf</div>,
+  document.getElementById('root')
+)
+```
+
+но у нас все еще подсвечивается красным ошибка, давайте разбираться. Гуглим. 
+Нам предлагают в ts-config'е в compilerOptions  в поле jsx поменять на 
+```
+//до
+  "compilerOptions": {
+    ...
+    "jsx": "react",
+    ...
+  }
+```
+```
+//после
+  "compilerOptions": {
+    ...
+    "jsx": "react-jsx",
+    ...
+  }
+```
+
+Проверим сборку npm start. Все работает
+Добавим что-нибудь в рандоный текст, проверяем. Да. текст изменился
+
+Предлагаю протестировать какой-нибудь уже полноценный компонент.
+Создадим в src папочку components. Внутри создадим файлик Сounter.tsx - типичный счетчик.
+```
+import React, { useState } from 'react'
+
+export const Counter = () => {
+  const [count, setCount] = useState(0);
+
+  const increment = () => {
+    setCount(count + 1);
+  }
+
+  return (
+    <div>
+      <h1>{count}</h1>
+      <button onClick={increment}>increment</button>
+    </div>
+  )
+}
+```
+Рендерим в index.tsx:
+```
+import { render } from "react-dom";
+import { Counter } from "./components/Counter";
+
+render(
+  <div>
+    <Counter />
+  </div>,
+  document.getElementById('root')
+)
+```
+И видим это
+![counter.jpg](/images/counter.jpg)
+
+Тыкаем, счетчик увеличивается, т е хуки у нас рботают, компонент работает -  те в принципе мы можем начать разрабатывать react-приложение
+
+### Стили (scss)
+
+Попробуем написать стили для счетчика. Создаем Counter.css:
+```
+button {
+  padding: 20px;
+  color: green;
+}
+```
+
+Импортируем файл в наш рекат компонент `import './Counter.css';`
+И видим, что сборка падает с ошибкой, потому что не хватает loader'а, который способен обработать файлы с расширением .css
+
+Обращаемся к документации, гуглим `webpack css`
+Но давайте лучше сразу `webpack scss`
+Видим [sass-loader](https://webpack.js.org/loaders/sass-loader/), что нам нужно установить несколько зависимостей и добавить еще одно правило, которое включает в себя использование трех лоадеров. Это как раз лоадеры, которые будут обрабатывать наши css-файлы
+
+Копируем этот скриптик и вставляем в терминал
+`npm install sass-loader sass webpack --save-dev`
+Но т к это страничка по настройке scss, то здесь отсутствует еще пара лоадеров style-loader и css-loader
+`npm install sass-loader sass webpack style-loader css-loader --save-dev`
+
+Но в списке правил в документации они есть:
+```
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.s[ac]ss$/i,
+        use: [
+          // Creates `style` nodes from JS strings
+          "style-loader",
+          // Translates CSS into CommonJS
+          "css-loader",
+          // Compiles Sass to CSS
+          "sass-loader",
+        ],
+      },
+    ],
+  },
+};
+```
+Устанавливаем их. Затем копируем правила в buildLoaders, создаем там новую переменную и добавляем ее в return:
+```
+//buildLoaders
+
+  const cssLoaders = {
+    test: /\.s[ac]ss$/i,
+    use: [
+      // Creates `style` nodes from JS strings
+      "style-loader",
+      // Translates CSS into CommonJS
+      "css-loader",
+      // Compiles Sass to CSS
+      "sass-loader",
+    ],
+  } 
+
+  ...
+
+    return [
+    typescriptLoader,
+
+    cssLoaders,
+  ]
+```
+
+Обратим внимание, что настроены они именно на sass и scss файлы. 
+И обратите внимание, что эти лоадеры идут в определенном порядке. Это очень важно.
+Создает стили из js строк, транслирует css в comonJs и затем преобразовывает sass в css
+
+Меняем расширение на scss у Counter
+
+Запускаем сборку. Все работает
+У нас полностью настроена работа с scss
+
+### Стили (css-modules)

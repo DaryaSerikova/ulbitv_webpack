@@ -1,26 +1,28 @@
 import path from 'path';
 import webpack from 'webpack';
-import { buildPlugins } from './config/build/buildPlugins';
-import { buildLoaders } from './config/build/buildLoaders';
-import { buildResolvers } from './config/build/buildResolvers';
+import { buildWebpackConfig } from './config/build/buildWebpackConfig';
+import { BuildEnv, BuildPath } from './config/build/types/config';
 
-const config: webpack.Configuration = {
-  mode: 'development',
-  //entry - стартовая точка нашего приложения. В нашем случае это './src/index.js',
-  entry: path.resolve(__dirname, 'src', 'index.ts'),
-  module: {
-    rules: buildLoaders(),
-  },
-  resolve: buildResolvers(),
 
-  // output - 'то настройка того, куда и как мы будем делать сборку нашего приложения
-  output: {
-    filename: '[name].[contenthash].js',
-    path: path.resolve(__dirname, 'build'),
-    clean: true,
-  },
-  plugins: buildPlugins(),
 
+export default (env: BuildEnv) => {
+  const paths: BuildPath = {
+    entry: path.resolve(__dirname, 'src', 'index.tsx'),
+    build: path.resolve(__dirname, 'build'),
+    html: path.resolve(__dirname, 'public', 'index.html'),
+  }
+  
+  const mode = env.mode || 'development';
+  const PORT = env.port || 3000; 
+
+  const isDev = mode === 'development';
+  
+  const config: webpack.Configuration = buildWebpackConfig({
+    mode: mode,
+    paths,
+    isDev, //это поле нужно исключительно для удобства
+    port: PORT,
+  });
+
+  return config;
 }
-
-export default config;
