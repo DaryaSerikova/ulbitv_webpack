@@ -10,7 +10,7 @@
 
 [Подключение плагинов](#setPlugins)
 - [HTMLWebpackPlugin](#HTMLWebpackPlugin)
-- [webpack.ProgressPlugin](#ProgressPlugin)
+- [webpack.ProgressPlugin - полоса загрузки](#ProgressPlugin)
 - [Настройка HTMLWebpackPlugin'а (template для root)](#HTMLWebpackPluginTemplate)
 
 [Typescript](#Typescript)
@@ -26,8 +26,13 @@
 - [buildWebpackConfig.ts - общая функция конфгурации с опциями](#buildWebpackConfig)
 
 [3. Webpack-dev-server. Переменные оружения](#mainWebpackDevServer)
-- [inline-source-map](#inlineSourceMap)
-- [webpack-dev-server](#webpackDevServer)
+- [inline-source-map - карта исходного кода для поиска ошибок в едином объединенном файле html](#inlineSourceMap)
+- [webpack-dev-server - автооткрывание страницы](#webpackDevServer)
+
+[4.React и первое подключение стилей (scss)](#reactAndScss)
+- [react](#react)
+- [scss](#scss)
+
 
 
 
@@ -1359,7 +1364,16 @@ config => build => buildWebpackConfig.ts
   devServer: isDev ? buildDevServer(options) : undefined,
 ```
 
-## React
+<a name="reactAndScss"></a> 
+
+## 4.React и первое подключение стилей (scss)
+
+
+[react](#react)
+
+<a name="react"></a> 
+
+### react
 
 ```
 npm i react@17.0.2 react-dom@17.0.2
@@ -1491,6 +1505,9 @@ render(
 ![counter.jpg](/images/counter.jpg)
 
 Тыкаем, счетчик увеличивается, т е хуки у нас рботают, компонент работает -  те в принципе мы можем начать разрабатывать react-приложение
+<!-- [scss](#scss) -->
+
+<a name="scss"></a> 
 
 ### Стили (scss)
 
