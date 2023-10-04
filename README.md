@@ -10,7 +10,7 @@
 
 [Подключение плагинов](#setPlugins)
 - [HTMLWebpackPlugin](#HTMLWebpackPlugin)
-- [webpack.ProgressPlugin - полоса загрузки](#ProgressPlugin)
+- [webpack.ProgressPlugin](#ProgressPlugin) - полоса загрузки
 - [Настройка HTMLWebpackPlugin'а (template для root)](#HTMLWebpackPluginTemplate)
 
 [Typescript](#Typescript)
@@ -26,8 +26,8 @@
 - [buildWebpackConfig.ts - общая функция конфгурации с опциями](#buildWebpackConfig)
 
 [3. Webpack-dev-server. Переменные оружения](#mainWebpackDevServer)
-- [inline-source-map - карта исходного кода для поиска ошибок в едином объединенном файле html](#inlineSourceMap)
-- [webpack-dev-server - автооткрывание страницы](#webpackDevServer)
+- [inline-source-map](#inlineSourceMap) - карта исходного кода для поиска ошибок в едином объединенном файле html
+- [webpack-dev-server](#webpackDevServer) - автооткрывание страницы
 
 [4.React и первое подключение стилей (scss)](#reactAndScss)
 - [react](#react)
