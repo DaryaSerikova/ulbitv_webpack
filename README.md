@@ -3,18 +3,17 @@
 ## Содержание
 [Usage](#)\
 [1. Basic setup](#basicSetup) ([entry](#entry), [output](#output), [ЧТОБЫ ЗАПУСТИТЬ СБОРКУ](#Запуск))
-- [Шаблоны. Динамические названия для файлов](#Шаблоны)
+  * [Шаблоны. Динамические названия для файлов](#Шаблоны)
+  * [Подключение плагинов](#setPlugins)
+    - [HTMLWebpackPlugin](#HTMLWebpackPlugin)
+    - [webpack.ProgressPlugin](#ProgressPlugin) - полоса загрузки
+    - [Настройка HTMLWebpackPlugin'а (template для root)](#HTMLWebpackPluginTemplate)
 
-[Подключение плагинов](#setPlugins)
-- [HTMLWebpackPlugin](#HTMLWebpackPlugin)
-- [webpack.ProgressPlugin](#ProgressPlugin) - полоса загрузки
-- [Настройка HTMLWebpackPlugin'а (template для root)](#HTMLWebpackPluginTemplate)
-
-[Typescript](#Typescript)
-- [resolve](#resolve)
-- [rules](#rules)
-- [ts-loader](#tsLoader)
-- [Configuration Languages. Настройка typescript для webpack.config](#configurationLanguages)
+  * [Typescript](#Typescript)
+    - [resolve](#resolve)
+    - [rules](#rules)
+    - [ts-loader](#tsLoader)
+    - [Configuration Languages. Настройка typescript для webpack.config](#configurationLanguages)
 
 [2. Декомпозиция конфига. Опции конфигурации](#decompositionConfig)
 - [buildPlugins](#buildPlugins)
