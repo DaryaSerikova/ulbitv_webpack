@@ -37,6 +37,12 @@
 - [5.6 Написание условия модульности. Различия между .scss и .module.scss ](#scssAndModulesDeviding)
 - [5.7 Итог](#conclusion5)
 
+[6. Часть файла с версиями ](#versionsFile1)
+
+[7. Роутинг. Сode splitting Lazy Suspence](#routingCodeSplitting)
+- 
+- 
+
 
 
 
@@ -2048,8 +2054,6 @@ Cобираем `npm run build:prod`. Сборка успешна.
 Перезапускаем приложение. `npm run start`. Cтили применились. И в девтулзе стили выглядят не как абракадабра, а вполне то, что так как мы настроили.
 ![devToolsCssModules.jpg](/images/devToolsCssModules.jpg)
 
-<!-- [5.7 Итог](#conclusion5) -->
-
 <a name="conclusion5"></a> 
 
 ### 5.7 Итог
@@ -2058,7 +2062,10 @@ Cобираем `npm run build:prod`. Сборка успешна.
 добавили miniCSSExtractPlugin
 настроили css-modules
 
-## Часть файла с версиями 
+
+<a name="versionsFile1"></a> 
+
+## 6. Часть файла с версиями 
 ```
 "devDependencies": {
   "@types/node": "^17.0.21",
@@ -2086,7 +2093,11 @@ Cобираем `npm run build:prod`. Сборка успешна.
 } 
 ```
 
-## Роутинг. Сode splitting Lazy Suspence
+<!-- [7. Роутинг. Сode splitting Lazy Suspence](#routingCodeSplitting) -->
+
+<a name="routingCodeSplitting"></a> 
+
+## 7. Роутинг. Сode splitting Lazy Suspence
 
 `npm i react-router-dom@6.2.1`
 `npm i -D @types/react-router-dom@5.3.3`
