@@ -1581,3 +1581,583 @@ module.exports = {
 У нас полностью настроена работа с scss
 
 ### Стили (css-modules)
+
+Давайте попробуем сделать сборку в режиме dev. 
+`npm run build:dev`
+Открываем build, видим css прям внутри js-файла, чего не должно быть. Стили должны находиться в отдельном css-файле.
+![cssInJs.jpg](/images/cssInJs.jpg)
+Для этого есть специальный плагин `mini-css-extract-plagin`
+
+## mini-css-extract-plugin
+
+Посмотрим, как его подключить. [На страничке](https://webpack.js.org/plugins/): ctrl+F, вводим: `minicss`
+
+Опиание: Создает файл css для каждого файла js, для которого нужен css
+
+Переходим на [страничку](https://webpack.js.org/plugins/mini-css-extract-plugin)
+
+Копируем команду для установки
+`npm install --save-dev mini-css-extract-plugin`
+`npm i -D mini-css-extract-plugin@2.5.3`
+<!-- 1:12 -->
+
+Пролистав нижу мы можем увидеть, что `plugin` содержит в себе `loader`
+```
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
+module.exports = {
+  plugins: [new MiniCssExtractPlugin()],
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        use: [MiniCssExtractPlugin.loader, "css-loader"],
+      },
+    ],
+  },
+};
+```
+Причем подключаем мы его перед `css-loader`'ом вместо `style-loader`'а
+
+Итак, добавим `new MiniCssExtractPlugin(),` в buildPlugins и `import MiniCssExtractPlugin from 'mini-css-extract-plugin';`
+Насколько я знаю, порядок плагинов, в котором мы их добавляем, значения особого не имеет. А вот лоадеры важно добавлять в определенном порядке
+
+Здесь мы кстати, сразу можем указать названия файлов и где они будут располагаться. Аналогично тому, что мы указывали в output
+Пишем шаблон для получения названия файла, для получения содержимого. Это опять же все делается для кэширования.
+И так же можем сразу указать название для chankFilename - это когда мы будем разбивать файлы на асинхронные и у нас будут появлятьс отдельные чанки, которые будут асинхронно подгружаться и соответственно для них тоже нужно указать название.
+
+В файле buildLoaders заменяем `style-loader` на `MiniCssExtractPlugin.loader`
+
+Запускаем `npm run build:dev`, видим, что в js файле больше нет padding'ов - они переехали в папку css.
+
+Возникает ризонный вопрос: нужно ли нам генерировать css файлы в режиме разработки? Я думаю, что нет. Поэтому:
+В buildLoaders достаем options: BuildOptions
+Меняем `MiniCssExtractPlugin.loader,` на `options.isDev ? 'style-loader' : MiniCssExtractPlugin.loader,` - те если у нас режим development, то мы используем  `style-loader`, иначе  `MiniCssExtractPlugin.loader`
+
+Ну и так же необходимо передать в саму функцию buildLoaders опции `rules: buildLoaders(),` => `rules: buildLoaders(options),` (в buildWebpackConfig)
+
+
+<!-- 3:47 -->
+### Подходы изоляции стилей
+
+Теперь поговорим про проблему изоляции стилей.
+
+Есть 2 компоненты с одинаковым названием в стилях. Они начинают конфликтовать, поэтому нам нужно соблюдать уникальность селекторов.
+
+- `БЭМ` - распространенный подход для изоляции стилей
+Т е мы используем методологию Блок, Элемент, Модификатор.
+
+С `БЭМ` мы получем вместо двух `open`'ов: `.modal__content_open` и `.dropdown__content_open`.
+Подход хороший, но его минус в том, что названия раздуваются и они увеличивают размер bandle'а
+
+- `css-modules`
+Мы пишем абсолютно привычный для нас css: наши два `open`'а
+Но в момент, когда мы делаем сборку приложения,`webpack` для каждого такого класса генерирует уникальные идентификаторы.
+Засчет того, что каждый такой идентификатор уникальный, нам гарантируется изоляция стилей, т е они не будут перекрывать друг друга и накладываться.
+Соответственно название превращается из 20-30 символов (как это есть в `БЭМ`) в 8-10 - в зависимости от того, как настроим `webpack`.
+
+Я предлагаю настроить `webpack` таким образом, чтобы мы могли поддерживать, как `scss`-файлы, так и `css-modules`.
+
+Файлы с css-modules должны иметь особое название - это [название компоненты].module.css
+Переименуем `Counter.scss` => `Counter.module.scss`
+А импорт будет выглядеть вот таким образом: `import classes from './Counter.module.scss';`
+<!-- 5:53 -->
+И эти classes - это объект с полями (классами, которые мы будем описывать)
+
+```
+import React, { useState } from 'react';
+// import './Counter.scss';
+import classes from './Counter.module.scss';
+
+export const Counter = () => {
+  const [count, setCount] = useState(0);
+
+  const increment = () => {
+    setCount(count + 1);
+  }
+
+  return (
+    <div className={classes?.button}>
+      <h1>{count}</h1>
+      <button onClick={increment}>increment</button>
+    </div>
+  )
+}
+```
+### Настройка css-modules (begin)
+Теперь обратимся к документации и посмотрмим, как css modules в webpack'е настраиваются
+Гугл: `webpack css modules`
+
+Кликаем на первую вкладку про [css-loader](https://webpack.js.org/loaders/css-loader/)
+<!-- 6:27 -->
+И здесь, если мы поищем есть подраздел `modules` 
+(Справа чуть проскролить вниз Sidebar, далее: CSS => css-loader => options => [modules](https://webpack.js.org/loaders/css-loader/#modules))
+
+Пролистаем чуть ниже до вот такого кода
+```
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        loader: "css-loader",
+        options: {
+          modules: true,
+        },
+      },
+    ],
+  },
+};
+```
+В самом простом случае нужно добавить  только вот такую опцию:
+```
+  options: {
+    modules: true,
+  },
+```
+и все: css-modules будут работать. 
+
+Здесь (если пролистать выше), конечно, есть ряд свойств, управляненя всякими штуами .. в общем, давайте сейчас будем это настраивать
+<!-- 6:56 -->
+Переходим в buildLoaders
+loaders можно передавать простым способом (как строку) или передавать, как объект
+
+
+```
+//buildLoaders.ts (до)
+  const cssLoaders = {
+    test: /\.s[ac]ss$/i,
+    use: [
+      options.isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
+      "css-loader",
+      "sass-loader",
+    ],
+  }
+```
+
+Чтобы webpack понимал, что это за loader, необходимо указать свойство loader и указать название. В нашем случае это css-loader.
+И так же в поле options мы можем передавать какие-нибудь настройки это лоадера
+```
+  const cssLoaders = {
+    test: /\.s[ac]ss$/i,
+    use: [
+      options.isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
+      // "css-loader",
+      {
+        loader: "css-loader",
+        options: {
+          
+        }
+      },
+      "sass-loader",
+    ],
+  } 
+```
+Последуем примеру из документации и сделаем поле modules со значение true (`modules: true`)
+
+
+### Явная декларация файлов (global.d.ts)
+Отвлечемся. Заметичает в видосе, что вебшторм подсветил ошибку в файле Сounter. 
+Он не понимает, что мы хотим из scss импортировать.
+![errorModules.jpg](/images/errorModules.jpg)
+
+Чтобы явно определить тип, который должен импортироваться из таких файлов, мы можем создать явную декларацию файлов.
+src => создаем файл (на уровне с index.tsx) global.d.ts
+
+Я не помню, как задать тип для возращаемого значения (.module.scss)
+Поиск в гугле: `css modules typescript`
+Открываем первую ссылку, [здесь](https://stackoverflow.com/questions/41336858/how-to-import-css-modules-with-typescript-react-and-webpack) люди предлагают добавить вот такой вот тип
+```
+declare module '*.css' {
+  interface IClassNames {
+    [className: string]: string
+  }
+  const classNames: IClassNames;
+  export = classNames;
+}
+```
+Копируем его и добавляем в файл `global.d.ts`, но заменяем css на scss:
+```
+declare module '*.scss' {
+  interface IClassNames {
+    [className: string]: string
+  }
+  const classNames: IClassNames;
+  export = classNames;
+}
+```
+
+B видим, что ошибка у нас пропала. И появились автоподсказки селекторов, которые есть в файле стиля. Автокомплит настроен.
+заменим в файле стилей button на .btn, и в Counter `className={classes?.btn}`
+```
+.btn {
+  padding: 20px;
+  color: green;
+}
+```
+
+Проверим сборку: `npm run build:prod`
+Сборка прошла успешно. Предлагаю открыть css-файл, который у нас получился.
+![cssFileProd.jpg](/images/cssFileProd.jpg)
+
+Минимизированный, вместо класса `.btn` мы видим абракадабру: `.WJfas66YqMo9vlVy3cDg`
+<!-- 9;17 -->
+
+Давайте попробуем запустить приложение и посмотрим, как это работает на самой странице: `npm run start`
+Пока приложение запускается создадим корневой компонент `App.tsx` (в корне src )
+
+```
+//App.tsx
+import React from 'react'
+import { Counter } from './components/Counter'
+
+const App = () => {
+  return (
+    <div className='app'>
+      <Counter />
+    </div>
+  )
+}
+
+export default App;
+```
+И соответственно меняем index.tsx:
+```
+//index.tsx (до)
+import { render } from "react-dom";
+import { Counter } from "./components/Counter";
+
+render(
+  <div>
+    <Counter />
+  </div>,
+  document.getElementById('root')
+)
+```
+
+на вот такой:
+```
+//index.tsx (после)
+import { render } from "react-dom";
+import App from "./App";
+
+render(
+  <App/>,
+  document.getElementById('root')
+)
+```
+
+### Cоздание глобального файла стилей index.scss
+Следующим этапом мы создадим файлик index.scss файл (в корне папки src). 
+И мы хотим, чтобы в нем css-modules не было. Грубо говоря, это у нас такой файлик с глобальными стилями и мы хотим, чтобы н распространялся на все приложение.
+```
+//index.scss
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.app {
+  font-size: 30px;
+  
+}
+```
+
+Добавим какой-нибудь текст в App.tsx и не забываем импортировать файл scss.
+```
+//App.tsx
+import React from 'react'
+import { Counter } from './components/Counter';
+import './index.scss';
+
+const App = () => {
+  return (
+    <div className='app'>
+      jfhdjkfh
+      <Counter />
+    </div>
+  )
+}
+
+export default App;
+```
+
+Открываем браузер. Cтили не применились. 
+Смотрим сборку `npm run buld:prod`
+![errorUsualStyles.jpg](/images/errorUsualStyles.jpg)
+Они не применились, потому что сss-modules распространились и на обычный файл без модулей.
+
+### Написание условия модульности. Различия между .scss и .module.scss 
+Предлагаю это исправить. Применять модульный подход только к тем файлам, которые в названии имеют расширение `.module.scss`
+Открываем опять [документацию](https://webpack.js.org/loaders/css-loader/#modules)
+
+Видим в ней свойство auto:
+```
+  auto: boolean | regExp | ((resourcePath: string) => boolean);
+```
+C помощью него или по регулярке, или с помощью вот такой вот (`resourcePath`) функции мы можем определять для какого файла применять, а для какого не применять.
+И так же сейчас у нас такие большие и непонятные названия, хотелось бы в dev режиме, чтобы они были нормальными. читабельными. Чтобы в случае чего мы могли нормально дебажить, изменять стили и понимать в принципе с какими стилями мы работаем.
+
+Откроем опять документацию и определим значение свойства `auto`
+Здесь, наверно, стоило пойти более простым путем и определить с помощью регулярки, но я почему-то решил пойти более сложным и пошел через функцию. Но разница, опять же незнчительная.
+<!-- 12:07 -->
+
+Эта функция принимает в аргументы путь до файла. Ну и проверка здесь достаточно простая. 
+Проверяем с помощью includes: если в участке пути `.module.` то возвращаем true, иначе false
+```
+//buildLoaders.ts
+
+  const cssLoaders = {
+    test: /\.s[ac]ss$/i,
+    use: [
+      options.isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
+      // "css-loader",
+      {
+        loader: "css-loader",
+        options: {
+          modules: true,
+          auto: (resPath: string) => Boolean(resPath.includes('.module.')),
+        }
+      },
+      "sass-loader",
+    ],
+  } 
+```
+С этим разобрались. Теперь обычные файлы, которые не включают в себя `.module.` по идее должны обрабатываться, как обычные css-файлы.
+Cледующим этапом нужно разобраться с названиями
+
+`options` => `{isDev}`
+
+здесь названия можно генерировать точно так же по шаблонам в output
+dev: Первая часть названия - путь до компонента, затем название класса и хэш
+prod: хэш 8 символов
+
+В [документации](https://webpack.js.org/loaders/css-loader/#object-2)
+```
+localIdentName: "[path][name]__[local]--[hash:base64:5]",
+```
+
+Замечаем, что нужно писать поле auto в modules, а не рядом. Исправляем
+```
+//buildLoaders
+
+  const cssLoaders = {
+    test: /\.s[ac]ss$/i,
+    use: [
+      isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
+      // "css-loader",
+      {
+        loader: "css-loader",
+        options: {
+          modules: {
+            auto: (resPath: string) => Boolean(resPath.includes('.module.')),
+            localIdentName: isDev 
+              ? '[path][name]__[local]--[hash:base64:5]' 
+              : '[hash:base64:8]'
+          },
+        }
+      },
+      "sass-loader",
+    ],
+  } 
+```
+
+А весь файл выглядит так:
+```
+//buildLoaders.ts
+import webpack from 'webpack';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import { BuildOptions } from './types/config';
+
+export function buildLoaders({isDev}: BuildOptions): webpack.RuleSetRule[] {
+
+  const cssLoaders = {
+    test: /\.s[ac]ss$/i,
+    use: [
+      isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
+      // "css-loader",
+      {
+        loader: "css-loader",
+        options: {
+          modules: {
+            auto: (resPath: string) => Boolean(resPath.includes('.module.')),
+            localIdentName: isDev 
+              ? '[path][name]__[local]--[hash:base64:5]' 
+              : '[hash:base64:8]'
+          },
+        }
+      },
+      "sass-loader",
+    ],
+  } 
+
+  const typescriptLoader = {
+    test: /\.tsx?$/,
+    use: 'ts-loader',
+    exclude: /node_modules/,
+  };
+
+  return [
+    typescriptLoader,
+    cssLoaders,
+  ]
+}
+```
+
+Cобираем `npm run build:prod`. Сборка успешна.
+Смотрим css файл
+![cssFileProd2.jpg](/images/cssFileProd2.jpg)
+
+Проблема решена
+
+Перезапускаем приложение. `npm run start`. Cтили применились. И в девтулзе стили выглядят не как абракадабра, а вполне то, что так как мы настроили.
+![devToolsCssModules.jpg](/images/devToolsCssModules.jpg)
+
+### Итог
+
+мы чуть-чуть улучшили работу с css
+добавили miniCSSExtractPlugin
+настроили css-modules
+
+## Часть файла с версиями 
+```
+"devDependencies": {
+  "@types/node": "^17.0.21",
+  "@types/react": "^17.0.39",
+  "@types/react-dom": "^17.0.11",
+  "@types/webpack": "^5.28.0",
+  "@types/webpack-dev-server": "^4.7.2",
+  "css-loader": "^6.6.0",
+  "html-webpack-plugin": "^5.5.0",
+  "mini-css-extract-plugin": "^2.5.3",
+  "sass": "^1.49.9",
+  "sass-loader": "^12.6.0",
+  "style-loader": "^3.3.1",
+  "ts-loader": "^9.2.6",
+  "ts-node": "^10.5.0",
+  "typescript": "^4.5.5",
+  "webpack": "^5.69.1",
+  "webpack-cli": "^4.9.2",
+  "webpack-dev-server": "^4.7.4",
+},
+"dependencies": {
+  "react": "^17.0.2",
+  "react-dom": "^17.0.2",
+  "react-router-dom": "^6.2.1"
+} 
+```
+
+## Роутинг. Сode splitting Lazy Suspence
+
+`npm i react-router-dom@6.2.1`
+`npm i -D @types/react-router-dom@5.3.3`
+
+В index.ts оборачиваем в BrouserRouter наше приложение.
+```
+//index.tsx
+import { render } from "react-dom";
+import App from "./App";
+import { BrowserRouter } from "react-router-dom";
+
+render(
+  <BrowserRouter>
+    <App/>
+  </BrowserRouter>,
+  document.getElementById('root')
+)
+```
+
+Следующим этапом добавим пару страниц
+
+```
+//App.tsx
+import React from 'react'
+import { Routes, Route } from 'react-router-dom';
+import { Counter } from './components/Counter';
+import './index.scss';
+
+const App = () => {
+  return (
+    <div className='app'>
+      <Routes>
+        <Route path={'/about'} />
+        <Route path={'/'} />
+
+      </Routes>
+    </div>
+  )
+}
+
+export default App;
+```
+
+В src создадим папку pages и в ней две папки MainPage и AboutPage и в каждом одноименные tsx файлы
+
+```
+//AboutPage.tsx
+import React from 'react'
+
+const AboutPage = () => {
+  return (
+    <div>AboutPage</div>
+  )
+}
+
+export default AboutPage;
+```
+
+```
+//MainPage
+import React from 'react'
+
+const MainPage = () => {
+  return (
+    <div>MainPage</div>
+  )
+}
+
+export default MainPage;
+```
+
+```
+//App.tsx
+import React from 'react'
+import { Routes, Route, Link } from 'react-router-dom';
+import { Counter } from './components/Counter';
+import './index.scss';
+import AboutPage from './pages/AboutPage/AboutPage';
+import MainPage from './pages/MainPage/MainPage';
+
+const App = () => {
+  return (
+    <div className='app'>
+      <Link to='/'>Главная</Link>
+      <Link to='/about'>О сайте</Link>
+      <Routes>
+
+        <Route path={'/about'} element={<AboutPage />}/>
+        <Route path={'/'} element={<MainPage />}/>
+
+      </Routes>
+    </div>
+  )
+}
+
+export default App;
+
+```
+
+`npm run start`
+
+![routing.jpg](/images/routing.jpg)
+
+Все хорошо, но при обновлении страницы about появляется такая ошибка
+![errorRoutingDevServer.jpg](/images/errorRoutingDevServer.jpg)
+
+
+
+
+
+
+
