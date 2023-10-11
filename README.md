@@ -28,6 +28,17 @@
 - [react](#react) - ts: typescriptLoader(уже обрабатывает), js: babel-loader
 - [scss](#scss) - style-loader, css-loader, sass-loader
 
+[5. Стили (css-modules)](#cssModules)
+- [5.1 mini-css-extract-plugin](#miniCssExtractPlugin)
+- [5.2 Подходы изоляции стилей](#stylesIzolationWays) : БЭМ и css-modules
+- [5.3 Настройка css-modules (begin)](#setupCSSModulesBegin)
+- [5.4 Явная декларация файлов (global.d.ts)](#globalDTs)
+- [5.5 Cоздание глобального файла стилей index.scss](#globalStylesFile)
+- [5.6 Написание условия модульности. Различия между .scss и .module.scss ](#scssAndModulesDeviding)
+- [5.7 Итог](#conclusion5)
+
+
+
 
 
 
@@ -1500,7 +1511,6 @@ render(
 ![counter.jpg](/images/counter.jpg)
 
 Тыкаем, счетчик увеличивается, т е хуки у нас рботают, компонент работает -  те в принципе мы можем начать разрабатывать react-приложение
-<!-- [scss](#scss) -->
 
 <a name="scss"></a> 
 
@@ -1580,7 +1590,9 @@ module.exports = {
 Запускаем сборку. Все работает
 У нас полностью настроена работа с scss
 
-### Стили (css-modules)
+<a name="cssModules"></a> 
+
+## 5. Стили (css-modules)
 
 Давайте попробуем сделать сборку в режиме dev. 
 `npm run build:dev`
@@ -1588,7 +1600,9 @@ module.exports = {
 ![cssInJs.jpg](/images/cssInJs.jpg)
 Для этого есть специальный плагин `mini-css-extract-plagin`
 
-## mini-css-extract-plugin
+<a name="miniCssExtractPlugin"></a> 
+
+### mini-css-extract-plugin
 
 Посмотрим, как его подключить. [На страничке](https://webpack.js.org/plugins/): ctrl+F, вводим: `minicss`
 
@@ -1638,6 +1652,10 @@ module.exports = {
 
 
 <!-- 3:47 -->
+<!-- [Подходы изоляции стилей](#stylesIzolationWays) -->
+
+<a name="stylesIzolationWays"></a> 
+
 ### Подходы изоляции стилей
 
 Теперь поговорим про проблему изоляции стилей.
@@ -1684,7 +1702,11 @@ export const Counter = () => {
   )
 }
 ```
+
+<a name="setupCSSModulesBegin"></a> 
+
 ### Настройка css-modules (begin)
+
 Теперь обратимся к документации и посмотрмим, как css modules в webpack'е настраиваются
 Гугл: `webpack css modules`
 
@@ -1755,8 +1777,12 @@ loaders можно передавать простым способом (как 
 ```
 Последуем примеру из документации и сделаем поле modules со значение true (`modules: true`)
 
+<!-- [5.4 Явная декларация файлов (global.d.ts)](#globalDTs) -->
 
-### Явная декларация файлов (global.d.ts)
+<a name="globalDTs"></a> 
+
+### 5.4 Явная декларация файлов (global.d.ts)
+
 Отвлечемся. Заметичает в видосе, что вебшторм подсветил ошибку в файле Сounter. 
 Он не понимает, что мы хотим из scss импортировать.
 ![errorModules.jpg](/images/errorModules.jpg)
@@ -1847,7 +1873,10 @@ render(
 )
 ```
 
-### Cоздание глобального файла стилей index.scss
+<a name="globalStylesFile"></a> 
+
+### 5.5 Cоздание глобального файла стилей index.scss
+
 Следующим этапом мы создадим файлик index.scss файл (в корне папки src). 
 И мы хотим, чтобы в нем css-modules не было. Грубо говоря, это у нас такой файлик с глобальными стилями и мы хотим, чтобы н распространялся на все приложение.
 ```
@@ -1888,7 +1917,12 @@ export default App;
 ![errorUsualStyles.jpg](/images/errorUsualStyles.jpg)
 Они не применились, потому что сss-modules распространились и на обычный файл без модулей.
 
-### Написание условия модульности. Различия между .scss и .module.scss 
+<!-- [5.6 Написание условия модульности. Различия между .scss и .module.scss ](#scssAndModulesDeviding) -->
+
+<a name="scssAndModulesDeviding"></a> 
+
+### 5.6 Написание условия модульности. Различия между .scss и .module.scss 
+
 Предлагаю это исправить. Применять модульный подход только к тем файлам, которые в названии имеют расширение `.module.scss`
 Открываем опять [документацию](https://webpack.js.org/loaders/css-loader/#modules)
 
@@ -2014,7 +2048,11 @@ Cобираем `npm run build:prod`. Сборка успешна.
 Перезапускаем приложение. `npm run start`. Cтили применились. И в девтулзе стили выглядят не как абракадабра, а вполне то, что так как мы настроили.
 ![devToolsCssModules.jpg](/images/devToolsCssModules.jpg)
 
-### Итог
+<!-- [5.7 Итог](#conclusion5) -->
+
+<a name="conclusion5"></a> 
+
+### 5.7 Итог
 
 мы чуть-чуть улучшили работу с css
 добавили miniCSSExtractPlugin
