@@ -29,7 +29,7 @@
 - [scss](#scss) - style-loader, css-loader, sass-loader
 
 [5. Стили (css-modules)](#cssModules)
-- [5.1 mini-css-extract-plugin](#miniCssExtractPlugin)
+- [5.1 mini-css-extract-plugin](#miniCssExtractPlugin) (Создает файл `css` из файла `js`)
 - [5.2 Подходы изоляции стилей](#stylesIzolationWays) : БЭМ и css-modules
 - [5.3 Настройка css-modules (begin)](#setupCSSModulesBegin)
 - [5.4 Явная декларация файлов (global.d.ts)](#globalDTs)
@@ -41,9 +41,9 @@
 
 [7. Роутинг. Сode splitting Lazy Suspence](#routingCodeSplitting)
 - [7.1 Добавление роутинга](#routingAdding)
-- [7.2 webpack-dev-server(--history-api-fallback)](#historyApiFallback)
+- [7.2 webpack-dev-server(--history-api-fallback)](#historyApiFallback). Привязка запросов к корневой странице (index.html)
 - [7.3 Разделение на бандлы. Теория. Зачем это нужно.](#devidingByBandlesTheory)
-- [7.4 Практика. Lazy и Suspence](#lazySuspence)
+- [7.4 Практика. Lazy и Suspence](#lazySuspence). Асинхронная подгрузка каждой из страниц отдельно.
 - [7.5 Итог](#conclusion6)
 
 [8. Организация стилей. Добавляем темы.](#stylesStructureAddThemes)
@@ -1614,7 +1614,7 @@ module.exports = {
 
 <a name="miniCssExtractPlugin"></a> 
 
-### mini-css-extract-plugin
+### 5.1 mini-css-extract-plugin
 
 Посмотрим, как его подключить. [На страничке](https://webpack.js.org/plugins/): ctrl+F, вводим: `minicss`
 
@@ -1668,7 +1668,7 @@ module.exports = {
 
 <a name="stylesIzolationWays"></a> 
 
-### Подходы изоляции стилей
+### 5.2 Подходы изоляции стилей
 
 Теперь поговорим про проблему изоляции стилей.
 
@@ -1717,7 +1717,7 @@ export const Counter = () => {
 
 <a name="setupCSSModulesBegin"></a> 
 
-### Настройка css-modules (begin)
+### 5.3 Настройка css-modules (begin)
 
 Теперь обратимся к документации и посмотрмим, как `css modules` в `webpack`'е настраиваются
 Гугл: `webpack css modules`
