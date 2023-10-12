@@ -40,9 +40,15 @@
 [6. Часть файла с версиями ](#versionsFile1)
 
 [7. Роутинг. Сode splitting Lazy Suspence](#routingCodeSplitting)
-- 
-- 
+- [7.1 Добавление роутинга](#routingAdding)
+- [7.2 webpack-dev-server(--history-api-fallback)](#historyApiFallback)
+- [7.3 Разделение на бандлы. Теория. Зачем это нужно.](#devidingByBandlesTheory)
+- [7.4 Практика. Lazy и Suspence](#lazySuspence)
+- [7.5 Итог](#conclusion6)
 
+[8. Организация стилей. Добавляем темы.](#stylesStructureAddThemes)
+- 
+- 
 
 
 
@@ -2093,11 +2099,14 @@ Cобираем `npm run build:prod`. Сборка успешна.
 } 
 ```
 
-<!-- [7. Роутинг. Сode splitting Lazy Suspence](#routingCodeSplitting) -->
-
 <a name="routingCodeSplitting"></a> 
 
 ## 7. Роутинг. Сode splitting Lazy Suspence
+
+
+<a name="routingAdding"></a> 
+
+### 7.1 Добавление роутинга
 
 `npm i react-router-dom@6.2.1`
 `npm i -D @types/react-router-dom@5.3.3`
@@ -2202,7 +2211,9 @@ export default App;
 ![routing.jpg](/images/routing.jpg)
 Роутинг в базовом варианте работает
 
-### webpack-dev-server(--history-api-fallback) 
+<a name="historyApiFallback"></a> 
+
+### 7.2 webpack-dev-server(--history-api-fallback) 
 
 Все хорошо, но при обновлении страницы about появляется такая ошибка
 ![errorRoutingDevServer.jpg](/images/errorRoutingDevServer.jpg)
@@ -2233,7 +2244,9 @@ export default App;
 
 Возвращаемся обратно к приложению.
 
-### Разделение на бандлы. Теория. Зачем это нужно.
+<a name="devidingByBandlesTheory"></a> 
+
+### 7.3 Разделение на бандлы. Теория. Зачем это нужно.
 
 Cделаем сборку в dev режиме (`npm run build:dev`)
 
@@ -2253,8 +2266,11 @@ Cделаем сборку в dev режиме (`npm run build:dev`)
 И такой механизм есть. Это называется Асинхронные чанки, `code splitting`, `lazy loading` - называется по-разному. но суть одна.
 В react'е это делается с помощью специальных функций, комонентов `lazy` и suspence.
 
+<!-- [Практика. Lazy и Suspence](#lazySuspence) -->
 
-### 
+<a name="lazySuspence"></a> 
+
+### 7.4 Практика. Lazy и Suspence
 
 Давайте посмотрим на практике
 В папке AboutPage создадим файл `AboutPage.async.tsx` (или `lazy` - главное, чтоб понималась суть)
@@ -2341,13 +2357,20 @@ export const MainPageAsync = lazy(() => new Promise(resolve => {
 ```
 Видим, что при загрузке страницы отображается `Loading` - за него отвечает `Suspence`
 
-### Итог
+
+<a name="conclusion6"></a> 
+
+### 7.5 Итог
 В этом уроке мы:\
 добавили роутинг,\ 
 добавили пакет `react-router-dom`,\
 и научились разбивать наш большой бандл на маленькие чанки, т е мы научились использовать стандартные механизмы реакта для разбиения кода, так называемого code `splitting`'а - это `react lazy` и `suspence`\
 
-## Организация стилей. Добавляем темы.
+<!-- [8. Организация стилей. Добавляем темы.](#stylesStructureAddThemes) -->
+
+<a name="stylesStructureAddThemes"></a> 
+
+## 8. Организация стилей. Добавляем темы.
 
 В этом уроке мы поработаем со стилями и зададим такую структуру стилей, при которой мы сможем легко внедрять новые темы, изменять размеры шрифтов глобально в во всем приложении сразу, работать с переменными и т д.
 
