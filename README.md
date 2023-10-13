@@ -47,7 +47,7 @@
 - [7.5 Итог](#conclusion6)
 
 [8. Организация стилей. Добавляем темы.](#stylesStructureAddThemes)
-- [8.1 Подготовка структуры стилей](#stylesStructure)
+- [8.1 Подготовка структуры стилей](#stylesStructure): файл reset и глобальный корневой index.scss с импортированнными файлами scss
 - [8.2 Переменные (variabels)](#cssVariabels): создание и подключение переменных
 - [8.3 Темы. Цветовая гамма приложения](#appThemesColors): dark и light темы, подключение и toggle
 - [8.4 Context для Theme](#contextForTheme): ThemeContext, ThemeProvider, оборачивание приложения в контекст
