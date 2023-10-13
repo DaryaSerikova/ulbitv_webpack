@@ -47,8 +47,13 @@
 - [7.5 Итог](#conclusion6)
 
 [8. Организация стилей. Добавляем темы.](#stylesStructureAddThemes)
-- 
-- 
+- [8.1 Подготовка структуры стилей](#stylesStructure)
+- [8.2 Переменные (variabels)](#cssVariabels): создание и подключение переменных
+- [8.3 Темы. Цветовая гамма приложения](#appThemesColors): dark и light темы, подключение и toggle
+- [8.4 Context для Theme](#contextForTheme): ThemeContext, ThemeProvider, оборачивание приложения в контекст
+- [8.5 хук useTheme](#useThemeHook): чтобы было по феншую
+- [8.6 Итог](#conclusion8)
+
 
 
 
@@ -2362,15 +2367,19 @@ export const MainPageAsync = lazy(() => new Promise(resolve => {
 
 ### 7.5 Итог
 В этом уроке мы:\
-добавили роутинг,\ 
-добавили пакет `react-router-dom`,\
-и научились разбивать наш большой бандл на маленькие чанки, т е мы научились использовать стандартные механизмы реакта для разбиения кода, так называемого code `splitting`'а - это `react lazy` и `suspence`\
+- добавили роутинг, \ 
+- добавили пакет `react-router-dom`, \
+- и научились разбивать наш большой бандл на маленькие чанки, т е мы научились использовать стандартные механизмы реакта для разбиения кода, так называемого code `splitting`'а - это `react lazy` и `suspence`\
 
-<!-- [8. Организация стилей. Добавляем темы.](#stylesStructureAddThemes) -->
 
 <a name="stylesStructureAddThemes"></a> 
 
 ## 8. Организация стилей. Добавляем темы.
+
+
+<a name="stylesStructure"></a> 
+
+### 8.1 Подготовка структуры стилей
 
 В этом уроке мы поработаем со стилями и зададим такую структуру стилей, при которой мы сможем легко внедрять новые темы, изменять размеры шрифтов глобально в во всем приложении сразу, работать с переменными и т д.
 
@@ -2407,8 +2416,444 @@ select {
 Подготовим удобную структуру с css-переменными. И мы ее подготовим таким образом, что внедрить какую-то новую тему будет достаточно просто буквально за пару минут.\
 В папке styles создадим папки variables и themes. \
 В папке themes создадим два файла: dark.scss и normal.scss\
-В папке variables создадим файл global.scss.\
+В папке variables создадим файл global.scss - здесб будут глобальные переменные, например, размеры шрифтов.\
 
 ![themesStructure.jpg](/images/themesStructure.jpg)
 
-И теперь 
+И теперь все файлы, которые мы сделали, необходимо импортировать в наш главный index.scss-файл, который будет являться корневым. \
+Грубо говоря, это точка входа для стилей, а сам файл index.scss импортируем в App.tsx, чтобы эти стили применились для всех вложенных компонентов 
+
+```
+//index.scss
+@import "reset";
+@import "variables/global.scss";
+@import "themes/normal.scss";
+@import "themes/dark.scss";
+
+.app {
+  font-size: 30px;
+}
+```
+
+<a name="cssVariabels"></a> 
+
+### 8.2 Переменные (variabels)
+
+Переменные в css это очень важная штука, которая позволяет гибко в ходе редизайна изменить во всем приложении практически за пару минут какие-то главные аспекты.
+
+Например, размер шрифта или какие-то цвета
+
+#### Создание переменных
+
+Переменная в css создается так --[название переменной]
+
+В папке variables, файл global.scss 
+
+`--font-size-m`- в данном случае переменная для размера шрифта `m` - это средний размер шрифта, который будет использоваться по умолчанию во всех текстах приложения.
+Например, `--font-size-l` будем использовать в заголовках
+
+Так же сразу создадим переменную для шрифта `--font-family-main`
+`--font-line-m: 24px;` - размер для высоты линии шрифта. Обычно ее делают на 8px больше шрифта
+  
+`--font-m: var(--font-size-m) / var(--font-line-m) var(--font-family-main);` - объединяющая переменная, которая включает в себя размер шрифта, размер линии и сам шрифт
+```
+//global.scss 
+
+:root {
+  --font-family-main: Consolas, "Times New Roman", Serif;
+
+  --font-size-m: 16px;
+  --font-line-m: 24px;
+  --font-m: var(--font-size-m) / var(--font-line-m) var(--font-family-main);
+
+  --font-size-l: 24px;
+  --font-line-l: 32px;
+  --font-l: var(--font-size-l) / var(--font-line-l) var(--font-family-main);
+
+}
+```
+
+Отлично! С размерами шрифтов разобрались, осталось их только подключить
+
+#### Подключение переменных
+
+Захолим в index.scss, в корневом классе (.app) для свойства font зададим var(--font-m) - этот шрифт будет использоваться во всех текстах в приложении по умолчанию
+
+```
+@import "reset";
+@import "variables/global.scss";
+@import "themes/normal.scss";
+@import "themes/dark.scss";
+
+.app {
+  // font-size: 30px;
+  font: var(--font-m);
+}
+```
+
+<a name="appThemesColors"></a> 
+
+### 8.3 Темы. Цветовая гамма приложения
+
+<!-- 4:09 -->
+Навешивать тему мы будем на тот же блок, нв котором сейчас весит .app
+Так же можно навешивать на сам body. Здесь, я думаю, это не столь важно.
+
+#### dark-тема. Темная
+
+styles => themes => dark.scss
+
+`--bg-color` - цвет заднего фона
+`--primary-color` - главный цвета приложения. Цвет шрифта, который делает какие-то акценты - это заголовки, кнопки, ссылки
+`--secondary-color` - второстепенный цвет шрифта. Обычный текст, какие-то параграфы, в общем, то на что не стоит делать акцент.
+Грубо говоря `primary` - это заголовок, `secondary` - это описание к заголовку
+```
+.app.dark {
+  --bg-color: rgb(0, 0, 112);
+
+  --primary-color: rgb(0, 109, 0);
+  --secondary-color: rgb(0, 205, 0);
+}
+```
+
+### light-тема. Светлая
+
+```
+.app.light {
+  --bg-color: rgb(231, 231, 231);
+
+  --primary-color: rgb(13, 23, 138);
+  --secondary-color: rgb(39, 31, 206);
+}
+```
+
+#### Подключение
+Теперь переменные надо подключить: `background: var(--bg-color)`, `color: var(--primary-color)`
+И добавим `min-height: 100vh;`
+```
+//index.scss
+@import "reset";
+@import "variables/global.scss";
+@import "themes/normal.scss";
+@import "themes/dark.scss";
+
+.app {
+  // font-size: 30px;
+  font: var(--font-m);
+
+  background: var(--bg-color);
+  color: var(--primary-color);
+
+   min-height: 100vh;
+}
+```
+Проверяем, что все работает
+
+#### Toggle для смены темы
+
+<!-- 7:10 -->
+```
+//App.tsx
+import React, { useState, Suspense } from 'react'
+import { Routes, Route, Link } from 'react-router-dom';
+import './styles/index.scss';
+import { AboutPageAsync } from './pages/AboutPage/AboutPage.async';
+import { MainPageAsync } from './pages/MainPage/MainPage.async';
+
+
+export enum Theme {
+  LIGHT = 'light',
+  DARK = 'dark',
+}
+
+const App = () => {
+  const [theme, setTheme] = useState<Theme>(Theme.LIGHT);
+
+  const toggleTheme = () => {
+    setTheme( theme === Theme.DARK ? Theme.LIGHT : Theme.DARK)
+  }
+
+  return (
+    <div className={`app ${theme}`}>
+      <button onClick={toggleTheme}>TOGGLE</button>
+      <Link to='/'>Главная</Link>
+      <Link to='/about'>О сайте</Link>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Routes>
+
+          <Route path={'/about'} element={<AboutPageAsync />}/>
+          <Route path={'/'} element={<MainPageAsync />}/>
+
+        </Routes>
+      </Suspense>
+    </div>
+  )
+}
+
+export default App;
+```
+
+Теперь у нас работает toggle: при нажатии на кнопку меняется цвет шрифта
+
+<!-- [8.4 Context для Theme](#contextForTheme) -->
+
+<a name="contextForTheme"></a> 
+
+### 8.4 Context для Theme
+
+#### ThemeContext
+
+Сейчас у нас функция, переключающая состояние находится в корневом компоненте, но вдруг мы захотим получить доступ, например, в sidebar'е
+или в какой-нибудь кнопке.
+И по-хорошему нужно иметь доступ к этой теме. Для этого в реакте используется контекст, поэтому давайте его создадим.
+
+В папке src создаем папку theme и в ней файлик ThemeContext.ts
+```
+//ThemeContext.ts
+import { createContext } from "react";
+
+export enum Theme {
+  LIGHT = 'light',
+  DARK = 'dark',
+}
+
+export interface ThemeContextProps {
+  theme?: Theme;
+  setTheme?: (theme: Theme) => void;
+}
+
+export const ThemeContext = createContext<ThemeContextProps>({});
+
+
+export const LOCAL_STORAGE_THEME_KEY = "theme";
+```
+
+Поскольку важно сохранять значение выбранной темы даже после того, как пользователь закрыл браузер, нам понадобится сохранять значение этой темы в localStorage. Поэтому для ключа создадим отдельную переменную, чтобы в нужных местах ее могли импользовать.
+
+
+
+Теперь, чтобы работать с контекстом, нам необходимо сделать Provider
+Если мы обернем наше приложение в провайдер, то мы с можем в любой точке приложения иметь доступ к выбранной теме.
+
+Получать тему мы будем из localStorage и мы сделали уже для этоко ключ (LOCAL_STORAGE_THEME_KEY)
+defaultTheme - берем инфу о теме из localStorage, но если он пуст, то устанавливаем светлую тему.
+
+#### ThemeProvider
+```
+//ThemeProvider.tsx
+
+import React, { useState } from 'react'
+import { LOCAL_STORAGE_THEME_KEY, Theme, ThemeContext } from './ThemeContext';
+
+
+const defaultTheme = localStorage.getItem(LOCAL_STORAGE_THEME_KEY) as Theme || Theme.LIGHT;
+
+export const ThemeProvider = () => {
+  const [theme, setTheme] = useState<Theme>(defaultTheme);
+
+  // const defaultProps = useMemo()
+
+  return (
+    <ThemeContext.Provider
+      value={{
+        theme: theme,
+        setTheme: setTheme,
+      }}
+    >ThemeProvider</ThemeContext.Provider>
+  )
+}
+```
+
+Обратите внимание, что вот здесь, в Provider, в value мы передаем объект. И по сути НА КАЖДЫЙ РЕНДЕР компонента у нас этот ОБЪЕКТ БУДЕТ ИНИЦИАЛИЗИРОВАТЬ ЗАНОВО .
+То есть объект будет КАЖДЫЙ РАЗ новый, ссылка на него будет новая и КОМПОНЕНТ БУДЕТ ПЕРЕРИСОВЫВАТЬСЯ
+
+
+```
+  return (
+    <ThemeContext.Provider
+      value={{
+        theme: theme,
+        setTheme: setTheme,
+      }}
+    >ThemeProvider</ThemeContext.Provider>
+  )
+```
+
+Здесь это не столь важно, но этим примером я хочу научить пользоваться useMemo()
+useMemo() позволяет мемоизировать значения какого-то объекта, массива. 
+И каждый раз не создавать новый, а возвращать уже существующий, если из массива зависимостей ничего не изменилось
+
+```
+//ThemeProvider.tsx
+
+import React, { FC, useState, useMemo } from 'react'
+import { LOCAL_STORAGE_THEME_KEY, Theme, ThemeContext } from './ThemeContext';
+
+
+const defaultTheme = localStorage.getItem(LOCAL_STORAGE_THEME_KEY) as Theme || Theme.LIGHT;
+
+export const ThemeProvider: FC = ({children}) => {
+  const [theme, setTheme] = useState<Theme>(defaultTheme);
+
+  const defaultProps = useMemo(() => ({
+    theme: theme,
+    setTheme: setTheme,
+  }), [theme]);
+
+  return (
+    <ThemeContext.Provider value={defaultProps}>
+      {children}
+    </ThemeContext.Provider>
+  )
+}
+```
+
+Провайдер готов. Осталось обернуть в него наше приложение.
+
+#### Оборачивание приложения в контекст
+
+```
+//index.tsx
+import { render } from "react-dom";
+import { BrowserRouter } from "react-router-dom";
+import App from "./App";
+import { ThemeProvider } from "./theme/ThemeProvider";
+
+render(
+  <BrowserRouter>
+    <ThemeProvider>
+      <App/>
+    </ThemeProvider>
+  </BrowserRouter>,
+  document.getElementById('root')
+)
+```
+
+Теперь с помощью хука useContext в App мы можем получить до темы доступ
+
+```
+//App.tsx
+import React, { useState, Suspense, useContext } from 'react'
+import { Routes, Route, Link } from 'react-router-dom';
+import { AboutPageAsync } from './pages/AboutPage/AboutPage.async';
+import { MainPageAsync } from './pages/MainPage/MainPage.async';
+import { ThemeContext, Theme } from './theme/ThemeContext';
+import './styles/index.scss';
+
+
+
+const App = () => {
+  const { theme, setTheme } = useContext(ThemeContext);
+
+  const toggleTheme = () => {
+    setTheme( theme === Theme.DARK ? Theme.LIGHT : Theme.DARK)
+  }
+
+  return (
+    <div className={`app ${theme}`}>
+      <button onClick={toggleTheme}>TOGGLE</button>
+      <Link to='/'>Главная</Link>
+      <Link to='/about'>О сайте</Link>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Routes>
+
+          <Route path={'/about'} element={<AboutPageAsync />}/>
+          <Route path={'/'} element={<MainPageAsync />}/>
+
+        </Routes>
+      </Suspense>
+    </div>
+  )
+}
+
+export default App;
+```
+
+<a name="useThemeHook"></a> 
+
+### 8.5 хук useTheme
+
+Чтобы все было по феншую вот эту логику по получению темы из контекста и по переключению темы вынести в отдельный хук useTheme.
+
+src => theme => useTheme.ts
+
+В момент переключения темы нам нужно сохранять ее в localStorage. Не просто менять состояние, а сохранять.
+
+```
+import { useContext } from "react";
+import { LOCAL_STORAGE_THEME_KEY, Theme, ThemeContext } from "./ThemeContext";
+
+interface useThemeResult {
+  toggleTheme: () => void;
+  theme: Theme;
+}
+
+export function useTheme(): useThemeResult {
+  const { theme, setTheme } = useContext(ThemeContext);
+
+  const newTheme = theme === Theme.DARK ? Theme.LIGHT : Theme.DARK;
+
+  const toggleTheme = () => {
+    setTheme(newTheme);
+    localStorage.setItem(LOCAL_STORAGE_THEME_KEY, newTheme);
+  }
+  return {
+    theme,
+    toggleTheme,
+  }
+}
+```
+
+У нас есть хук, который мы можем использовать. \
+В любой точке нашего приложения, в любой компоненте мы этот хук можем использовать. \
+При этом мы не указываем и не импортируем каждый раз контекст. \
+Нам о нем знать в принципе вообще не обязательно, достаточно знать о существовании хука useTheme().
+
+
+```
+import React, { Suspense } from 'react'
+import { Routes, Route, Link } from 'react-router-dom';
+import { AboutPageAsync } from './pages/AboutPage/AboutPage.async';
+import { MainPageAsync } from './pages/MainPage/MainPage.async';
+import './styles/index.scss';
+import { useTheme } from './theme/useTheme';
+
+
+
+const App = () => {
+  const {theme, toggleTheme} = useTheme();
+
+  return (
+    <div className={`app ${theme}`}>
+      <button onClick={toggleTheme}>TOGGLE</button>
+      <Link to='/'>Главная</Link>
+      <Link to='/about'>О сайте</Link>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Routes>
+
+          <Route path={'/about'} element={<AboutPageAsync />}/>
+          <Route path={'/'} element={<MainPageAsync />}/>
+
+        </Routes>
+      </Suspense>
+    </div>
+  )
+}
+
+export default App;
+```
+<!-- [8.6 Итог](#conclusion8) -->
+
+<a name="conclusion8"></a> 
+
+### 8.6 Итог
+- мы сделали два файла с переменными под разные темы (.dark и .light)
+- мы сделали общий файл, в котором храним общие переменные (общие цвета, размеры шрифтов..)
+- для того, чтобы внедрить какую-то новую тему, нам достаточно создать еще один scss файл с теми же переменными, переопределить их и добавить эту тему в наш хук, в котором мы эти тем переключаем
+
+
+
+
+
+
+
