@@ -2383,10 +2383,10 @@ export const MainPageAsync = lazy(() => new Promise(resolve => {
 
 В этом уроке мы поработаем со стилями и зададим такую структуру стилей, при которой мы сможем легко внедрять новые темы, изменять размеры шрифтов глобально в во всем приложении сразу, работать с переменными и т д.
 
-В папке src создаем папку styles. Файл index.scss отправляем в эту папку.
+В папке `src` создаем папку `styles`. Файл `index.scss` отправляем в эту папку.
 Как вы знаете, у некоторых элементов изначально заложены какие-то стили. И обычно делают какой-то файлик, который эти стили обнуляет.
 
-Так, создаем в папку styles файл reset.scss:
+Так, создаем в папку `styles` файл `reset.scss`:
 ```
 //reset.scss
 * {
@@ -2405,7 +2405,7 @@ select {
 }
 ```
 
-В файлике index.scss удалим все для *, оставим только .app:
+В файлике `index.scss` удалим все для *, оставим только `.app`:
 ```
 //index.scss
 .app {
@@ -2413,15 +2413,15 @@ select {
 }
 ```
 
-Подготовим удобную структуру с css-переменными. И мы ее подготовим таким образом, что внедрить какую-то новую тему будет достаточно просто буквально за пару минут.\
-В папке styles создадим папки variables и themes. \
-В папке themes создадим два файла: dark.scss и normal.scss\
-В папке variables создадим файл global.scss - здесб будут глобальные переменные, например, размеры шрифтов.\
+Подготовим удобную структуру с `css`-переменными. И мы ее подготовим таким образом, что внедрить какую-то новую тему будет достаточно просто буквально за пару минут.\
+В папке `styles` создадим папки `variables` и `themes`. \
+В папке `themes` создадим два файла: `dark.scss` и `normal.scss`\
+В папке `variables` создадим файл `global.scss` - здесб будут глобальные переменные, например, размеры шрифтов.\
 
 ![themesStructure.jpg](/images/themesStructure.jpg)
 
-И теперь все файлы, которые мы сделали, необходимо импортировать в наш главный index.scss-файл, который будет являться корневым. \
-Грубо говоря, это точка входа для стилей, а сам файл index.scss импортируем в App.tsx, чтобы эти стили применились для всех вложенных компонентов 
+И теперь все файлы, которые мы сделали, необходимо импортировать в наш главный `index.scss`-файл, который будет являться корневым. \
+Грубо говоря, это точка входа для стилей, а сам файл `index.scss` импортируем в` App.tsx`, чтобы эти стили применились для всех вложенных компонентов 
 
 ```
 //index.scss
@@ -2439,15 +2439,15 @@ select {
 
 ### 8.2 Переменные (variabels)
 
-Переменные в css это очень важная штука, которая позволяет гибко в ходе редизайна изменить во всем приложении практически за пару минут какие-то главные аспекты.
+Переменные в `css` это очень важная штука, которая позволяет гибко в ходе редизайна изменить во всем приложении практически за пару минут какие-то главные аспекты.
 
 Например, размер шрифта или какие-то цвета
 
 #### Создание переменных
 
-Переменная в css создается так --[название переменной]
+Переменная в `css` создается так `--[название переменной]`
 
-В папке variables, файл global.scss 
+В папке `variables`, файл `global.scss `
 
 `--font-size-m`- в данном случае переменная для размера шрифта `m` - это средний размер шрифта, который будет использоваться по умолчанию во всех текстах приложения.
 Например, `--font-size-l` будем использовать в заголовках
@@ -2477,7 +2477,7 @@ select {
 
 #### Подключение переменных
 
-Захолим в index.scss, в корневом классе (.app) для свойства font зададим var(--font-m) - этот шрифт будет использоваться во всех текстах в приложении по умолчанию
+Захолим в `index.scss`, в корневом классе (`.app`) для свойства font зададим `var(--font-m)` - этот шрифт будет использоваться во всех текстах в приложении по умолчанию
 
 ```
 @import "reset";
@@ -2496,12 +2496,12 @@ select {
 ### 8.3 Темы. Цветовая гамма приложения
 
 <!-- 4:09 -->
-Навешивать тему мы будем на тот же блок, нв котором сейчас весит .app
-Так же можно навешивать на сам body. Здесь, я думаю, это не столь важно.
+Навешивать тему мы будем на тот же блок, нв котором сейчас весит `.app`
+Так же можно навешивать на сам `body`. Здесь, я думаю, это не столь важно.
 
 #### dark-тема. Темная
 
-styles => themes => dark.scss
+`styles` => `themes` => `dark.scss`
 
 `--bg-color` - цвет заднего фона
 `--primary-color` - главный цвета приложения. Цвет шрифта, который делает какие-то акценты - это заголовки, кнопки, ссылки
@@ -2593,7 +2593,7 @@ const App = () => {
 export default App;
 ```
 
-Теперь у нас работает toggle: при нажатии на кнопку меняется цвет шрифта
+Теперь у нас работает `toggle`: при нажатии на кнопку меняется цвет шрифта
 
 <!-- [8.4 Context для Theme](#contextForTheme) -->
 
@@ -2603,11 +2603,11 @@ export default App;
 
 #### ThemeContext
 
-Сейчас у нас функция, переключающая состояние находится в корневом компоненте, но вдруг мы захотим получить доступ, например, в sidebar'е
+Сейчас у нас функция, переключающая состояние находится в корневом компоненте, но вдруг мы захотим получить доступ, например, в `sidebar`'е
 или в какой-нибудь кнопке.
 И по-хорошему нужно иметь доступ к этой теме. Для этого в реакте используется контекст, поэтому давайте его создадим.
 
-В папке src создаем папку theme и в ней файлик ThemeContext.ts
+В папке `src` создаем папку theme и в ней файлик `ThemeContext.ts`
 ```
 //ThemeContext.ts
 import { createContext } from "react";
@@ -2628,15 +2628,15 @@ export const ThemeContext = createContext<ThemeContextProps>({});
 export const LOCAL_STORAGE_THEME_KEY = "theme";
 ```
 
-Поскольку важно сохранять значение выбранной темы даже после того, как пользователь закрыл браузер, нам понадобится сохранять значение этой темы в localStorage. Поэтому для ключа создадим отдельную переменную, чтобы в нужных местах ее могли импользовать.
+Поскольку важно сохранять значение выбранной темы даже после того, как пользователь закрыл браузер, нам понадобится сохранять значение этой темы в `localStorage`. Поэтому для ключа создадим отдельную переменную, чтобы в нужных местах ее могли импользовать.
 
 
 
-Теперь, чтобы работать с контекстом, нам необходимо сделать Provider
+Теперь, чтобы работать с контекстом, нам необходимо сделать `Provider`
 Если мы обернем наше приложение в провайдер, то мы с можем в любой точке приложения иметь доступ к выбранной теме.
 
-Получать тему мы будем из localStorage и мы сделали уже для этоко ключ (LOCAL_STORAGE_THEME_KEY)
-defaultTheme - берем инфу о теме из localStorage, но если он пуст, то устанавливаем светлую тему.
+Получать тему мы будем из `localStorage` и мы сделали уже для этоко ключ (`LOCAL_STORAGE_THEME_KEY`)
+`defaultTheme` - берем инфу о теме из `localStorage`, но если он пуст, то устанавливаем светлую тему.
 
 #### ThemeProvider
 ```
@@ -2664,7 +2664,7 @@ export const ThemeProvider = () => {
 }
 ```
 
-Обратите внимание, что вот здесь, в Provider, в value мы передаем объект. И по сути НА КАЖДЫЙ РЕНДЕР компонента у нас этот ОБЪЕКТ БУДЕТ ИНИЦИАЛИЗИРОВАТЬ ЗАНОВО .
+Обратите внимание, что вот здесь, в` Provider`, в `value` мы передаем объект. И по сути НА КАЖДЫЙ РЕНДЕР компонента у нас этот ОБЪЕКТ БУДЕТ ИНИЦИАЛИЗИРОВАТЬ ЗАНОВО .
 То есть объект будет КАЖДЫЙ РАЗ новый, ссылка на него будет новая и КОМПОНЕНТ БУДЕТ ПЕРЕРИСОВЫВАТЬСЯ
 
 
@@ -2679,8 +2679,8 @@ export const ThemeProvider = () => {
   )
 ```
 
-Здесь это не столь важно, но этим примером я хочу научить пользоваться useMemo()
-useMemo() позволяет мемоизировать значения какого-то объекта, массива. 
+Здесь это не столь важно, но этим примером я хочу научить пользоваться `useMemo()`
+`useMemo()` позволяет мемоизировать значения какого-то объекта, массива. 
 И каждый раз не создавать новый, а возвращать уже существующий, если из массива зависимостей ничего не изменилось
 
 ```
@@ -2773,11 +2773,11 @@ export default App;
 
 ### 8.5 хук useTheme
 
-Чтобы все было по феншую вот эту логику по получению темы из контекста и по переключению темы вынести в отдельный хук useTheme.
+Чтобы все было по феншую вот эту логику по получению темы из контекста и по переключению темы вынести в отдельный хук `useTheme`.
 
-src => theme => useTheme.ts
+`src` => `theme` => `useTheme.ts`
 
-В момент переключения темы нам нужно сохранять ее в localStorage. Не просто менять состояние, а сохранять.
+В момент переключения темы нам нужно сохранять ее в `localStorage`. Не просто менять состояние, а сохранять.
 
 ```
 import { useContext } from "react";
@@ -2807,7 +2807,7 @@ export function useTheme(): useThemeResult {
 У нас есть хук, который мы можем использовать. \
 В любой точке нашего приложения, в любой компоненте мы этот хук можем использовать. \
 При этом мы не указываем и не импортируем каждый раз контекст. \
-Нам о нем знать в принципе вообще не обязательно, достаточно знать о существовании хука useTheme().
+Нам о нем знать в принципе вообще не обязательно, достаточно знать о существовании хука `useTheme()`.
 
 
 ```
@@ -2847,13 +2847,517 @@ export default App;
 <a name="conclusion8"></a> 
 
 ### 8.6 Итог
-- мы сделали два файла с переменными под разные темы (.dark и .light)
+- мы сделали два файла с переменными под разные темы (`.dark` и `.light`)
 - мы сделали общий файл, в котором храним общие переменные (общие цвета, размеры шрифтов..)
 - для того, чтобы внедрить какую-то новую тему, нам достаточно создать еще один scss файл с теми же переменными, переопределить их и добавить эту тему в наш хук, в котором мы эти тем переключаем
 
 
 
+## 9. classNames. Создаем git репозиторий
+
+`src` => создаем папку `helpers` => создаем файл `classNames.ts`
+
+гугл: `classnames react`
+[GitHub](https://github.com/JedWatson/classnames) на эту библиотеку
+
+### 9.1 Создание функции classNames
+
+```
+export function classNames(cls: string, mods, additional: string[]): string {
+
+}
+```
+Функция `classNames` должна возвращать строку классов,
+Аргументы:
+`cls` - главный класс (например, `app`)
+`mods` - объект с модами (ключ - название класса, значение - булиан флаг, если true - класс добавляем, иначе - удаляем)
+`additional` - массив каких-то дополнительных классов (например padding не завивсит от условий, он нужен всегла)
+
+```
+classNames('remove-btn', { hovered: true, selectable: true, red: false }, ['pdg']);
+//'remove-btn hovered selectable pdg'
+```
+
+`hovered` - :hover
+`selectable` - выбран
+
+```
+type Mods = Record<string, boolean | string>
+
+//Example
+const obj: Mods = {
+  'hovered': true,
+  'selectable': 'djfhjdfh',
+}
+```
+
+```
+type Mods = Record<string, boolean | string>
+
+export function classNames(cls: string, mods: Mods, additional: string[]): string {
+  return [
+    cls,
+    ...additional,
+    ...Object.entries(mods)
+      .filter(([className, value]) => Boolean(value)) //[key, value]
+      .map(([className]) => className) //[key, value]
+  ].join(' ')
+}
+
+// classNames('remove-btn', { hovered: true, selectable: true, red: true }, ['pdg']);
+//'remove-btn hovered selectable pdg'
+```
+По сути это самописная библиотека classNames
+
+### 9.2
+Откроем компонент App
+До:
+```
+const App = () => {
+  const {theme, toggleTheme} = useTheme();
+
+  return (
+    <div className={`app ${theme}`}>
+      ...
+    </div>
+  )
+}
+```
+
+После:
+```
+const App = () => {
+  const {theme, toggleTheme} = useTheme();
+
+  return (
+    <div className={classNames('app', {}, [theme])}>
+      ...
+    </div>
+  )
+}
+```
+
+### Cоздание .gitignore
+
+```
+./build
+./node_modules
+.idea
+```
+`./build` - нет смысла заливать сборку на гит
+`./node_modules` - очевидно
+`.idea` - для тех, кто работает с вебшторм. Скрытая папка создается автоматически в корне проекта.
+
+Бесполезная ссылка на репозиторий, потому что приватная
+`https://github.com/utimur/production-project`
+
+
+```
+/build
+node_modules
+.idea
+```
+
+`/build` - это означает, что гит проигнорирует только верхний build в корне проекта, а внутри конфига будет непроигнорирована
 
 
 
+## 9. Архитектура. Введение. Теория
 
+Мы будем пользоваться методологией `feature sliced`
+
+[Документация по Feature Sliced Design](https://feature-sliced.design/)
+
+Можно посмотреть типы архитектур, в том числе и FSD [здесь](https://www.youtube.com/watch?v=c3JGBdxfYcU&t=4s&ab_channel=UlbiTV)
+
+
+
+## 10. Архитектура. Начинаем внедрять. Основы.
+
+Создаем в src папки: app, widgets, features, shared, entities
+
+Затем:
+- файл App.tsx отправляется (в src => app)
+- папка styles(глобальные стили) отправляется (в src => app)
+- создаем папку types (в src => app) и отправляем туда файл global.d.ts
+
+- папку components можно удалять, это был пример с Counter'ом, он нам не нужен
+
+Разберемся с темами. Для таких провайдеров, глобальных оберток существует папка providers.
+
+- src => providers в нем создаем папку ui и index.ts. В папку ui перекидываем (из папки theme) ThemeProvider.tsx.
+```
+//(src => providers => ThemeProvider) index.ts
+
+import { ThemeProvider } from "./ui/ThemeProvider";
+
+export { ThemeProvider };
+```
+
+В src => providers в файле index.ts 
+Далее осталось разобраться с остатками в папке ThemeContext.ts и useTheme.ts.
+Либо мы пихаем их в providers, либо в shared => config
+- отправляем папку theme в shared => config
+- создадим в app => providers => ThemeProvider создадим папку lib и перенесем туда хук useTheme и ThemeContext.ts из папки theme. Добавляем экспорт, в index.ts
+(оставшаяся пустая папка theme удаляется )
+
+```
+//(src => providers => ThemeProvider) index.ts
+
+import { ThemeProvider } from "./ui/ThemeProvider";
+import { useTheme } from "./lib/useTheme";
+
+export { ThemeProvider, useTheme };
+```
+
+### 10.1 Настройка путей. tsconfig
+
+Вы могли заметить, что с этим подходом импорты у нас выглядят вот так
+```
+import { LOCAL_STORAGE_THEME_KEY, Theme, ThemeContext } from '../../../../shared/config/theme/ThemeContext';
+```
+
+Cтрашные экспорты, залазим в самые кишки, вылезаем на несколько уровней назад.
+Хочется, чтобы во-первых, все это было более симпатично, во-вторых, поскльку у нас будет `public api`, хотелось бы, чтобы из этого `publuc api`, с верхнего уровня абсолютными импортами доставать то, что нам необходимо.
+Для этого:
+1. Раскомментируем в `tscofig.json` `".baseUrl": ".",`
+2. Добавим еще одно поле path, оно говорит нам, что все экспорты, импорты абсолютные будут идти из папки `src`
+```
+//tscofig.json
+  ...
+  "baseUrl": ".",
+  "paths": {
+    "*": ["./src/*"]
+  },
+  ...
+```
+
+Теперь наш страшный импорт можно написать таким образом:
+```
+import { LOCAL_STORAGE_THEME_KEY, Theme, ThemeContext } from 'shared/config/theme/ThemeContext';
+```
+
+заменим импорты на абсолютные в useTheme и ThemeProvider
+заменим и в index.tsx (на самом верхнем корневом уровне)
+```
+// import { ThemeProvider } from "./app/providers/ThemeProvider/ui/ThemeProvider";
+import { ThemeProvider } from "app/providers/ThemeProvider";
+```
+
+Вот этот index.ts-файл и есть `public api` (app => providers => index.ts) - он регулирует то, что мы отдаем наружу, он не отдает вспомиогательные интерфейсы
+
+#### Еще ВАЖНЫЙ МОМЕНТ. Абсолютные и относительные пути
+Рекомендуется внутри самого модуля рекомендуется писать относительные пути, чтобы в любой момент мы могли этот модуль переместить и по сути импорты у нас не поменяются, потому что они все сосредоточены относительно модуля
+А вот когда экспортируем наружу, мы используем абсолютные импорты до index.ts файла.
+-----
+Абсолютный путь показывает точное местонахождение файла, а относительный показывает путь к файлу относительно какой-либо "отправной точки" (файл, программа и т. д.).
+-----
+src => app => App.tsx поменяем абсолютные на относительные пути
+```
+// import { AboutPageAsync } from '../pages/AboutPage/AboutPage.async';
+// import { MainPageAsync } from '../pages/MainPage/MainPage.async';
+// import { useTheme } from './providers/ThemeProvider/lib/useTheme';
+// import { classNames } from '../helpers/classNames';
+import { AboutPageAsync } from 'pages/AboutPage/AboutPage.async';
+import { MainPageAsync } from 'pages/MainPage/MainPage.async';
+import { useTheme } from 'app/providers/ThemeProvider/';
+import { classNames } from 'helpers/classNames';
+```
+
+### 10.2 Настройка путей. Webpack, resolve
+
+`npm run start` - видим, что куча ошибок и все эти ошибки связаны с абсолютными путями.
+Все дело в том, что `tsconfig.json` мы настроили, а вот `webpack` пока ничего об абсолютных импортах не знает.
+
+И нам надо соглосовать webpack с тем, что мы написали в `tsconfig`'е 
+
+За это отвечает resolvers (у нас они в config => build => buildResolvers.ts )
+
+Но как их настраивать?
+гугл: `webpack absolute imports`
+
+Жмем первую ссылку и попадаем [сюда](https://webpack.js.org/concepts/module-resolution/)
+Находим подсвеченные слова [resolve.modules](https://webpack.js.org/configuration/resolve/#resolvemodules) и [resolve.alias](https://webpack.js.org/configuration/resolve/#resolvealias) - это ссылки на документацию
+<!-- 6:51 -->
+
+Тычем на [элиасы](https://webpack.js.org/configuration/resolve/#resolvealias)
+
+Во-первых, нам нужно будет добавить (пока только смотрим, не добавляем) в resolve такие вот alias'ы:
+
+```
+const path = require('path');
+
+module.exports = {
+  //...
+  resolve: {
+    alias: {
+      Utilities: path.resolve(__dirname, 'src/utilities/'),
+      Templates: path.resolve(__dirname, 'src/templates/'),
+    },
+  },
+};
+```
+#### resolve.preferAbsolute
+А пока, если пролистать ниже, наткнемся на свойство [resolve.preferAbsolute](https://webpack.js.org/configuration/resolve/#resolvealias)
+
+`preferAbsolute: true,` - значит, что абсолютные пути в приоритете
+Добавляем эту строчку в `buildResolvers`
+
+```
+//config => build => buildResolvers.ts
+import { ResolveOptions } from "webpack";
+
+export function buildResolvers(): ResolveOptions {
+  return {
+      extensions: ['.tsx', '.ts', '.js'],
+      preferAbsolute: true,
+    }
+}
+```
+
+#### resolve.modules
+[resolve.modules](https://webpack.js.org/configuration/resolve/#resolvemodules)
+
+Так же нам необходимо указать modules. 
+В него нам надо будет передать путь до папки src, а значит, что нам нужны options.
+Достаем в аргументах `options: BuildOptions`, 
+Переходим в файл BuildOptions (нажимаем на BuildOptions правой кнопкой мыши и Go to defenition)
+
+Здесь есть interface BuildPath
+```
+export interface BuildPath {
+  entry: string;
+  build: string;
+  html: string;
+}
+```
+Добавляем в него новую строчку:
+`src: string;` - это путь до папки с исходным кодом
+```
+export interface BuildPath {
+  entry: string;
+  build: string;
+  html: string;
+  
+  src: string;
+}
+```
+
+Затем идем в webpack.config.ts
+
+```
+//webpack.config.ts
+...
+
+  const paths: BuildPath = {
+    entry: path.resolve(__dirname, 'src', 'index.tsx'),
+    build: path.resolve(__dirname, 'build'),
+    html: path.resolve(__dirname, 'public', 'index.html'),
+  }
+
+...
+```
+
+Добавляем в webpack.config.ts, в BuildPath `src: path.resolve(__dirname, 'src'),`
+
+```
+//webpack.config.ts
+...
+
+  const paths: BuildPath = {
+    entry: path.resolve(__dirname, 'src', 'index.tsx'),
+    build: path.resolve(__dirname, 'build'),
+    html: path.resolve(__dirname, 'public', 'index.html'),
+    
+    src: path.resolve(__dirname, 'src'),
+  }
+
+...
+```
+
+Теперь в buildResolvers мы можем из опций этот путь вытащить.
+Для этого добавим строку 
+`modules: [options.paths.src, 'node_modules'],`
+в наш `buildResolvers.ts`
+
+```
+//config => build => buildResolvers.ts
+
+import { ResolveOptions } from "webpack";
+import { BuildOptions } from "./types/config";
+
+export function buildResolvers(options: BuildOptions): ResolveOptions {
+  return {
+      extensions: ['.tsx', '.ts', '.js'],
+      preferAbsolute: true,
+
+      modules: [options.paths.src, 'node_modules'],
+    }
+}
+```
+
+#### resolve.alias
+[resolve.alias](https://webpack.js.org/configuration/resolve/#resolvealias)
+
+Следуя документациии, нам нужно указать еще и элиасы
+В качестве элиаса часто указывают знак `@`
+Например: `@/shared/classNames`
+
+Но если оставить элиасы пустыми `alias: {},`
+(`/shared/classNames`)
+И при этом указать modules и preferAbsolute, то в таком случае мы сможем обращаться к папкам напрямую без указания каких-либо дополнительных знаков, элиасов
+
+Можно пойти по любому из этих двух путей, но мы будем пользоваться напрямую.
+
+Добавляем новые строчки в `buildResolvers`
+
+`mainFiles: ['index'],` - явное указание главного файла
+`alias: {},` - пустой элиас
+
+```
+import { ResolveOptions } from "webpack";
+import { BuildOptions } from "./types/config";
+
+export function buildResolvers(options: BuildOptions): ResolveOptions {
+  return {
+      extensions: ['.tsx', '.ts', '.js'],
+      preferAbsolute: true,
+      modules: [options.paths.src, 'node_modules'],
+
+      mainFiles: ['index'],
+      alias: {},
+    }
+}
+```
+
+Пробуем запустить
+`npm run start`
+
+Выпадает ошибка: забыли передать опции в buildResolvers
+
+![resolveBuildOptionsError.jpg](/images/resolveBuildOptionsError.jpg)
+
+В buildWebpackConfig заменяем в `return`: 
+`resolve: buildResolvers(),` на `resolve: buildResolvers(options),`
+
+Пробуем запустить `npm run start` - все ок, toggle работает
+<!-- 
+1) Сделать приоритетными абсолютные пути
+2) Разобраться с модулями
+3) Разобраться с элиасами -->
+
+На даный момент структура приложения выглядит так
+![structurePart1.jpg](/images/structurePart1.jpg)
+
+<!-- 9:34 -->
+### 10.3 Приводим в порядок pages
+
+С самым верхним сдлоем мы разобрались, к нему мы вернемся чуть позже. 
+Теперь давайте наведем порядок в папке pages
+
+Руководствуясь методологией, для каждого слоя должны быть сегменты и слайсы (за исключением слоя `shared`), а так же `public api`
+
+`public api` - `index.ts`-файл
+
+В папке `AboutPage` создаем папку `ui`, туда переносим сами компоненты (`AboutPage.tsx` и `AboutPage.async.tsx`) и оставляем снаружи `index.ts`
+
+В `index.ts` наружу выносим только асинхронный компонент, сам `AboutPage`  у нас остается внутри, потому что наружу нам нужен асинхронный чанк, потому что мы используем его в роутинге, чтобы уменьшить размер бандла.
+
+Но сверху нам необязательно знать, что это асинхронный компонент, поэтому отдать наверх мы его можем с названием ``
+
+```
+import { AboutPageAsync } from "./ui/AboutPage.async";
+
+export { AboutPageAsync as AboutPage}
+```
+
+#### Замечание по export'ам
+
+Перед тем как эспортировать компонент, мы его сначала заимпортировали
+Есть альтернативный способ
+
+`export { AboutPageAsync } from "./ui/AboutPage.async";`
+
+Это прямой экспорт без лишнего импорта.
+В начале он об этом забыл, но позже перешел чисто на такие импорты.
+
+Заходим в App.tsx
+
+```
+import React, { Suspense } from 'react'
+import { Routes, Route, Link } from 'react-router-dom';
+import { AboutPageAsync } from 'pages/AboutPage/ui/AboutPage.async';
+import { MainPageAsync } from 'pages/MainPage/MainPage.async';
+import { useTheme } from 'app/providers/ThemeProvider/';
+import { classNames } from 'helpers/classNames';
+import './styles/index.scss';
+
+
+
+const App = () => {
+  const {theme, toggleTheme} = useTheme();
+
+  return (
+    <div className={classNames('app', {}, [theme])}>
+      <button onClick={toggleTheme}>TOGGLE</button>
+      <Link to='/'>Главная</Link>
+      <Link to='/about'>О сайте</Link>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Routes>
+
+          <Route path={'/about'} element={<AboutPageAsync />}/>
+          <Route path={'/'} element={<MainPageAsync />}/>
+
+        </Routes>
+      </Suspense>
+    </div>
+  )
+}
+
+export default App;
+
+```
+
+Нам нужно заменить вот эти две вещи
+`import { AboutPageAsync } from 'pages/AboutPage/ui/AboutPage.async';`
+`<Route path={'/about'} element={<AboutPageAsync />}/>`
+
+Обратите внимание, что в предложении экспорта есть и абсолютный путь, и относительный. Нам нужно доставать из модуля, а не из этих кишков
+![routerRelativePath.jpg](/images/routerRelativePath.jpg)
+
+Поэтому заменяем те строки на эти:
+`import { AboutPage } from 'pages/AboutPage';`
+`<Route path={'/about'} element={<AboutPage/>}/>`
+
+Проделываем тоже самое для MainPage: компоненты в ui и создаем index.ts-файл
+
+После в App.tsx исправляем на новые строки:
+
+`import { MainPage } from 'pages/MainPage';`
+` <Route path={'/'} element={<MainPage/>}/>`
+
+`npm run start` - все работает
+Хотя лично у меня появилась ошибка, но она вообще не мешает работе: toggle рфботает и rout'ы тоже работают
+![FSerror1.jpg](/images/FSerror1.jpg)
+
+### 10.4 helpers и shared
+
+итак, со слоем app мы пока что разобрадись, со слоем pages мы разобрались.
+Еще у нас осталась папочка helpers. 
+В ней у нас лежит единственная функция classNames 
+![FSclassNames1.jpg](/images/FSclassNames1.jpg)
+
+И ее (папку classNames) мы перенесем на shared (в папку lib/ в слайс lib) слой, поскольку эта функция будет использоваться абсолютно везде.
+![FSclassNames2.jpg](/images/FSclassNames2.jpg)
+
+В shared, в папке lib у нас будут всякие helper'ы, переиспользуемые хуки и прочее
+
+
+### Итог
+Подведем итоги
+
+У нас теперь выстраивается четкая структура по FSD, состоящая из 6ти слоев
+![FSconclusion.jpg](/images/FSconclusion.jpg)
+
+
+## 11 AppRouter. Конфиг для роутера.
