@@ -54,6 +54,22 @@
 - [8.5 хук useTheme](#useThemeHook): чтобы было по феншую
 - [8.6 Итог](#conclusion8)
 
+[9. classNames. Создаем git репозиторий](#classNamesGit)
+- [9.1 Создание функции classNames](#classNamesFuncCreating)
+- [9.2[404NotFound]](#9.2[404NotFound])
+- [9.3 Cоздание .gitignore](#gitignoreCreating)
+
+[10. Архитектура. Введение. Теория](#arhitectureBeginingTheory)
+
+[11. Архитектура. Начинаем внедрять. Основы.](#arhitectureBeginingPractice)
+- [11.1 Настройка путей. tsconfig](#tsconfigSettingsPaths)
+- [11.2 Настройка путей. Webpack, resolve](#webpackSettingsPaths): resolve.preferAbsolute, resolve.modules, resolve.alias
+- [11.3 Приводим в порядок pages](#clearPages)
+- [11.4 helpers и shared](#helpersAndShared)
+- [11.5 Итог](#conclusion11)
+
+
+
 
 
 
@@ -2842,7 +2858,6 @@ const App = () => {
 
 export default App;
 ```
-<!-- [8.6 Итог](#conclusion8) -->
 
 <a name="conclusion8"></a> 
 
@@ -2852,6 +2867,7 @@ export default App;
 - для того, чтобы внедрить какую-то новую тему, нам достаточно создать еще один scss файл с теми же переменными, переопределить их и добавить эту тему в наш хук, в котором мы эти тем переключаем
 
 
+<a name="classNamesGit"></a> 
 
 ## 9. classNames. Создаем git репозиторий
 
@@ -2859,6 +2875,11 @@ export default App;
 
 гугл: `classnames react`
 [GitHub](https://github.com/JedWatson/classnames) на эту библиотеку
+
+
+<!-- [9.1 Создание функции classNames](#classNamesFuncCreating) -->
+
+<a name="classNamesFuncCreating"></a> 
 
 ### 9.1 Создание функции classNames
 
@@ -2909,7 +2930,12 @@ export function classNames(cls: string, mods: Mods, additional: string[]): strin
 ```
 По сути это самописная библиотека classNames
 
+
+<a name="9.2[404NotFound]"></a> 
+
 ### 9.2
+
+
 Откроем компонент App
 До:
 ```
@@ -2937,7 +2963,9 @@ const App = () => {
 }
 ```
 
-### Cоздание .gitignore
+<a name="gitignoreCreating"></a> 
+
+### 9.3 Cоздание .gitignore
 
 ```
 ./build
@@ -2961,8 +2989,9 @@ node_modules
 `/build` - это означает, что гит проигнорирует только верхний build в корне проекта, а внутри конфига будет непроигнорирована
 
 
+<a name="arhitectureBeginingTheory"></a> 
 
-## 9. Архитектура. Введение. Теория
+## 10. Архитектура. Введение. Теория
 
 Мы будем пользоваться методологией `feature sliced`
 
@@ -2971,8 +3000,11 @@ node_modules
 Можно посмотреть типы архитектур, в том числе и FSD [здесь](https://www.youtube.com/watch?v=c3JGBdxfYcU&t=4s&ab_channel=UlbiTV)
 
 
+<!-- [11. Архитектура. Начинаем внедрять. Основы.](#arhitectureBeginingPractice) -->
 
-## 10. Архитектура. Начинаем внедрять. Основы.
+<a name="arhitectureBeginingPractice"></a> 
+
+## 11. Архитектура. Начинаем внедрять. Основы.
 
 Создаем в src папки: app, widgets, features, shared, entities
 
@@ -3010,7 +3042,11 @@ import { useTheme } from "./lib/useTheme";
 export { ThemeProvider, useTheme };
 ```
 
-### 10.1 Настройка путей. tsconfig
+<!-- [11.1 Настройка путей. tsconfig](#tsconfigSettingsPaths) -->
+
+<a name="tsconfigSettingsPaths"></a> 
+
+### 11.1 Настройка путей. tsconfig
 
 Вы могли заметить, что с этим подходом импорты у нас выглядят вот так
 ```
@@ -3064,7 +3100,9 @@ import { useTheme } from 'app/providers/ThemeProvider/';
 import { classNames } from 'helpers/classNames';
 ```
 
-### 10.2 Настройка путей. Webpack, resolve
+<a name="webpackSettingsPaths"></a> 
+
+### 11.2 Настройка путей. Webpack, resolve
 
 `npm run start` - видим, что куча ошибок и все эти ошибки связаны с абсолютными путями.
 Все дело в том, что `tsconfig.json` мы настроили, а вот `webpack` пока ничего об абсолютных импортах не знает.
@@ -3250,7 +3288,12 @@ export function buildResolvers(options: BuildOptions): ResolveOptions {
 ![structurePart1.jpg](/images/structurePart1.jpg)
 
 <!-- 9:34 -->
-### 10.3 Приводим в порядок pages
+
+<!-- [11.3 Приводим в порядок pages](#clearPages) -->
+
+<a name="clearPages"></a> 
+
+### 11.3 Приводим в порядок pages
 
 С самым верхним сдлоем мы разобрались, к нему мы вернемся чуть позже. 
 Теперь давайте наведем порядок в папке pages
@@ -3340,7 +3383,13 @@ export default App;
 Хотя лично у меня появилась ошибка, но она вообще не мешает работе: toggle рфботает и rout'ы тоже работают
 ![FSerror1.jpg](/images/FSerror1.jpg)
 
-### 10.4 helpers и shared
+<!-- [11.3 Приводим в порядок pages](#clearPages) -->
+<!-- [11.4 helpers и shared](#helpersAndShared) -->
+
+
+<a name="helpersAndShared"></a> 
+
+### 11.4 helpers и shared
 
 итак, со слоем app мы пока что разобрадись, со слоем pages мы разобрались.
 Еще у нас осталась папочка helpers. 
@@ -3352,12 +3401,321 @@ export default App;
 
 В shared, в папке lib у нас будут всякие helper'ы, переиспользуемые хуки и прочее
 
+<a name="conclusion11"></a> 
 
-### Итог
+### 11.5 Итог
 Подведем итоги
 
 У нас теперь выстраивается четкая структура по FSD, состоящая из 6ти слоев
 ![FSconclusion.jpg](/images/FSconclusion.jpg)
 
 
-## 11 AppRouter. Конфиг для роутера.
+## 12 AppRouter. Конфиг для роутера.
+
+Давайте наведем порядок в компоненте App - это корень нашего приложения и он должен быть максимально чистым
+
+
+### 12.1 Папка router: index.ts-файл и ui => AppRouter.tsx (app => providers)
+
+routing - это такая глобальная штука, поэтому ее вынесем на уровень provider'а (src => app => providers), рядышком с ThemeProvider'ом
+
+Создаем папку `router` в src => app => providers. Внутри нее создаем index.ts-файл и папку ui.
+Внутри папки ui создаем AppRouter.tsx
+
+```
+//AppRouter.tsx
+import React from 'react'
+
+const AppRouter = () => {
+  return (
+    <div>
+      
+    </div>
+  )
+}
+
+export default AppRouter;
+```
+
+Теперь заходим в наш App.tsx
+```
+//на данный момент App.tsx
+import React, { Suspense } from 'react'
+import { Routes, Route, Link } from 'react-router-dom';
+
+import { AboutPage } from 'pages/AboutPage';
+import { MainPage } from 'pages/MainPage';
+import { useTheme } from 'app/providers/ThemeProvider/';
+import { classNames } from 'shared/lib/classNames/classNames';
+import './styles/index.scss';
+
+
+
+const App = () => {
+  const {theme, toggleTheme} = useTheme();
+
+  return (
+    <div className={classNames('app', {}, [theme])}>
+      <button onClick={toggleTheme}>TOGGLE</button>
+      <Link to='/'>Главная</Link>
+      <Link to='/about'>О сайте</Link>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Routes>
+
+          <Route path={'/about'} element={<AboutPage/>}/>
+          <Route path={'/'} element={<MainPage/>}/>
+
+        </Routes>
+      </Suspense>
+    </div>
+  )
+}
+
+export default App;
+```
+
+Вырезаем из App.tsx все. что касается router'а :
+
+```
+  <Suspense fallback={<div>Loading...</div>}>
+    <Routes>
+
+      <Route path={'/about'} element={<AboutPage/>}/>
+      <Route path={'/'} element={<MainPage/>}/>
+
+    </Routes>
+  </Suspense>
+```
+
+И вставляем в наш AppRouter
+Поправлем все импорты и получаем это:
+```
+import React, { Suspense } from 'react'
+import { Routes, Route } from 'react-router-dom';
+import { AboutPage } from 'pages/AboutPage';
+import { MainPage } from 'pages/MainPage';
+
+
+const AppRouter = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Routes>
+
+        <Route path={'/about'} element={<AboutPage/>}/>
+        <Route path={'/'} element={<MainPage/>}/>
+
+      </Routes>
+    </Suspense>
+  )
+}
+
+export default AppRouter;
+
+```
+
+
+В index.ts 
+```
+import AppRouter from "./ui/AppRouter";
+
+export {
+  AppRouter
+}
+```
+
+И теперь добавляем AppRouter в наш App.tsx
+
+```
+import React, { Suspense } from 'react'
+import { Routes, Route, Link } from 'react-router-dom';
+
+import { useTheme } from 'app/providers/ThemeProvider/';
+import { classNames } from 'shared/lib/classNames/classNames';
+import './styles/index.scss';
+import { AppRouter } from './providers/router';
+
+
+
+const App = () => {
+  const {theme, toggleTheme} = useTheme();
+
+  return (
+    <div className={classNames('app', {}, [theme])}>
+      <button onClick={toggleTheme}>TOGGLE</button>
+      <Link to='/'>Главная</Link>
+      <Link to='/about'>О сайте</Link>
+      <AppRouter />
+    </div>
+  )
+}
+
+export default App;
+
+```
+
+### 12.2 config router'а (shared)
+
+Сейчас у нас роуты описаны способом, который вы видете выше.
+Т е они описаны прям в компоненте. 
+Но хотелось бы иметь какой-то конфиг, внутри которого мы список роутов определим, а в AppRouter'е просто декларативным способом по этому конфигу пройдемся и отрисуем каждый нужный компонент.
+
+Сделаем этот конфиг в папке shared.
+
+Идем в папку shared => config => routeConfig =>  создаем routeConfig.tsx
+
+В этом файле создадим перечисление enum, внутри которого мы объявим список роутов, которые есть в нашем приложении и названий для них.
+Это необходимо, если мы вдруг захотим хранить информацию о маршрутах в Redux, stat'е
+
+```
+//src => shared => config => routeConfig => routeConfig.tsx
+
+export enum AppRoutes {
+  MAIN = 'main',
+  ABOUT = 'about',
+}
+```
+
+Создадим объект, в котором мы для каждого маршрута из enum AppRoutes укажем путь до соответствующего компонента.
+
+```
+//routeConfig.tsx
+...
+
+export const RoutePath: Record<AppRoutes, string> = {
+  [AppRoutes.MAIN] : '/',
+  [AppRoutes.ABOUT] : '/about',
+}
+```
+
+Следующим этапом необходимо объявить сами роуты.
+Т е маршрут до них, компонент, который мы должны отрисовывать. И эту константу уже мы назовем routeConfig
+
+Для понимания, что такое RouteProps - это тот самый, который мы используем, когда передаем пропсы в компонент Route 
+Например, здесь пропсы path и element
+`<Route path={'/about'} element={<AboutPage/>}/>`
+
+А сам он выглядит так
+
+```
+export interface RouteProps {
+    caseSensitive?: boolean;
+    children?: React.ReactNode;
+    element?: React.ReactNode | null;
+    index?: boolean;
+    path?: string;
+}
+```
+
+Продолжаем. Напишем сам компонент роут
+```
+export const routeConfig: Record<AppRoutes, RouteProps> = {
+  [AppRoutes.MAIN]: {
+    path: RoutePath.main,
+    element: <MainPage />
+  },
+  [AppRoutes.ABOUT]: {
+    path: RoutePath.about,
+    element: <AboutPage />
+  }
+}
+```
+Все готово для применения.
+
+```
+//готовый конфиг
+import { AboutPage } from "pages/AboutPage"
+import { MainPage } from "pages/MainPage"
+import { RouteProps } from "react-router-dom"
+
+export enum AppRoutes {
+  MAIN = 'main',
+  ABOUT = 'about',
+}
+
+export const RoutePath: Record<AppRoutes, string> = {
+  [AppRoutes.MAIN] : '/',
+  [AppRoutes.ABOUT] : '/about',
+}
+
+export const routeConfig: Record<AppRoutes, RouteProps> = {
+  [AppRoutes.MAIN]: {
+    path: RoutePath.main,
+    element: <MainPage />
+  },
+  [AppRoutes.ABOUT]: {
+    path: RoutePath.about,
+    element: <AboutPage />
+  }
+}
+```
+
+### 12.3 Cоединяем AppRouter и config
+
+Так выглядит сейчас routeConfig без переменных:
+
+```
+const routeConfig = {
+  'main': {
+    path: '/',
+    element: <MainPage/>
+  },
+  'about': {
+    path: '/about',
+    element: <AboutPage/>
+  }
+}
+```
+
+
+Этот кусок можно удалить, т к мы будем пробегаться по массиву роутов
+```
+  <Route path={'/about'} element={<AboutPage/>}/>
+  <Route path={'/'} element={<MainPage/>}/>
+```
+
+routeConfig - это объект, а нам нужен массив, причем массив значений.
+Поэтому воспользуемся Object.values()
+
+
+```
+import React, { Suspense } from 'react'
+import { Routes, Route } from 'react-router-dom';
+import { routeConfig } from 'shared/config/routeConfig/routeConfig';
+
+
+const AppRouter = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Routes>
+
+        {Object.values(routeConfig).map(({element, path}) => (
+        <Route 
+            key={path}
+            path={path}
+            element={element}
+          />
+        ))}
+
+      </Routes>
+    </Suspense>
+  )
+}
+
+export default AppRouter;
+
+```
+
+
+## 13 Navbar.Шаблоны для разработки. Первый UI Kit элемент
+
+
+
+
+
+
+
+
+
+
+
+
