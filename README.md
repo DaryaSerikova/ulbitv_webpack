@@ -68,6 +68,29 @@
 - [11.4 helpers и shared](#helpersAndShared)
 - [11.5 Итог](#conclusion11)
 
+[12. AppRouter. Конфиг для роутера.](#appRouterCongig)
+- [12.1 Папка router](#fileRouter): index.ts-файл и ui => AppRouter.tsx (app => providers)  
+- [12.2 config router'а (shared)](#configRouter)
+- [12.3 Cоединяем AppRouter и config](#connectAppRouterAndConfig)
+
+[13. Navbar.Шаблоны для разработки. Первый UI Kit элемент](#navbarSnippetsFirstUiKit)
+- [13.1 Navbar.](#navbar)
+- [13.2 Кастомные сниппеты VSCode](#snippets)
+- [13.3 Подправляем стили, переменная высоты для Navbar](#fixStylesHightVariable)
+- [13.4 Ссылка - классический пример shared-компонента](#linkSharedComponent)
+- - [Создание компоненты AppLink](#appLinkCreating)
+- - [Стилизация AppLink](#appLinkStyling)
+- - [Создание inverted цветов](#invertedColorsCreating)
+- - [Чтобы применить новую тему](#applyNewTheme)
+- [13.5 Итог](#conclusion13)
+
+[14. Svg loader. File loader. Button UI kit](#svgLoaderFileLoaderButton)
+- 
+- 
+- 
+
+
+
 
 
 
@@ -2989,6 +3012,51 @@ node_modules
 `/build` - это означает, что гит проигнорирует только верхний build в корне проекта, а внутри конфига будет непроигнорирована
 
 
+
+### Из lesson 14 Navbar
+
+1. mods и additional - это опциональные штуки, их нужно поправить, добавить знак вопроса.
+Или просто их проинициализировать. Мы выбираем 2ой путь
+меняем это
+`export function classNames(cls: string, mods: Mods, additional: string[]): string {`
+на это
+`export function classNames(cls: string, mods: Mods = {}, additional: string[] = []): string {`
+
+2. Т к в additional могут прилетать undefined'ы, поскольку className необязательный, то по-хорошему его надо фильтровать по Boolean фильтру
+`...additional,`
+`...additional.filter(Boolean),`
+
+```
+//до изменений
+type Mods = Record<string, boolean | string>
+
+export function classNames(cls: string, mods: Mods, additional: string[]): string {
+  return [
+    cls,
+    ...additional,
+    ...Object.entries(mods)
+      .filter(([className, value]) => Boolean(value)) //[key, value]
+      .map(([className]) => className) //[key, value]
+  ].join(' ')
+}
+```
+
+```
+//после изменений
+type Mods = Record<string, boolean | string>
+
+export function classNames(cls: string, mods: Mods = {}, additional: string[] = []): string {
+  return [
+    cls,
+    ...additional.filter(Boolean),
+    ...Object.entries(mods)
+      .filter(([className, value]) => Boolean(value)) //[key, value]
+      .map(([className]) => className) //[key, value]
+  ].join(' ')
+}
+```
+
+
 <a name="arhitectureBeginingTheory"></a> 
 
 ## 10. Архитектура. Введение. Теория
@@ -3383,10 +3451,6 @@ export default App;
 Хотя лично у меня появилась ошибка, но она вообще не мешает работе: toggle рфботает и rout'ы тоже работают
 ![FSerror1.jpg](/images/FSerror1.jpg)
 
-<!-- [11.3 Приводим в порядок pages](#clearPages) -->
-<!-- [11.4 helpers и shared](#helpersAndShared) -->
-
-
 <a name="helpersAndShared"></a> 
 
 ### 11.4 helpers и shared
@@ -3410,17 +3474,23 @@ export default App;
 ![FSconclusion.jpg](/images/FSconclusion.jpg)
 
 
-## 12 AppRouter. Конфиг для роутера.
+<a name="appRouterCongig"></a> 
 
-Давайте наведем порядок в компоненте App - это корень нашего приложения и он должен быть максимально чистым
+## 12. AppRouter. Конфиг для роутера.
 
+Давайте наведем порядок в компоненте `App` - это корень нашего приложения и он должен быть максимально чистым
+
+
+<!-- [12.1 Папка router](#fileRouter): index.ts-файл и ui => AppRouter.tsx (app => providers)  -->
+
+<a name="fileRouter"></a> 
 
 ### 12.1 Папка router: index.ts-файл и ui => AppRouter.tsx (app => providers)
 
-routing - это такая глобальная штука, поэтому ее вынесем на уровень provider'а (src => app => providers), рядышком с ThemeProvider'ом
+`routing` - это такая глобальная штука, поэтому ее вынесем на уровень `provider`'а (`src` => `app` => `providers`), рядышком с `ThemeProvider`'ом
 
-Создаем папку `router` в src => app => providers. Внутри нее создаем index.ts-файл и папку ui.
-Внутри папки ui создаем AppRouter.tsx
+Создаем папку `router` в `src` => `app` => `providers`. Внутри нее создаем `index.ts`-файл и папку `ui`.
+Внутри папки `ui` создаем `AppRouter.tsx`
 
 ```
 //AppRouter.tsx
@@ -3437,7 +3507,7 @@ const AppRouter = () => {
 export default AppRouter;
 ```
 
-Теперь заходим в наш App.tsx
+Теперь заходим в наш `App.tsx`
 ```
 //на данный момент App.tsx
 import React, { Suspense } from 'react'
@@ -3474,7 +3544,7 @@ const App = () => {
 export default App;
 ```
 
-Вырезаем из App.tsx все. что касается router'а :
+Вырезаем из `App.tsx` все. что касается `router`'а :
 
 ```
   <Suspense fallback={<div>Loading...</div>}>
@@ -3487,7 +3557,7 @@ export default App;
   </Suspense>
 ```
 
-И вставляем в наш AppRouter
+И вставляем в наш `AppRouter`
 Поправлем все импорты и получаем это:
 ```
 import React, { Suspense } from 'react'
@@ -3514,7 +3584,7 @@ export default AppRouter;
 ```
 
 
-В index.ts 
+В `index.ts` 
 ```
 import AppRouter from "./ui/AppRouter";
 
@@ -3523,7 +3593,7 @@ export {
 }
 ```
 
-И теперь добавляем AppRouter в наш App.tsx
+И теперь добавляем `AppRouter` в наш `App.tsx`
 
 ```
 import React, { Suspense } from 'react'
@@ -3553,18 +3623,20 @@ export default App;
 
 ```
 
+<a name="configRouter"></a> 
+
 ### 12.2 config router'а (shared)
 
 Сейчас у нас роуты описаны способом, который вы видете выше.
 Т е они описаны прям в компоненте. 
-Но хотелось бы иметь какой-то конфиг, внутри которого мы список роутов определим, а в AppRouter'е просто декларативным способом по этому конфигу пройдемся и отрисуем каждый нужный компонент.
+Но хотелось бы иметь какой-то конфиг, внутри которого мы список роутов определим, а в `AppRouter`'е просто декларативным способом по этому конфигу пройдемся и отрисуем каждый нужный компонент.
 
-Сделаем этот конфиг в папке shared.
+Сделаем этот конфиг в папке `shared`.
 
-Идем в папку shared => config => routeConfig =>  создаем routeConfig.tsx
+Идем в папку `shared` => `config` => `routeConfig` =>  создаем `routeConfig.tsx`
 
 В этом файле создадим перечисление enum, внутри которого мы объявим список роутов, которые есть в нашем приложении и названий для них.
-Это необходимо, если мы вдруг захотим хранить информацию о маршрутах в Redux, stat'е
+Это необходимо, если мы вдруг захотим хранить информацию о маршрутах в `Redux`, `stat`'е
 
 ```
 //src => shared => config => routeConfig => routeConfig.tsx
@@ -3575,7 +3647,7 @@ export enum AppRoutes {
 }
 ```
 
-Создадим объект, в котором мы для каждого маршрута из enum AppRoutes укажем путь до соответствующего компонента.
+Создадим объект, в котором мы для каждого маршрута из `enum` `AppRoutes` укажем путь до соответствующего компонента.
 
 ```
 //routeConfig.tsx
@@ -3588,10 +3660,10 @@ export const RoutePath: Record<AppRoutes, string> = {
 ```
 
 Следующим этапом необходимо объявить сами роуты.
-Т е маршрут до них, компонент, который мы должны отрисовывать. И эту константу уже мы назовем routeConfig
+Т е маршрут до них, компонент, который мы должны отрисовывать. И эту константу уже мы назовем `routeConfig`
 
-Для понимания, что такое RouteProps - это тот самый, который мы используем, когда передаем пропсы в компонент Route 
-Например, здесь пропсы path и element
+Для понимания, что такое `RouteProps` - это тот самый, который мы используем, когда передаем пропсы в компонент `Route `
+Например, здесь пропсы `path` и `element`
 `<Route path={'/about'} element={<AboutPage/>}/>`
 
 А сам он выглядит так
@@ -3649,9 +3721,13 @@ export const routeConfig: Record<AppRoutes, RouteProps> = {
 }
 ```
 
+
+<a name="connectAppRouterAndConfig"></a> 
+
 ### 12.3 Cоединяем AppRouter и config
 
-Так выглядит сейчас routeConfig без переменных:
+
+Так выглядит сейчас `routeConfig` без переменных:
 
 ```
 const routeConfig = {
@@ -3673,8 +3749,8 @@ const routeConfig = {
   <Route path={'/'} element={<MainPage/>}/>
 ```
 
-routeConfig - это объект, а нам нужен массив, причем массив значений.
-Поэтому воспользуемся Object.values()
+`routeConfig` - это объект, а нам нужен массив, причем массив значений.
+Поэтому воспользуемся `Object.values()`
 
 
 ```
@@ -3706,7 +3782,1364 @@ export default AppRouter;
 ```
 
 
-## 13 Navbar.Шаблоны для разработки. Первый UI Kit элемент
+<a name="navbarSnippetsFirstUiKit"></a> 
+
+## 13. Navbar.Шаблоны для разработки. Первый UI Kit элемент
+
+Мы вынесли `AppRouter` из `App.tsx`, теперь вынесем навигационную модель, `Нeader`, `Navbar` и кнопку по переключению тем
+
+```
+//App.tsx
+import React, { Suspense } from 'react'
+import { Routes, Route, Link } from 'react-router-dom';
+
+import { useTheme } from 'app/providers/ThemeProvider/';
+import { classNames } from 'shared/lib/classNames/classNames';
+import './styles/index.scss';
+import { AppRouter } from './providers/router';
+
+
+
+const App = () => {
+  const {theme, toggleTheme} = useTheme();
+
+  return (
+    <div className={classNames('app', {}, [theme])}>
+      <button onClick={toggleTheme}>TOGGLE</button>
+      <Link to='/'>Главная</Link>
+      <Link to='/about'>О сайте</Link>
+      <AppRouter />
+    </div>
+  )
+}
+
+export default App;
+
+```
+
+<a name="navbar"></a> 
+
+### 13.1 Navbar.
+
+Начнем с `NavBar`'а.
+`NavBar` по своей логике - это `widget`
+
+Поэтому `widgets` => создаем папку `Navbar` => создаем `index.ts`-файл и папку `ui` => в папке` ui` cоздаем `Navbar.tsx` и `Navbar.module.scss`
+
+```
+//Navbar.tsx
+
+import React from 'react'
+
+export const Navbar = () => {
+  return (
+    <div>
+      
+    </div>
+  )
+}
+
+```
+
+#### Замечание
+компоненты, которые не требуют асинхронного чанка, мы будем экспортировать не по дефолту, а именованным образом
+
+```
+//index.ts
+import { Navbar } from "./ui/Navbar";
+
+export {
+  Navbar,
+}
+```
+
+===
+
+Продолжаем
+
+Заходим в `App.tsx`, заменяем  это (этот кусок отправляется в навбар)
+```
+  <Link to='/'>Главная</Link>
+  <Link to='/about'>О сайте</Link>
+```
+
+на это `<Navbar />`
+
+```
+import React, { Suspense } from 'react'
+import { Routes, Route, Link } from 'react-router-dom';
+
+import { AppRouter } from './providers/router';
+import { useTheme } from 'app/providers/ThemeProvider/';
+import { Navbar } from 'widgets/Navbar';
+import { classNames } from 'shared/lib/classNames/classNames';
+import './styles/index.scss';
+
+
+
+const App = () => {
+  const {theme, toggleTheme} = useTheme();
+
+  return (
+    <div className={classNames('app', {}, [theme])}>
+      <button onClick={toggleTheme}>TOGGLE</button>
+      <Navbar />
+      <AppRouter />
+    </div>
+  )
+}
+
+export default App;
+
+```
+
+
+```
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { classNames } from 'shared/lib/classNames/classNames';
+
+export const Navbar = () => {
+  return (
+    <div className={classNames('navbar', {}, [])}>
+      <Link to='/'>Главная</Link>
+      <Link to='/about'>О сайте</Link>
+    </div>
+  )
+}
+```
+
+
+```
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { classNames } from 'shared/lib/classNames/classNames';
+import cls from './Navbar.module.scss';
+
+interface NavbarProps {
+  className?: string;
+
+}
+
+export const Navbar = ({className}: NavbarProps) => {
+  return (
+    <div className={classNames(cls.navbar, {}, [className])}>
+      <Link to='/'>Главная</Link>
+      <Link to='/about'>О сайте</Link>
+    </div>
+  )
+}
+
+```
+
+
+--bg-color светлый  - это  --inverted-bg-color у темной
+и наоборот
+```
+.app.light {
+  --bg-color: rgb(231, 231, 231);
+  --inverted-bg-color: rgb(0 0 47);
+
+  --primary-color: rgb(13, 23, 138);
+  --secondary-color: rgb(39, 31, 206);
+}
+```
+
+```
+//dark.scss
+.app.dark {
+  --bg-color: rgb(0 0 47);
+  --inverted-bg-color: rgb(231, 231, 231);
+
+  --primary-color: rgb(0, 109, 0);
+  --secondary-color: rgb(0, 205, 0);
+}
+```
+
+<!-- 3:46 -->
+
+
+<a name="snippets"></a> 
+
+### 13.2 Кастомные сниппеты VSCode
+
+В левом нижнем углу тычем в шестеренку, выскакивает список.
+Ищем в нем `UserSnippets`
+
+![userSnippets.jpg](/images/userSnippets.jpg)
+
+После сверху по середине выскакивает список с полем ввода, нажимаем на `New Global Snippets file`
+![userSnippets2.jpg](/images/userSnippets2.jpg)
+
+Далее видем поле ввода, в него нужно вписать название вашего файла. В этот файл вы можете написать кучу разных сниппетов, поэтому лучше сделать общее название
+![userSnippets3.jpg](/images/userSnippets3.jpg)
+
+Далее видим это - куча комментариев с примером сниппета
+
+![userSnippets4.jpg](/images/userSnippets4.jpg)
+
+`scope` - это среда, в которой будет работать сниппет, например, `scss`,`javascript`
+`prefix` - комманда для сниппета или триггер
+`body` - то, что будет выводиться после запуска команды (например: `rc + Tab`), но в `json`-формате
+`description` - описание команды, объяснение (подсказка в `VSCode`, когда увидете в спсике команд)
+
+Самый простой пример - это однострочный
+![userSnippets5.jpg](/images/userSnippets5.jpg)
+
+Если здесь возникли проблемы, то [видео](https://www.youtube.com/watch?v=eE1b9E0meNo) в помощь. Я здесь (`Emmet: Show Expanded Abbreviation`) заменяла always на never (шестеренка => `Settings` => в инпуте `emmet`)
+Но это сомнительное решение, т к после этого у меня перестал работать `df` - `display: flex`, пришлось откатать все обратно. 
+
+
+Сложный пример. 
+Для него потребуется генератор сниппетов: [snippet-generator.app](https://snippet-generator.app/)
+
+Заполняем поля, как показано ниже (или похоже)
+Вставляем код, который хотим, чтобы был шаблоном
+
+```
+import React from 'react';
+import { classNames } from 'shared/lib/classNames/classNames';
+import cls from './Navbar.module.scss';
+
+interface NavbarProps {
+  className?: string;
+}
+
+export const Navbar = ({className}: NavbarProps) => {
+  return (
+    <div className={classNames(cls.navbar, {}, [className])}>
+
+    </div>
+  )
+}
+```
+![userSnippets6.jpg](/images/userSnippets6.jpg)
+Получаем это:
+```
+"create ts react component": {
+  "prefix": "rc",
+  "body": [
+    "import React from 'react';",
+    "import { classNames } from 'shared/lib/classNames/classNames';",
+    "import cls from './Navbar.module.scss';",
+    "",
+    "interface NavbarProps {",
+    "  className?: string;",
+    "}",
+    "",
+    "export const Navbar = ({className}: NavbarProps) => {",
+    "  return (",
+    "    <div className={classNames(cls.navbar, {}, [className])}>",
+    "",
+    "    </div>",
+    "  )",
+    "}"
+  ],
+  "description": "create ts react component"
+}
+```
+Но нам бы хотелось, чтобы название файла было названием компонента. То же касается названия пропсов и т д.
+Гуглим: `vscode live templates get filename`
+
+Второй ссылкой видим сайт [VSCode](https://code.visualstudio.com/docs/editor/userdefinedsnippets)
+
+Находим переменные ([Variables](https://code.visualstudio.com/docs/editor/userdefinedsnippets#_variables))
+`TM_FILENAME_BASE The filename of the current document without its extensions`
+
+Заменяем все места с `Navbar` на `${TM_FILENAME_BASE}`
+
+Почти все. Осталось решить момент с `navbar`
+
+Листаем ниже. Находим [Transform examples](https://code.visualstudio.com/docs/editor/userdefinedsnippets#_transform-examples)
+
+Видим пример для `uppercase`: `"${TM_FILENAME/(.*)/${1:/upcase}/}"`
+Гуглим для `lowercase`: `${TM_FILENAME_BASE/(.*)/${1:/downcase}/}`
+
+В итоге получаем такой сниппет:
+```
+"create ts react component": {
+  "prefix": "rc",
+  "body": [
+    "import React from 'react';",
+    "import { classNames } from 'shared/lib/classNames/classNames';",
+    "import cls from './${TM_FILENAME_BASE}.module.scss';",
+    "",
+    "interface ${TM_FILENAME_BASE}Props {",
+    "  className?: string;",
+    "}",
+    "",
+    "export const ${TM_FILENAME_BASE} = ({className}: ${TM_FILENAME_BASE}Props) => {",
+    "  return (",
+    "    <div className={classNames(cls.${TM_FILENAME_BASE/(.*)/${1:/downcase}/}, {}, [className])}>",
+    "",
+    "    </div>",
+    "  )",
+    "}"
+  ],
+  "description": "create ts react component"
+}
+```
+Для ленивых [полуготовый сниппет без переменных](https://snippet-generator.app/?description=create+ts+react+component&tabtrigger=rc&snippet=import+React+from+%27react%27%3B%0Aimport+%7B+classNames+%7D+from+%27shared%2Flib%2FclassNames%2FclassNames%27%3B%0Aimport+cls+from+%27.%2FNavbar.module.scss%27%3B%0A%0Ainterface+NavbarProps+%7B%0A++className%3F%3A+string%3B%0A%7D%0A%0Aexport+const+Navbar+%3D+%28%7BclassName%7D%3A+NavbarProps%29+%3D%3E+%7B%0A++return+%28%0A++++%3Cdiv+className%3D%7BclassNames%28cls.navbar%2C+%7B%7D%2C+%5BclassName%5D%29%7D%3E%0A%0A++++%3C%2Fdiv%3E%0A++%29%0A%7D&mode=vscode)
+
+Готово! Пользуйтесь!
+
+<!-- 7:26 -->
+
+
+<a name="fixStylesHightVariable"></a> 
+
+### 13.3 Подправляем стили, переменная высоты для Navbar
+
+Navbar.module.scss
+```
+.navbar {
+  width: 100%;
+  height: 50px;
+  background: var(--inverted-bg-color);
+
+  display: flex;
+  align-items: center;
+  padding: 20px;
+}
+```
+
+`app` => `styles` => `variables` => `global.scss`
+Добавим переменную для высоты навбара
+
+```
+:root {
+  --font-family-main: Consolas, "Times New Roman", Serif;
+
+  --font-size-m: 16px;
+  --font-line-m: 24px;
+  --font-m: var(--font-size-m) / var(--font-line-m) var(--font-family-main);
+
+  --font-size-l: 24px;
+  --font-line-l: 32px;
+  --font-l: var(--font-size-l) / var(--font-line-l) var(--font-family-main);
+
+  //Размеры
+  --navbar-height: 50px;
+}
+```
+И применим ее в Navbar.module.scss
+```
+.navbar {
+  width: 100%;
+  height: var(--navbar-height);
+  background: var(--inverted-bg-color);
+
+  display: flex;
+  align-items: center;
+  padding: 20px;
+}
+```
+
+```
+//Navbar.tsx
+...
+export const Navbar = ({className}: NavbarProps) => {
+  return (
+    <div className={classNames(cls.navbar, {}, [className])}>
+      <div className={cls.links}>
+        <Link to='/' className={cls.mainLink}>Главная</Link>
+        <Link to='/about'>О сайте</Link>
+      </div>
+    </div>
+  )
+}
+```
+
+
+<a name="linkSharedComponent"></a> 
+
+### 13.4 Ссылка - классический пример shared-компонента
+
+`shared` => создаем папку `ui` => создаем папку `AppLink` => создаем файлы `AppLink.tsx` и `AppLink.module.scss`
+
+<a name="appLinkCreating"></a> 
+
+#### Создание компоненты AppLink
+
+С помощью сниппета разворачиваем компонент (`rc + Tab`)
+
+```
+import React from 'react';
+import { classNames } from 'shared/lib/classNames/classNames';
+import cls from './AppLink.module.scss';
+
+interface AppLinkProps {
+  className?: string;
+}
+
+export const AppLink = ({className}: AppLinkProps) => {
+  return (
+    <div className={classNames(cls.applink, {}, [className])}>
+
+    </div>
+  )
+}
+```
+
+А теперь немного его подправим: 
+1) `div` на `Link`
+2) подготовка для `children: FC `
+3) У `Link` есть свои пропсы, заложенные разработчиками `react-router-dom`, поэтому `extends LinkProps`
+
+```
+import React, { FC } from 'react';
+import { Link, LinkProps } from 'react-router-dom';
+import { classNames } from 'shared/lib/classNames/classNames';
+import cls from './AppLink.module.scss';
+
+interface AppLinkProps extends LinkProps {
+  className?: string;
+}
+
+export const AppLink: FC<AppLinkProps> = (props) => {
+  const { to, className, children, ...otherProps} = props;
+  return (
+    <Link 
+      to={to}
+      className={classNames(cls.applink, {}, [className])}
+      {...otherProps}
+      >
+      {children}
+    </Link>
+  )
+}
+```
+
+Теперь идем в `Navbar` и заменяем `Link` на наш `AppLink`
+
+```
+//navbar до
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { classNames } from 'shared/lib/classNames/classNames';
+import cls from './Navbar.module.scss';
+
+interface NavbarProps {
+  className?: string;
+}
+
+export const Navbar = ({className}: NavbarProps) => {
+  return (
+    <div className={classNames(cls.navbar, {}, [className])}>
+      <div className={cls.links}>
+        <Link to='/' className={cls.mainLink}>Главная</Link>
+        <Link to='/about'>О сайте</Link>
+      </div>
+    </div>
+  )
+}
+```
+
+
+```
+//navbar после
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { classNames } from 'shared/lib/classNames/classNames';
+import cls from './Navbar.module.scss';
+import { AppLink } from 'shared/ui/AppLink/AppLink';
+
+interface NavbarProps {
+  className?: string;
+}
+
+export const Navbar = ({className}: NavbarProps) => {
+  return (
+    <div className={classNames(cls.navbar, {}, [className])}>
+      <div className={cls.links}>
+        <AppLink to='/' className={cls.mainLink}>Главная</AppLink>
+        <AppLink to='/about'>О сайте</AppLink>
+      </div>
+    </div>
+  )
+}
+```
+
+<!-- [Создание компоненты AppLink](#appLinkCreating) -->
+<!-- [Стилизация AppLink](#appLinkStyling) -->
+
+
+<a name="appLinkStyling"></a> 
+
+#### Стилизация AppLink
+
+```
+// AppLink.module.scss
+.AppLink {
+  color: var(--primary-color);
+}
+```
+
+И вот здесь мы приходим к различным темам для `UIKit`'а
+На примере кнопки: кнопка с рамкой, кнопка без рамки, кнопка с цветом заднего фона.
+
+В случае с ссылкой мы сделаем тему с `inverted` цветом и с обычным цветом
+
+```
+//AppLink сейчас
+import React, { FC } from 'react';
+import { Link, LinkProps } from 'react-router-dom';
+import { classNames } from 'shared/lib/classNames/classNames';
+import cls from './AppLink.module.scss';
+
+interface AppLinkProps extends LinkProps {
+  className?: string;
+}
+
+export const AppLink: FC<AppLinkProps> = (props) => {
+  const { to, className, children, ...otherProps} = props;
+  return (
+    <Link 
+      to={to}
+      className={classNames(cls.applink, {}, [className])}
+      {...otherProps}
+      >
+      {children}
+    </Link>
+  )
+}
+```
+<!-- 13:29 место с найденной ошибкой и исправлением на cls[theme]-->
+Почему такая странная передача темы: `cls[theme]`? Потому что, есои передать просто `theme`, то вместо названия темы получим `'theme'`. нам нужна переменная, а не конкретное значение `'theme'`
+
+```
+//AppLink.tsx
+import React, { FC } from 'react';
+import { Link, LinkProps } from 'react-router-dom';
+import { classNames } from 'shared/lib/classNames/classNames';
+import cls from './AppLink.module.scss';
+
+export enum AppLinkTheme {
+  PRIMARY = 'primary',
+  SECONDARY = 'secondary'
+}
+
+interface AppLinkProps extends LinkProps {
+  className?: string;
+  theme?: AppLinkTheme;
+}
+
+export const AppLink: FC<AppLinkProps> = (props) => {
+  const { 
+    to, 
+    className, 
+    children, 
+    theme = AppLinkTheme.PRIMARY, 
+    ...otherProps
+  } = props;
+
+  return (
+    <Link 
+      to={to}
+      className={classNames(cls.applink, {}, [className, cls[theme]])}
+      {...otherProps}
+      >
+      {children}
+    </Link>
+  )
+}
+```
+
+Теперь давайте добавим красный цвет просто, чтобы убедиться, что наша конструкция работает.
+
+```
+//AppLink.module.scss
+.AppLink {
+  color: var(--primary-color);
+}
+
+.primary {
+  color: red;
+}
+
+.secondary {
+
+}
+```
+Теперь нормальные цвета
+
+```
+.AppLink {
+  color: var(--primary-color);
+}
+
+.primary {
+  color: var(--primary-color);
+}
+
+.secondary {
+  color: var(--secondary-color);
+}
+```
+
+Идем в `navbar`
+```
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { classNames } from 'shared/lib/classNames/classNames';
+import cls from './Navbar.module.scss';
+import { AppLink, AppLinkTheme } from 'shared/ui/AppLink/AppLink';
+
+interface NavbarProps {
+  className?: string;
+}
+
+export const Navbar = ({className}: NavbarProps) => {
+  return (
+    <div className={classNames(cls.navbar, {}, [className])}>
+      <div className={cls.links}>
+        <AppLink to='/' className={cls.mainLink}>Главная</AppLink>
+        <AppLink to='/about'>О сайте</AppLink>
+      </div>
+    </div>
+  )
+}
+```
+
+Добавляем в `AppLink` тему:
+Это `<AppLink to='/' className={cls.mainLink}>Главная</AppLink>`
+превращается в:
+`<AppLink theme={AppLinkTheme.SECONDARY} to='/' className={cls.mainLink}>Главная</AppLink>`
+
+А это `<AppLink to='/about'>О сайте</AppLink>`
+превращается в: `<AppLink theme={AppLinkTheme.SECONDARY} to='/about'>О сайте</AppLink>`
+
+```
+//Navbar новый
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { classNames } from 'shared/lib/classNames/classNames';
+import cls from './Navbar.module.scss';
+import { AppLink, AppLinkTheme } from 'shared/ui/AppLink/AppLink';
+
+interface NavbarProps {
+  className?: string;
+}
+
+export const Navbar = ({className}: NavbarProps) => {
+  return (
+    <div className={classNames(cls.navbar, {}, [className])}>
+      <div className={cls.links}>
+        <AppLink 
+          theme={AppLinkTheme.SECONDARY} 
+          to='/' 
+          className={cls.mainLink}
+          >
+            Главная
+          </AppLink>
+        <AppLink 
+          theme={AppLinkTheme.SECONDARY} 
+          to='/about'
+          >
+            О сайте
+          </AppLink>
+      </div>
+    </div>
+  )
+}
+```
+
+<a name="invertedColorsCreating"></a> 
+
+#### Создание inverted цветов
+
+```
+//normal.scss
+.app.light {
+  --bg-color: rgb(231, 231, 231);
+  --inverted-bg-color: rgb(0 0 47);
+
+  --primary-color: rgb(13, 23, 138);
+  --secondary-color: rgb(39, 31, 206);
+
+  --inverted-primary-color: rgb(0, 109, 0);
+  --inverted-secondary-color: rgb(0, 205, 0);
+}
+```
+
+```
+//dark.scss
+.app.dark {
+  --bg-color: rgb(0 0 47);
+  --inverted-bg-color: rgb(231, 231, 231);
+
+  --primary-color: rgb(0, 109, 0);
+  --secondary-color: rgb(0, 205, 0);
+
+  --inverted-primary-color: rgb(13, 23, 138);
+  --inverted-secondary-color: rgb(39, 31, 206);
+}
+```
+
+Идем в `AppLink.module.scss` и меняем в `secondary` цвет на `inverted`
+```
+.AppLink {
+  color: var(--primary-color);
+}
+
+.primary {
+  // color: red;
+  color: var(--primary-color);
+}
+
+.secondary {
+  color: var(--inverted-primary-color);
+}
+
+```
+
+<a name="applyNewTheme"></a> 
+
+#### Чтобы применить новую тему
+
+1. Добавляем тему в перечисление `enum` (в `AppLink.tsx`)
+```
+export enum AppLinkTheme {
+  PRIMARY = 'primary',
+  SECONDARY = 'secondary',
+
+  RED = 'red',
+}
+```
+2. Добавляем еще один класс (в `AppLink.module.scss` сразу под `.secondary`) 
+```
+.red {
+  color: red;
+}
+```
+
+3. Идем в `Navbar.tsx`, чтобы ее применить
+
+```
+...
+    <AppLink 
+      // theme={AppLinkTheme.SECONDARY} 
+      theme={AppLinkTheme.RED} 
+      to='/about'
+      >
+        О сайте
+      </AppLink>
+...
+```
+
+Проверяем: из двух зеленых ссылок одна стала красной - все как надо 
+![addNewTheme.jpg](/images/addNewTheme.jpg)
+
+
+<a name="conclusion13"></a> 
+
+### 13.5 Итог
+
+Мы разработали первый виджет: `Header` или `Navbar`
+Разработали первый `UI` компонент - ссылку.
+Добавили для ссылки несколько тем и научились их использовать.
+
+
+<!-- [14. Svg loader. File loader. Button UI kit](#svgLoaderFileLoaderButton) -->
+
+<a name="svgLoaderFileLoaderButton"></a> 
+
+## 14. Svg loader. File loader. Button UI kit
+
+Сегодня мы перенесем кнопку для переключения темы в виджеты.
+Т к это никакая не сущность и никакая не бизнес-фича
+
+`widgets` => создаем папку `ThemeSwitcher` => в ней создаем `index.ts`-файл и  папку `ui` => в папке `ui`: создаем `ThemeSwitcher.tsx` и `ThemeSwitcher.module.scss`
+
+Заходим в `ThemeSwitcher.tsx`: `rc + Tab`
+
+```
+//ThemeSwitcher.tsx
+import React from 'react';
+import { classNames } from 'shared/lib/classNames/classNames';
+import cls from './ThemeSwitcher.module.scss';
+
+interface ThemeSwitcherProps {
+  className?: string;
+}
+
+export const ThemeSwitcher = ({className}: ThemeSwitcherProps) => {
+  return (
+    <div className={classNames(cls.themeswitcher, {}, [className])}>
+
+    </div>
+  )
+}
+```
+Заходим в `App.tsx` и вырезаем `<button onClick={toggleTheme}>TOGGLE</button>`
+
+```
+//App.tsx
+import React, { Suspense } from 'react'
+import { Routes, Route, Link } from 'react-router-dom';
+
+import { AppRouter } from './providers/router';
+import { useTheme } from 'app/providers/ThemeProvider/';
+import { Navbar } from 'widgets/Navbar';
+import { classNames } from 'shared/lib/classNames/classNames';
+import './styles/index.scss';
+
+
+
+const App = () => {
+  const {theme, toggleTheme} = useTheme();
+
+  return (
+    <div className={classNames('app', {}, [theme])}>
+      <Navbar />
+
+      <button onClick={toggleTheme}>TOGGLE</button>
+
+      <AppRouter />
+    </div>
+  )
+}
+
+export default App;
+
+```
+
+Заменяем `div` на `button` в `ThemeSwitcher.tsx`
+
+```
+//ThemeSwitcher.tsx
+import React from 'react';
+import { classNames } from 'shared/lib/classNames/classNames';
+import cls from './ThemeSwitcher.module.scss';
+
+interface ThemeSwitcherProps {
+  className?: string;
+}
+
+export const ThemeSwitcher = ({className}: ThemeSwitcherProps) => {
+  return (
+    <button onClick={toggleTheme}>TOGGLE</button>
+  )
+}
+```
+
+```
+import React from 'react';
+import { classNames } from 'shared/lib/classNames/classNames';
+import cls from './ThemeSwitcher.module.scss';
+import { useTheme } from 'app/providers/ThemeProvider';
+
+interface ThemeSwitcherProps {
+  className?: string;
+}
+
+export const ThemeSwitcher = ({className}: ThemeSwitcherProps) => {
+  const { theme, toggleTheme } = useTheme();
+  
+  return (
+    <button
+      className={classNames(cls.ThemeSwitcher, {}, [className])}
+      onClick={toggleTheme}
+    >
+        TOGGLE
+    </button>
+  )
+}
+```
+
+```
+//index.ts
+import { ThemeSwitcher } from "./ui/ThemeSwitcher";
+
+export { 
+  ThemeSwitcher, 
+}
+```
+
+#### Холиварный момент: ThemeSwitcher в widgets или в shared?
+Здесь он переносит всю папку из `widgets` в `shared`
+Но сам же говорит, что во время монатажа посмотрел, подумал и решил, что он не прав и стоит свитчер оставить в `widgets`.
+Такие моменты плохо задокументированы в `FSD` и из-за этого рождаются такие холиварные моменты.
+Но как-то кардинально на архитектуру это не влияет
+===
+
+Заходим в `Navbar.tsx` и добавляем `<ThemeSwitcher />`
+
+```
+//Navbar.tsx
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { classNames } from 'shared/lib/classNames/classNames';
+import cls from './Navbar.module.scss';
+import { AppLink, AppLinkTheme } from 'shared/ui/AppLink/AppLink';
+import { ThemeSwitcher } from 'widgets/ThemeSwitcher';
+
+interface NavbarProps {
+  className?: string;
+}
+
+export const Navbar = ({className}: NavbarProps) => {
+  return (
+    <div className={classNames(cls.navbar, {}, [className])}>
+      
+      <ThemeSwitcher />
+
+      <div className={cls.links}>
+        <AppLink 
+          theme={AppLinkTheme.SECONDARY} 
+          to='/' 
+          className={cls.mainLink}
+          >
+            Главная
+          </AppLink>
+        <AppLink 
+          // theme={AppLinkTheme.SECONDARY} 
+          theme={AppLinkTheme.RED} 
+          to='/about'
+          >
+            О сайте
+          </AppLink>
+      </div>
+    </div>
+  )
+}
+```
+
+Проверям: toggle отлично работает
+
+#### Для чего нужен этот пропс classname в classNames
+
+Мы сейчас в `Navbar.tsx`
+
+Например, я хочу поменять расположение этой кнопки (`<ThemeSwitcher />`)
+добавляю ей className: `<ThemeSwitcher className={'jhjh'}/>`
+
+```
+//Navbar.tsx
+
+...
+
+export const Navbar = ({className}: NavbarProps) => {
+  return (
+    <div className={classNames(cls.navbar, {}, [className])}>
+      
+      <ThemeSwitcher className={'jhjh'}/>
+
+      <div className={cls.links}>
+        ...
+      </div>
+    </div>
+  )
+}
+```
+
+У кнопки есть основной класс `ThemeSwitcher` и дополнительный (`additional`) - `classname`. И вот засчет `className` мы можем распологать кнопку как нам нужно, менять размеры и всякое такое.
+
+```
+//ThemeSwitcher.tsx
+export const ThemeSwitcher = ({className}: ThemeSwitcherProps) => {
+  const { theme, toggleTheme } = useTheme();
+  
+  return (
+    <button
+      className={classNames(cls.ThemeSwitcher, {}, [className])}
+      onClick={toggleTheme}
+    >
+        TOGGLE
+    </button>
+  )
+}
+```
+
+===
+
+<!-- 2:44 -->
+
+### 14.? Добавляем svg-файлы. Вспроизведение ошибки
+
+В папке `shared` => создаем папку `assets` => создаем папку `icons` => в нее закидываем заранее подготовленные иконки: `theme-light.svg` и `theme-dark.svg`
+
+Заходим в `ThemeSwitcher.tsx`, импортируем иконки
+```
+import LightIcon from "../../../shared/assets/icons/theme-light";
+import DarkIcon from "../../../shared/assets/icons/theme-dark";
+```
+
+
+`TypeScript` начинает ругаться, он не понимает, что это за файлы такие `svg`.
+![svgThemeTsError.jpg](/images/svgThemeTsError.jpg)
+
+```
+  'LightIcon' is declared but its value is never read.ts(6133)
+  Cannot find module '../../../shared/assets/icons/theme-light' or its corresponding type declarations.ts(2307)
+```
+
+И сборка тоже падает и ругается на импорты `svg`-файлов
+![svgThemesError.jpg](/images/svgThemesError.jpg)
+
+
+### 14.? Настройка Webpack для Svg-файлов
+
+`Webpack` никак не обрабатывает `svg`-файлы. И мы в настройках это никак не указали.
+
+`config => build => buildLoaders.ts`
+
+<!-- 4:47 -->
+
+Нам нужно добавить `svgLoader`
+
+```
+//buildLoaders.ts
+import webpack from 'webpack';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import { BuildOptions } from './types/config';
+
+export function buildLoaders({isDev}: BuildOptions): webpack.RuleSetRule[] {
+
+  const svgLoader = {
+    
+  }
+
+  const cssLoaders = {
+    ...
+  } 
+
+  const typescriptLoader = {
+    ...
+  };
+
+  return [
+    typescriptLoader,
+    cssLoaders,
+  ]
+}
+```
+
+Гуглим: `svgr webpack`
+
+`svgr` - это название лоадера
+
+Здесь во [второй ссылке](https://react-svgr.com/docs/webpack/) - документация
+Тычем в первую ссылку: [npm пакет](https://www.npmjs.com/package/@svgr/webpack)
+
+В видео:
+
+`
+  npm install @svgr/webpack --save-dev
+`
+
+Подобрала версию:
+`
+npm install @svgr/webpack@6.2.1 --save-dev
+`
+
+Листаем ниже, видим это и копируем в наш buildLoaders
+```
+//Usage
+//In your webpack.config.js:
+
+{
+  test: /\.svg$/,
+  use: ['@svgr/webpack'],
+}
+```
+
+```
+//buildLoaders.ts
+...
+  const svgLoader = {
+    test: /\.svg$/,
+    use: ['@svgr/webpack'],
+  }
+...
+```
+
+Но обратите внимание, что этот лоудер предназначен только для `svg`.
+Т е если вы захотите добавить картинку `jpeg, png` - он их обработать не сможет
+
+### 14.? Настройка Webpack для Png
+
+
+Гуглим: `webpack file loader`
+`webpack file loader` - для png
+
+Jткрываем [первую ссылку](https://v4.webpack.js.org/loaders/file-loader/)
+В документации:
+`
+  npm install file-loader --save-dev
+`
+
+Подобранная - на данный момент до сих пор последняя версия
+`
+npm install file-loader@v6.2.0 --save-dev 
+`
+//v6.2.0
+<!-- 6:21 -->
+
+Отсюда копируем объект с самим лоадером
+
+```
+module.exports = {
+  module: {
+    rules: [
+
+      {
+        test: /\.(png|jpe?g|gif)$/i,
+        use: [
+          {
+            loader: 'file-loader',
+          },
+        ],
+      },
+
+    ],
+  },
+};
+```
+И добавляем в `buildLoaders.ts`
+```
+//buildLoaders.ts
+...
+  const fileLoader = {
+    test: /\.(png|jpe?g|gif)$/i,
+    use: [
+      {
+        loader: 'file-loader',
+      },
+    ],
+  };
+...
+```
+
+И не забываем добавить в `return `наши 2 новых лоадера
+
+```
+//buildLoaders.ts
+...
+  return [
+    fileLoader,
+    svgLoader,
+    typescriptLoader,
+    cssLoaders,
+  ]
+```
+
+### 14.? Замечание: woff и woff2 - шрифты в fileLoader
+
+Если нам вдруг нужны шрифты, мы можем в регулярку добавить еще `woff` и `woff2`
+```
+  const fileLoader = {
+    // test: /\.(png|jpe?g|gif)$/i,
+    test: /\.(png|jpe?g|gif|woff2|woff)$/i,
+    use: [
+      {
+        loader: 'file-loader',
+      },
+    ],
+  };
+```
+
+```
+//buildLoaders.ts
+import webpack from 'webpack';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import { BuildOptions } from './types/config';
+
+export function buildLoaders({isDev}: BuildOptions): webpack.RuleSetRule[] {
+
+  const svgLoader = {
+    test: /\.svg$/,
+    use: ['@svgr/webpack'],
+  }
+
+  const cssLoaders = {
+    test: /\.s[ac]ss$/i,
+    use: [
+      isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
+      // "css-loader",
+      {
+        loader: "css-loader",
+        options: {
+          modules: {
+            auto: (resPath: string) => Boolean(resPath.includes('.module.')),
+            localIdentName: isDev 
+              ? '[path][name]__[local]--[hash:base64:5]' 
+              : '[hash:base64:8]'
+          },
+        }
+      },
+      "sass-loader",
+    ],
+  } 
+
+  const typescriptLoader = {
+    test: /\.tsx?$/,
+    use: 'ts-loader',
+    exclude: /node_modules/,
+  };
+
+  const fileLoader = {
+    // test: /\.(png|jpe?g|gif)$/i,
+    test: /\.(png|jpe?g|gif|woff2|woff)$/i,
+    use: [
+      {
+        loader: 'file-loader',
+      },
+    ],
+  };
+
+  return [
+    fileLoader,
+    svgLoader,
+    typescriptLoader,
+    cssLoaders,
+  ]
+}
+```
+
+Итак, на данный момент мы научили `Webpack` работать с `svg, png, jpg, jpeg, gif, woff` и `woff2`
+
+### 14.? Настройка TypeSript: svg, png, jpg, jpeg
+
+Но `TypeScript` по-прежнему ругается
+
+Гуглим: `import svg typescript `
+
+[Первая ссылка](https://stackoverflow.com/questions/44717164/unable-to-import-svg-files-in-typescript)
+
+//importSvgTs.jpg
+![importSvgTs.jpg](/images/importSvgTs.jpg)
+
+```
+declare module "*.svg" {
+  const content: React.FunctionComponent<React.SVGAttributes<SVGElement>>;
+  export default content;
+}
+```
+
+custom.d.ts to tsconfig.json
+`"include": ["src/components", "src/custom.d.ts"]`
+
+[source](https://webpack.js.org/guides/typescript/#importing-other-assets)
+
+В source видим это и копируем это добро:
+```
+declare module '*.svg' {
+  const content: any;
+  export default content;
+}
+
+```
+
+И идем в `app => types => global.d.ts`
+
+```
+//global.d.ts
+declare module '*.scss' {
+  interface IClassNames {
+    [className: string]: string
+  }
+  const classNames: IClassNames;
+  export = classNames;
+}
+
+declare module '*.svg' {
+  const content: any;
+  export default content;
+}
+
+```
+
+В принципе мы можем часть из этого убрать: 
+
+```
+declare module '*.svg' {
+  const content: any;
+  export default content;
+}
+```
+
+чтобы осталась только декларация: `declare module "*.svg";`
+
+Yо по-хорошему6 чтобы у нас тип был правильный, вспомните, у нас импортируется специальный компонент, который мы можем использовать, а вот подобную декларацию мы можем оставить для `png` и `jpeg`
+
+```
+//global.d.ts
+declare module '*.scss' {
+  interface IClassNames {
+    [className: string]: string
+  }
+  const classNames: IClassNames;
+  export = classNames;
+}
+
+declare module "*.png";
+declare module "*.jpg";
+declare module "*.jpeg";
+
+```
+
+
+Гуглим: `svgr webpack typescript`
+[Первая ссылка](https://github.com/gregberge/svgr/issues/546)
+
+Находим это, копируем
+```
+declare module "*.svg" {
+  import React from "react";
+  const SVG: React.VFC<React.SVGProps<SVGSVGElement>>;
+  export default SVG;
+}
+```
+
+И вставляем в `global.d.ts`
+```
+declare module '*.scss' {
+  interface IClassNames {
+    [className: string]: string
+  }
+  const classNames: IClassNames;
+  export = classNames;
+}
+
+declare module "*.png";
+declare module "*.jpg";
+declare module "*.jpeg";
+
+declare module "*.svg" {
+  import React from "react";
+  const SVG: React.VFC<React.SVGProps<SVGSVGElement>>;
+  export default SVG;
+}
+```
+
+Теперь ошибки должны пропасть, идем проверять в `ThemeSwitcher.tsx`
+```
+import LightIcon from "../../../shared/assets/icons/theme-light";
+import DarkIcon from "../../../shared/assets/icons/theme-dark";
+```
+Они не пропали, но потому что я забыла указать расширение .svg
+Добавляем расширение 
+```
+import LightIcon from "../../../shared/assets/icons/theme-light.svg";
+import DarkIcon from "../../../shared/assets/icons/theme-dark.svg";
+```
+и ошибки исчезают
+<!-- 8:50 -->
+
+Давайте проверим, что типизация работает правильно
+svgLoader преобразовывает обычные иконки в react-компоненты
+
+`ThemeSwitcher.tsx`
+Добавим туда иконку ` <DarkIcon />` и посмотрим пропсы
+
+![iconTsProps.jpg](/images/iconTsProps.jpg)
+
+Мы видим, что пропсы правильные (`fill, stroke, width`..)
+
+`npm run start` - все нормально, видим иконку и темы работают
+Добавим условие для иконки в зависмости от темы
+
 
 
 

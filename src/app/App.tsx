@@ -1,15 +1,11 @@
 import React, { Suspense } from 'react'
 import { Routes, Route, Link } from 'react-router-dom';
 
-// import { AboutPageAsync } from 'pages/AboutPage/ui/AboutPage.async';
-// import { MainPageAsync } from 'pages/MainPage/ui/MainPage.async';
-
-// import { AboutPage } from 'pages/AboutPage';
-// import { MainPage } from 'pages/MainPage';
+import { AppRouter } from './providers/router';
 import { useTheme } from 'app/providers/ThemeProvider/';
+import { Navbar } from 'widgets/Navbar';
 import { classNames } from 'shared/lib/classNames/classNames';
 import './styles/index.scss';
-import { AppRouter } from './providers/router';
 
 
 
@@ -18,9 +14,7 @@ const App = () => {
 
   return (
     <div className={classNames('app', {}, [theme])}>
-      <button onClick={toggleTheme}>TOGGLE</button>
-      <Link to='/'>Главная</Link>
-      <Link to='/about'>О сайте</Link>
+      <Navbar />
       <AppRouter />
     </div>
   )
