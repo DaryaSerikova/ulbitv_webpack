@@ -85,9 +85,17 @@
 - [13.5 Итог](#conclusion13)
 
 [14. Svg loader. File loader. Button UI kit](#svgLoaderFileLoaderButton)
+- [14.1 Создание ThemeSwitcher (widgets)](#themeSwitcherCreating)
+- - [Холиварный момент: ThemeSwitcher в widgets или в shared?](#pointOfContentionWidgetsShared)
+- - [Для чего нужен этот пропс classname (как additional) в classNames?](#classnameAdditional)
+- [14.2 Добавляем svg-файлы. Вспроизведение ошибки](#addSvgFilesError)
+- [14.3 Настройка Webpack для Svg-файлов](#svgFilesWebpackSettings)
+- [14.4 Настройка Webpack для png, jpg, jpeg, gif](#pngJpegGifFilesWebpackSettings)
+- [14.5 Замечание: woff и woff2 - шрифты в fileLoader](#woffWoff2WebpackSettings)
+- [14.6 Настройка TypeSript: svg, png, jpg, jpeg](#svgPngJpegTypeSriptSettings)
 - 
-- 
-- 
+
+
 
 
 
@@ -4540,7 +4548,6 @@ export enum AppLinkTheme {
 Добавили для ссылки несколько тем и научились их использовать.
 
 
-<!-- [14. Svg loader. File loader. Button UI kit](#svgLoaderFileLoaderButton) -->
 
 <a name="svgLoaderFileLoaderButton"></a> 
 
@@ -4548,6 +4555,12 @@ export enum AppLinkTheme {
 
 Сегодня мы перенесем кнопку для переключения темы в виджеты.
 Т к это никакая не сущность и никакая не бизнес-фича
+
+<!-- [14.1 Создание ThemeSwitcher (widgets)](#themeSwitcherCreating) -->
+
+<a name="themeSwitcherCreating"></a> 
+
+### 14.1 Создание ThemeSwitcher (widgets)
 
 `widgets` => создаем папку `ThemeSwitcher` => в ней создаем `index.ts`-файл и  папку `ui` => в папке `ui`: создаем `ThemeSwitcher.tsx` и `ThemeSwitcher.module.scss`
 
@@ -4656,6 +4669,8 @@ export {
 }
 ```
 
+<a name="pointOfContentionWidgetsShared"></a> 
+
 #### Холиварный момент: ThemeSwitcher в widgets или в shared?
 Здесь он переносит всю папку из `widgets` в `shared`
 Но сам же говорит, что во время монатажа посмотрел, подумал и решил, что он не прав и стоит свитчер оставить в `widgets`.
@@ -4707,7 +4722,10 @@ export const Navbar = ({className}: NavbarProps) => {
 
 Проверям: toggle отлично работает
 
-#### Для чего нужен этот пропс classname в classNames
+
+<a name="classnameAdditional"></a> 
+
+#### Для чего нужен этот пропс classname (как additional) в classNames?
 
 Мы сейчас в `Navbar.tsx`
 
@@ -4755,7 +4773,9 @@ export const ThemeSwitcher = ({className}: ThemeSwitcherProps) => {
 
 <!-- 2:44 -->
 
-### 14.? Добавляем svg-файлы. Вспроизведение ошибки
+<a name="addSvgFilesError"></a> 
+
+### 14.2 Добавляем svg-файлы. Вспроизведение ошибки
 
 В папке `shared` => создаем папку `assets` => создаем папку `icons` => в нее закидываем заранее подготовленные иконки: `theme-light.svg` и `theme-dark.svg`
 
@@ -4778,7 +4798,9 @@ import DarkIcon from "../../../shared/assets/icons/theme-dark";
 ![svgThemesError.jpg](/images/svgThemesError.jpg)
 
 
-### 14.? Настройка Webpack для Svg-файлов
+<a name="svgFilesWebpackSettings"></a> 
+
+### 14.3 Настройка Webpack для Svg-файлов
 
 `Webpack` никак не обрабатывает `svg`-файлы. И мы в настройках это никак не указали.
 
@@ -4857,7 +4879,9 @@ npm install @svgr/webpack@6.2.1 --save-dev
 Но обратите внимание, что этот лоудер предназначен только для `svg`.
 Т е если вы захотите добавить картинку `jpeg, png` - он их обработать не сможет
 
-### 14.? Настройка Webpack для Png
+<a name="pngJpegGifFilesWebpackSettings"></a> 
+
+### 14.4 Настройка Webpack для png, jpg, jpeg, gif
 
 
 Гуглим: `webpack file loader`
@@ -4924,7 +4948,9 @@ module.exports = {
   ]
 ```
 
-### 14.? Замечание: woff и woff2 - шрифты в fileLoader
+<a name="woffWoff2WebpackSettings"></a> 
+
+### 14.5 Замечание: woff и woff2 - шрифты в fileLoader
 
 Если нам вдруг нужны шрифты, мы можем в регулярку добавить еще `woff` и `woff2`
 ```
@@ -4999,7 +5025,13 @@ export function buildLoaders({isDev}: BuildOptions): webpack.RuleSetRule[] {
 
 Итак, на данный момент мы научили `Webpack` работать с `svg, png, jpg, jpeg, gif, woff` и `woff2`
 
-### 14.? Настройка TypeSript: svg, png, jpg, jpeg
+
+<!-- [14.6 Настройка TypeSript: svg, png, jpg, jpeg](#svgPngJpegTypeSriptSettings) -->
+
+<a name="svgPngJpegTypeSriptSettings"></a> 
+
+### 14.6 Настройка TypeSript: svg, png, jpg, jpeg
+
 
 Но `TypeScript` по-прежнему ругается
 
