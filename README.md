@@ -5171,6 +5171,853 @@ svgLoader преобразовывает обычные иконки в react-к
 
 `npm run start` - все нормально, видим иконку и темы работают
 Добавим условие для иконки в зависмости от темы
+<!-- 9:59 -->
+
+#### Правка Theme, ThemeProvider
+
+```
+//providers => ThemeProvider => index.ts
+
+// import { ThemeProvider } from "src/theme/ThemeProvider";
+import { ThemeProvider } from "./ui/ThemeProvider";
+import { useTheme } from "./lib/useTheme";
+// import { Theme } from 'app/providers/ThemeProvider/lib/ThemeContext';
+import { Theme } from './lib/ThemeContext';
+
+
+
+export { 
+  ThemeProvider, 
+  useTheme,
+  Theme, 
+};
+
+```
+
+===
+
+Возвращаемся в `ThemeSwitcher`
+
+добавляем тернарный оператор на иконки в зависимости от темы
+`{theme === Theme.DARK ? <DarkIcon /> : <LightIcon />}`
+
+Обратите внимание, как импортируется Theme:
+```
+import { Theme, useTheme } from 'app/providers/ThemeProvider';
+// import { Theme } from 'app/providers/ThemeProvider/lib/ThemeContext';
+```
+Теперь `Theme` импортируется через `public api`
+
+
+
+```
+//ThemeSwitcher.tsx
+import React from 'react';
+import { classNames } from 'shared/lib/classNames/classNames';
+import { Theme, useTheme } from 'app/providers/ThemeProvider';
+// import { Theme } from 'app/providers/ThemeProvider/lib/ThemeContext';
+import cls from './ThemeSwitcher.module.scss';
+
+import LightIcon from "../../../shared/assets/icons/theme-light.svg";
+import DarkIcon from "../../../shared/assets/icons/theme-dark.svg";
+
+
+interface ThemeSwitcherProps {
+  className?: string;
+}
+
+export const ThemeSwitcher = ({className}: ThemeSwitcherProps) => {
+  const { theme, toggleTheme } = useTheme();
+  
+  return (
+    <button
+      className={classNames(cls.ThemeSwitcher, {}, [className])}
+      onClick={toggleTheme}
+    >
+
+        {/* TOGGLE */}
+        {theme === Theme.DARK ? <DarkIcon /> : <LightIcon />}
+
+    </button>
+  )
+}
+```
+
+`npm run start` - все работает - toggle переключает темы
+
+### 14.7 Button - shared компонент
+
+по аналогии с AppLink
+shared => ui => создаем папку Button => Button.tsx и Button.module.scss
+
+rc+Tab
+```
+//Button.tsx
+import React from 'react';
+import { classNames } from 'shared/lib/classNames/classNames';
+import cls from './Button.module.scss';
+
+interface ButtonProps {
+  className?: string;
+}
+
+export const Button = ({className}: ButtonProps) => {
+  return (
+    <div className={classNames(cls.Button, {}, [className])}>
+
+    </div>
+  )
+}
+```
+
+```
+//Button.module.scss
+.Button {
+  
+}
+```
+
+```
+import React, {ButtonHTMLAttributes, FC} from 'react';
+import { classNames } from 'shared/lib/classNames/classNames';
+import cls from './Button.module.scss';
+
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  className?: string;
+}
+
+export const Button: FC<ButtonProps> = (props) => {
+  const { 
+    className, 
+  } = props;
+  
+  return (
+    <button className={classNames(cls.Button, {}, [className])}>
+
+    </button>
+  )
+}
+```
+
+Делаем кнопку:
+```
+//Button.tsx
+import React, {ButtonHTMLAttributes, FC} from 'react';
+import { classNames } from 'shared/lib/classNames/classNames';
+import cls from './Button.module.scss';
+
+
+export enum ThemeButton {
+  CLEAR = 'clear',
+}
+
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  className?: string;
+  theme?: ThemeButton;
+}
+
+export const Button: FC<ButtonProps> = (props) => {
+  const { 
+    className,
+    children,
+    theme,
+    ...otherProps 
+  } = props;
+
+  return (
+    <button  
+      className={classNames(cls.Button, {}, [className, cls[theme]])}
+      {...otherProps}
+    >
+      {children}
+    </button>
+  )
+}
+```
+
+```
+//Button.module.scss
+.Button {
+  cursor: pointer;
+}
+
+.clear {
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: none;
+  outline: none;
+}
+```
+
+Теперь идем в ThemeSwitcher.tsx, чтобы заменить обычную кнопку button на нашу кастомную Button
+
+```
+//до ThemeSwitcher
+...
+
+export const ThemeSwitcher = ({className}: ThemeSwitcherProps) => {
+  const { theme, toggleTheme } = useTheme();
+  
+  return (
+    <button
+      className={classNames(cls.ThemeSwitcher, {}, [className])}
+      onClick={toggleTheme}
+    >
+
+        {/* TOGGLE */}
+        {theme === Theme.DARK ? <DarkIcon /> : <LightIcon />}
+
+    </button>
+  )
+}
+```
+
+### 14.8 Итог
+В этом ролике мы сделали навигационную панель
+компонент для переключения тем
+научились работать с svg
+научились импортировать png jpeg jpg файлы с помощью fileloader'а
+
+
+## 15. Sidebar.Layout
+
+Сегодня создаем левую менюшку, которую можно развернуть, свернуть
+
+widgets => папка Sidebar => undex.ts-файл и папка ui
+
+поскольку Sidebar - это уже более сложный компонент, здесь мб много компонентов. 
+То мы файлы будем создавать не напрямую в папке ui, а создаем подпапку Sidebar (рядом могут лежать SidebarHeader, SidebarFooter) и в ней создаем файл Sidebar.tsx и Sidebar.module.scss
+
+### 15.? Cоздание Sidebar
+
+`collapsed`
+
+```
+//Sidebar.tsx
+
+import React from 'react';
+import { classNames } from 'shared/lib/classNames/classNames';
+import { Theme, useTheme } from 'app/providers/ThemeProvider';
+// import { Theme } from 'app/providers/ThemeProvider/lib/ThemeContext';
+import cls from './ThemeSwitcher.module.scss';
+
+import LightIcon from "../../../shared/assets/icons/theme-light.svg";
+import DarkIcon from "../../../shared/assets/icons/theme-dark.svg";
+import { Button, ThemeButton } from 'shared/ui/Button/Button';
+
+
+interface ThemeSwitcherProps {
+  className?: string;
+}
+
+export const ThemeSwitcher = ({className}: ThemeSwitcherProps) => {
+  const { theme, toggleTheme } = useTheme();
+  
+  return (
+    <Button
+      theme={ThemeButton.CLEAR}
+      className={classNames(cls.ThemeSwitcher, {}, [className])}
+      onClick={toggleTheme}
+    >
+
+        {/* TOGGLE */}
+        {theme === Theme.DARK ? <DarkIcon /> : <LightIcon />}
+
+    </Button>
+  )
+}
+
+
+```
+
+`className={classNames(cls.sidebar, {[cls.collapsed]: collapsed}, [className])}`
+Если collapsed - true, тогда навешиваем класс `collapsed`
+
+```
+//Sidebar.tsx
+import React, { useState } from 'react';
+import { classNames } from 'shared/lib/classNames/classNames';
+import cls from './Sidebar.module.scss';
+
+interface SidebarProps {
+  className?: string;
+}
+
+export const Sidebar = ({className}: SidebarProps) => {
+  const [collapsed, setCollapsed] = useState(false);
+  
+  const onToggle = () => {
+    setCollapsed(prev => !prev);
+  }
+
+  return (
+    <div 
+      className={classNames(cls.sidebar, {[cls.collapsed]: collapsed}, [className])}
+    >
+      <button
+        onClick={onToggle}
+      >toggle</button>
+    </div>
+  )
+}
+```
+
+```
+.Sidebar {
+  height: calc(100vh - var(--navbar-height));
+  //от всей высоты браузера отнимаем высоту навбара
+  width: 300px;
+  background: var(--inverted-bg-color);
+
+  position: relative;
+}
+```
+
+Давайте проверим, как все работает. 
+
+Экспортируем его в index.tsx
+```
+import { Sidebar } from "./ui/Sidebar/Sidebar";
+
+export {
+  Sidebar,
+}
+```
+
+### 15.? Обустраиваем Sidebar в App.tsx
+
+Зайдем в App.tsx и вставим туда наш Sidebar (оборачиваем его в div и пихаем туда же роутер)
+
+```
+import React, { Suspense } from 'react'
+import { Routes, Route, Link } from 'react-router-dom';
+
+import { AppRouter } from './providers/router';
+import { useTheme } from 'app/providers/ThemeProvider/';
+import { Navbar } from 'widgets/Navbar';
+import { classNames } from 'shared/lib/classNames/classNames';
+import './styles/index.scss';
+import { Sidebar } from 'widgets/Sidebar';
+// import { Sidebar } from 'widgets/Sidebar/ui/Sidebar/Sidebar';
+
+
+
+const App = () => {
+  const {theme, toggleTheme} = useTheme();
+
+  return (
+    <div className={classNames('app', {}, [theme])}>
+      <Navbar />
+      <div className='content-page'>
+        <Sidebar />
+        <AppRouter />
+      </div>
+    </div>
+  )
+}
+
+export default App;
+```
+
+app => styles => index.scss - глобальные стили
+
+Добавляем content-page и page-wrapper
+```
+//app => styles => index.scss - глобальные стили
+@import "reset";
+@import "variables/global.scss";
+@import "themes/normal.scss";
+@import "themes/dark.scss";
+
+.app {
+  // font-size: 30px;
+  font: var(--font-m);
+
+  background: var(--bg-color);
+  color: var(--primary-color);
+
+  min-height: 100vh;
+}
+
+.content-page {
+  display: flex;
+}
+
+.page-wrapper {
+  flex-grow: 1;
+}
+```
+
+Теперь нам нужно найти куда добавить кдасс page-wrapper
+
+Идем в AppRouter (app => providers => router => ui)
+
+```
+//AppRouter.tsx
+...
+
+
+const AppRouter = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Routes>
+
+        {Object.values(routeConfig).map(({element, path}) => (
+          <Route 
+            key={path}
+            path={path}
+            element={element}
+          />
+        ))}
+
+      </Routes>
+    </Suspense>
+  )
+}
+
+export default AppRouter;
+
+```
+
+Находим `element={element}` и на него навешиваем див с нужным классом, т е 
+```
+  element={
+    <div className='page-wrapper'>
+      element
+    </div>
+  }
+```
+
+Теперь часть рядом с sidebar (я бы назвала ее body) растянута на всю ширину
+
+Две картинки: зачем нужен flex-grow: 1;
+![flexGrow1.jpg](/images/flexGrow1.jpg)
+![flexGrow2.jpg](/images/flexGrow2.jpg)
+
+//flexGrow1.jpg
+<!-- flexGrow2.jpg -->
+
+
+```
+//app => styles => index.scss - глобальные стили
+...
+
+.page-wrapper {
+  flex-grow: 1;
+  padding: 20px;
+}
+```
+
+### 15.? Collapsed: сворачивание Sidebar'а
+
+//Sidebar.module.scss
+
+```
+.Sidebar {
+  height: calc(100vh - var(--navbar-height));
+  //от всей высоты браузера отнимаем высоту навбара
+  width: 300px;
+  width: var(--sidebar-width);
+  background: var(--inverted-bg-color);
+
+  position: relative;
+}
+
+.collapsed {
+  // width: 80px;
+  width: var(--sidebar-width-collapsed);
+
+}
+```
+
+Теперь надо создать переменные, которые мы только что использовали `var(--sidebar-width)` и `var(--sidebar-width-collapsed)`
+
+Идем в файл styles => variables => `global.scss`;
+
+```
+//styles => variables => `global.scss`
+:root {
+  --font-family-main: Consolas, "Times New Roman", Serif;
+
+  --font-size-m: 16px;
+  --font-line-m: 24px;
+  --font-m: var(--font-size-m) / var(--font-line-m) var(--font-family-main);
+
+  --font-size-l: 24px;
+  --font-line-l: 32px;
+  --font-l: var(--font-size-l) / var(--font-line-l) var(--font-family-main);
+
+  //Размеры
+  --navbar-height: 50px;
+}
+```
+
+Дополняем
+
+```
+//styles => variables => `global.scss`
+:root {
+  --font-family-main: Consolas, "Times New Roman", Serif;
+
+  --font-size-m: 16px;
+  --font-line-m: 24px;
+  --font-m: var(--font-size-m) / var(--font-line-m) var(--font-family-main);
+
+  --font-size-l: 24px;
+  --font-line-l: 32px;
+  --font-l: var(--font-size-l) / var(--font-line-l) var(--font-family-main);
+
+  //Размеры
+  --navbar-height: 50px;
+
+  --sidebar-width: 300px;
+  --sidebar-width-collapsed: 80px;
+}
+```
+
+Проверяем, что sidebar сворачивается, все ок
+Теперь добавим плавности, анимация: `transition: width 0.3s;`
+```
+//Sidebar.module.scss
+
+.Sidebar {
+  height: calc(100vh - var(--navbar-height));
+  //от всей высоты браузера отнимаем высоту навбара
+  // width: 300px;
+  width: var(--sidebar-width);
+  background: var(--inverted-bg-color);
+  position: relative;
+
+  transition: width 0.3s;
+}
+
+.collapsed {
+  width: var(--sidebar-width-collapsed);
+
+}
+```
+
+### 15.? Перенос ThemeSwitcher из Navbar в sidebar
+
+```
+//Navbar.tsx
+...
+
+export const Navbar = ({className}: NavbarProps) => {
+  return (
+    <div className={classNames(cls.navbar, {}, [className])}>
+      
+      <ThemeSwitcher className='jhjh'/>
+
+      <div className={cls.links}>
+        <AppLink 
+          theme={AppLinkTheme.SECONDARY} 
+          to='/' 
+          className={cls.mainLink}
+          >
+            Главная
+          </AppLink>
+        <AppLink 
+          // theme={AppLinkTheme.SECONDARY} 
+          theme={AppLinkTheme.RED} 
+          to='/about'
+          >
+            О сайте
+          </AppLink>
+      </div>
+    </div>
+  )
+}
+```
+Оборачиваем ThemeSwitcher в div, т к еще в этом диве будет лежать переключатель языков. Навешаем класс switchers
+```
+//Sidebar.tsx
+...
+import { ThemeSwitcher } from 'widgets/ThemeSwitcher';
+...
+
+export const Sidebar = ({className}: SidebarProps) => {
+  const [collapsed, setCollapsed] = useState(false);
+  
+  const onToggle = () => {
+    setCollapsed(prev => !prev);
+  }
+
+  return (
+    <div 
+      className={classNames(cls.Sidebar, {[cls.collapsed]: collapsed}, [className])}
+    >
+      <button onClick={onToggle}>toggle</button>
+
+      <div className={cls.switchers}>
+        <ThemeSwitcher/>
+        {/* Переключатель языков */}
+      </div>
+    </div>
+  )
+}
+```
+
+Сразу напишем стили на класс switchers
+
+```
+.switchers {
+  position: absolute;
+  bottom: 20px;
+  display: flex; 
+  justify-content: center;
+  width: 100%;
+}
+```
+
+```
+//Sidebar.module.scss
+.Sidebar {
+  height: calc(100vh - var(--navbar-height));
+  //от всей высоты браузера отнимаем высоту навбара
+  // width: 300px;
+  width: var(--sidebar-width);
+  background: var(--inverted-bg-color);
+  position: relative;
+
+  transition: width 0.3s;
+}
+
+.collapsed {
+  width: var(--sidebar-width-collapsed);
+
+}
+
+.switchers {
+  position: absolute;
+  bottom: 20px;
+  display: flex; 
+  justify-content: center;
+  width: 100%;
+}
+```
+
+
+## 16. i18n. Интернационализация. Define plugin. Плагин переводов.
+
+Настало время довать в наше приложение еще один язык.
+Гуглим: `i18n react`
+
+Тычем в первую [ссылку](https://react.i18next.com/)
+
+Перейдем во вкладку [Get started](https://react.i18next.com/getting-started)
+
+По документации:
+` npm install react-i18next i18next --save`
+<!-- /////?? вообще хз -->
+<!-- 11.15.5 react-i18next -->
+<!-- 21.6.12 i18next -->
+
+`npm i react-i18next@11.15.5 i18next@21.6.12 -D`
+
+shared => config => создаем папку i18n => создаем файл i18n.ts
+
+#### Basic sample
+Если пролистать чуть ниже, то найдем [basic sample](https://react.i18next.com/getting-started#basic-sample)
+
+```
+import React from "react";
+import { createRoot } from 'react-dom/client';
+import i18n from "i18next";
+import { useTranslation, initReactI18next } from "react-i18next";
+
+i18n
+  .use(initReactI18next) // passes i18n down to react-i18next
+  .init({
+    // the translations
+    // (tip move them in a JSON file and import them,
+    // or even better, manage them via a UI: https://react.i18next.com/guides/multiple-translation-files#manage-your-translations-with-a-management-gui)
+    resources: {
+      en: {
+        translation: {
+          "Welcome to React": "Welcome to React and react-i18next"
+        }
+      }
+    },
+    lng: "en", // if you're using a language detector, do not define the lng option
+    fallbackLng: "en",
+
+    interpolation: {
+      escapeValue: false // react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape
+    }
+  });
+
+function App() {
+  const { t } = useTranslation();
+
+  return <h2>{t('Welcome to React')}</h2>;
+}
+
+// append app to dom
+const root = createRoot(document.getElementById('root'));
+root.render(
+  <App />
+);
+```
+
+#### Quick start
+
+Давайте перейдем во вкладку [Quick start](https://react.i18next.com/guides/quick-start)
+Это такой простенький вариант
+
+```
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
+
+// the translations
+// (tip move them in a JSON file and import them,
+// or even better, manage them separated from your code: https://react.i18next.com/guides/multiple-translation-files)
+const resources = {
+  en: {
+    translation: {
+      "Welcome to React": "Welcome to React and react-i18next"
+    }
+  },
+  fr: {
+    translation: {
+      "Welcome to React": "Bienvenue à React et react-i18next"
+    }
+  }
+};
+
+i18n
+  .use(initReactI18next) // passes i18n down to react-i18next
+  .init({
+    resources,
+    lng: "en", // language to use, more information here: https://www.i18next.com/overview/configuration-options#languages-namespaces-resources
+    // you can use the i18n.changeLanguage function to change the language manually: https://www.i18next.com/overview/api#changelanguage
+    // if you're using a language detector, do not define the lng option
+
+    interpolation: {
+      escapeValue: false // react already safes from xss
+    }
+  });
+
+  export default i18n;
+```
+
+#### Step by step
+
+Перейдем в [Step by step](https://react.i18next.com/latest/using-with-hooks)
+Его и копируем в файл i18n.ts
+
+
+i18next-http-backend - пакет с помощью которого можно асинхронно чанками подгружать только тот язык, который нам нужен и не тянуть ненужные языки в сборку
+
+```
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+
+import Backend from 'i18next-http-backend';
+import LanguageDetector from 'i18next-browser-languagedetector';
+// don't want to use this?
+// have a look at the Quick start guide 
+// for passing in lng and translations on init
+
+i18n
+  // load translation using http -> see /public/locales (i.e. https://github.com/i18next/react-i18next/tree/master/example/react/public/locales)
+  // learn more: https://github.com/i18next/i18next-http-backend
+  // want your translations to be loaded from a professional CDN? => https://github.com/locize/react-tutorial#step-2---use-the-locize-cdn
+  .use(Backend)
+  // detect user language
+  // learn more: https://github.com/i18next/i18next-browser-languageDetector
+  .use(LanguageDetector)
+  // pass the i18n instance to react-i18next.
+  .use(initReactI18next)
+  // init i18next
+  // for all options read: https://www.i18next.com/overview/configuration-options
+  .init({
+    fallbackLng: 'en',
+    debug: true,
+
+    interpolation: {
+      escapeValue: false, // not needed for react as it escapes by default
+    }
+  });
+
+
+export default i18n;
+```
+
+Видим подсвеченные `i18next-http-backend` и `i18next-browser-languagedetector`.
+
+Cверху в документации есть команда загрузки этих скриптов:
+`npm install i18next-http-backend i18next-browser-languagedetector --save`
+
+1.3.2 i18next-http-backend
+6.1.3 i18next-browser-languagedetector
+
+`npm i i18next-http-backend@1.3.2 i18next-browser-languagedetector@6.1.3 -D`
+
+Поудаляем лишние комментарии.Получаем:
+
+```
+//i18n.ts
+
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+
+import Backend from 'i18next-http-backend';
+import LanguageDetector from 'i18next-browser-languagedetector';
+
+
+i18n
+  .use(Backend)
+  .use(LanguageDetector)
+  .use(initReactI18next)
+  .init({
+    fallbackLng: 'ru',
+    debug: true,
+
+    interpolation: {
+      escapeValue: false, // not needed for react as it escapes by default
+    }
+  });
+
+
+export default i18n;
+```
+
+`use` - это подключение плагинов
+i18n поддерживает большое количество плагинов. Даже можно их писать самому
+
+`fallbackLng: 'ru',` - язык по умолчанию русский
+`debug: true,` - будет спамить в консоль про: подгрузку переводов, отсутствующие ключи (в общем все, что связано с дебагом)  
+Нам хотелось бы заменить эту конструкцию на что-то вроде 
+`debug: isDev ? true : false,`
+
+Но как это сделать непосредственно в коде самого приложения?
+
+Для этого у webpack'а есть плагин DefinePlugun -  с помощью него в приложении можно прокидывать глобальные переменные
+
+Гуглим: `DefinePlugun`
+
+Тычем на первую ссылку
+
+Идем в buildPlugins.ts
+
+<!-- 2:18 -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
