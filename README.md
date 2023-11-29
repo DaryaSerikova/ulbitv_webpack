@@ -46,7 +46,7 @@
 - [7.2 webpack-dev-server(--history-api-fallback)](#historyApiFallback). Привязка запросов к корневой странице (index.html)
 - [7.3 Разделение на бандлы. Теория. Зачем это нужно.](#devidingByBandlesTheory)
 - [7.4 Практика. Lazy и Suspence](#lazySuspence). Асинхронная подгрузка каждой из страниц отдельно.
-- [7.5 Итог](#conclusion6)
+- [7.5 Итог](#conclusion7)
 
 [8. Организация стилей. Добавляем темы.](#stylesStructureAddThemes)
 - [8.1 Подготовка структуры стилей](#stylesStructure): файл reset и глобальный корневой index.scss с импортированнными файлами scss
@@ -129,6 +129,19 @@ Webpack.js.com => Guides => Busic Setup
 ## Basic Setup 
 
 <a name="entry"></a> 
+
+
+[1. Basic setup](#basicSetup) ([entry](#entry), [output](#output), [ЧТОБЫ ЗАПУСТИТЬ СБОРКУ](#Запуск))
+  * [Шаблоны. Динамические названия для файлов](#Шаблоны)
+  * [Подключение плагинов](#setPlugins)
+    - [HTMLWebpackPlugin](#HTMLWebpackPlugin)
+    - [webpack.ProgressPlugin](#ProgressPlugin) - полоса загрузки
+    - [Настройка HTMLWebpackPlugin'а (template для root)](#HTMLWebpackPluginTemplate)
+  * [Typescript](#Typescript)
+    - [resolve](#resolve)
+    - [rules](#rules)
+    - [ts-loader](#tsLoader)
+    - [Configuration Languages. Настройка typescript для webpack.config](#configurationLanguages)
 
 ### entry
 
@@ -837,6 +850,12 @@ export default config;
 ## 2. Декомпозиция конфига. Опции конфигурации
 [Вернуться к содержанию](#contents)
 
+[2. Декомпозиция конфига. Опции конфигурации](#decompositionConfig)
+- [buildPlugins](#buildPlugins)
+- [buildLoaders](#buildLoaders)
+- [buildResolvers](#buildResolvers)
+- [buildWebpackConfig.ts - общая функция конфгурации с опциями](#buildWebpackConfig)
+
 Продолжаем конфигурировать наше приложение. И на текущий момент, конфиг начинает разрастаться. 
 Хотя по сути мы только начали конфигурировать наше приложение: есть всего 2 плагина и 1 loader.
 Плюс ко всему рано или поздно нам придется разделать prodaction и dev-сборку и конфиг будет совсем страшным.
@@ -1164,6 +1183,10 @@ const config: webpack.Configuration = buildWebpackConfig({
 ## 3. Webpack-dev-server. Переменные оружения
 [Вернуться к содержанию](#contents)
 
+[3. Webpack-dev-server. Переменные оружения](#mainWebpackDevServer)
+- [inline-source-map](#inlineSourceMap) - карта исходного кода для поиска ошибок в едином объединенном файле html
+- [webpack-dev-server](#webpackDevServer) - автооткрывание страницы
+
 Сейчас мы будем настраивать dev-server. \
 Но сначала поймем, для чего он нам нужен.\
 
@@ -1453,6 +1476,10 @@ config => build => buildWebpackConfig.ts
 ## 4.React и первое подключение стилей (scss)
 [Вернуться к содержанию](#contents)
 
+[4. React и первое подключение стилей (scss)](#reactAndScss)
+- [react](#react) - ts: typescriptLoader(уже обрабатывает), js: babel-loader
+- [scss](#scss) - style-loader, css-loader, sass-loader
+
 
 [react](#react)
 
@@ -1673,6 +1700,15 @@ module.exports = {
 
 ## 5. Стили (css-modules)
 [Вернуться к содержанию](#contents)
+
+[5. Стили (css-modules)](#cssModules)
+- [5.1 mini-css-extract-plugin](#miniCssExtractPlugin) (Создает файл `css` из файла `js`)
+- [5.2 Подходы изоляции стилей](#stylesIzolationWays) : БЭМ и css-modules
+- [5.3 Настройка css-modules (begin)](#setupCSSModulesBegin)
+- [5.4 Явная декларация файлов (global.d.ts)](#globalDTs)
+- [5.5 Cоздание глобального файла стилей index.scss](#globalStylesFile)
+- [5.6 Написание условия модульности. Различия между .scss и .module.scss ](#scssAndModulesDeviding)
+- [5.7 Итог](#conclusion5)
 
 Давайте попробуем сделать сборку в режиме dev. 
 `npm run build:dev`
@@ -2174,6 +2210,12 @@ Cобираем `npm run build:prod`. Сборка успешна.
 ## 7. Роутинг. Сode splitting Lazy Suspence
 [Вернуться к содержанию](#contents)
 
+[7. Роутинг. Сode splitting Lazy Suspence](#routingCodeSplitting)
+- [7.1 Добавление роутинга](#routingAdding)
+- [7.2 webpack-dev-server(--history-api-fallback)](#historyApiFallback). Привязка запросов к корневой странице (index.html)
+- [7.3 Разделение на бандлы. Теория. Зачем это нужно.](#devidingByBandlesTheory)
+- [7.4 Практика. Lazy и Suspence](#lazySuspence). Асинхронная подгрузка каждой из страниц отдельно.
+- [7.5 Итог](#conclusion7)
 
 <a name="routingAdding"></a> 
 
@@ -2429,7 +2471,7 @@ export const MainPageAsync = lazy(() => new Promise(resolve => {
 Видим, что при загрузке страницы отображается `Loading` - за него отвечает `Suspence`
 
 
-<a name="conclusion6"></a> 
+<a name="conclusion7"></a> 
 
 ### 7.5 Итог
 В этом уроке мы:\
@@ -2442,6 +2484,14 @@ export const MainPageAsync = lazy(() => new Promise(resolve => {
 
 ## 8. Организация стилей. Добавляем темы.
 [Вернуться к содержанию](#contents)
+
+[8. Организация стилей. Добавляем темы.](#stylesStructureAddThemes)
+- [8.1 Подготовка структуры стилей](#stylesStructure): файл reset и глобальный корневой index.scss с импортированнными файлами scss
+- [8.2 Переменные (variabels)](#cssVariabels): создание и подключение переменных
+- [8.3 Темы. Цветовая гамма приложения](#appThemesColors): dark и light темы, подключение и toggle
+- [8.4 Context для Theme](#contextForTheme): ThemeContext, ThemeProvider, оборачивание приложения в контекст
+- [8.5 хук useTheme](#useThemeHook): чтобы было по феншую
+- [8.6 Итог](#conclusion8)
 
 <a name="stylesStructure"></a> 
 
@@ -2921,6 +2971,11 @@ export default App;
 
 ## 9. classNames. Создаем git репозиторий
 [Вернуться к содержанию](#contents)
+
+[9. classNames. Создаем git репозиторий](#classNamesGit)
+- [9.1 Создание функции classNames](#classNamesFuncCreating)
+- [9.2[404NotFound]](#9.2[404NotFound])
+- [9.3 Cоздание .gitignore](#gitignoreCreating)
 
 `src` => создаем папку `helpers` => создаем файл `classNames.ts`
 
