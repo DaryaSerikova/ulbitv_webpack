@@ -1,5 +1,7 @@
 # UlbiTV
 
+<a name="contents"></a> 
+
 ## Содержание
 [Usage](#)\
 [1. Basic setup](#basicSetup) ([entry](#entry), [output](#output), [ЧТОБЫ ЗАПУСТИТЬ СБОРКУ](#Запуск))
@@ -99,7 +101,6 @@
 
 [15. Sidebar.Layout](#SidebarLayout)
 - [15.1 Cоздание Sidebar](#SidebarCreating)
-- [15.2 Обустраиваем Sidebar в App.tsx](#SidebarAppTsx)
 - [15.2 Обустраиваем Sidebar в App.tsx](#SidebarAppTsx)
 - [15.3 Collapsed: сворачивание Sidebar'а](#SidebarCollapsed)
 - [15.4 Перенос ThemeSwitcher из Navbar в Sidebar](#ThemeSwitcherFromNavbarToSidebar)
@@ -5832,6 +5833,8 @@ export const Sidebar = ({className}: SidebarProps) => {
 <a name="i18nDefinePluginTranslationPlugin"></a> 
 
 ## 16. i18n. Интернационализация. Define plugin. Плагин переводов.
+[Вернуться к содержанию](#contents)
+
 
 Настало время довать в наше приложение еще один язык.
 Гуглим: `i18n react`
