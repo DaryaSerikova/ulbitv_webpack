@@ -835,6 +835,7 @@ export default config;
 <a name="decompositionConfig"></a> 
 
 ## 2. Декомпозиция конфига. Опции конфигурации
+[Вернуться к содержанию](#contents)
 
 Продолжаем конфигурировать наше приложение. И на текущий момент, конфиг начинает разрастаться. 
 Хотя по сути мы только начали конфигурировать наше приложение: есть всего 2 плагина и 1 loader.
@@ -1161,6 +1162,7 @@ const config: webpack.Configuration = buildWebpackConfig({
 <a name="mainWebpackDevServer"></a> 
 
 ## 3. Webpack-dev-server. Переменные оружения
+[Вернуться к содержанию](#contents)
 
 Сейчас мы будем настраивать dev-server. \
 Но сначала поймем, для чего он нам нужен.\
@@ -1449,6 +1451,7 @@ config => build => buildWebpackConfig.ts
 <a name="reactAndScss"></a> 
 
 ## 4.React и первое подключение стилей (scss)
+[Вернуться к содержанию](#contents)
 
 
 [react](#react)
@@ -1669,6 +1672,7 @@ module.exports = {
 <a name="cssModules"></a> 
 
 ## 5. Стили (css-modules)
+[Вернуться к содержанию](#contents)
 
 Давайте попробуем сделать сборку в режиме dev. 
 `npm run build:dev`
@@ -2136,6 +2140,8 @@ Cобираем `npm run build:prod`. Сборка успешна.
 <a name="versionsFile1"></a> 
 
 ## 6. Часть файла с версиями 
+[Вернуться к содержанию](#contents)
+
 ```
 "devDependencies": {
   "@types/node": "^17.0.21",
@@ -2166,6 +2172,7 @@ Cобираем `npm run build:prod`. Сборка успешна.
 <a name="routingCodeSplitting"></a> 
 
 ## 7. Роутинг. Сode splitting Lazy Suspence
+[Вернуться к содержанию](#contents)
 
 
 <a name="routingAdding"></a> 
@@ -2434,7 +2441,7 @@ export const MainPageAsync = lazy(() => new Promise(resolve => {
 <a name="stylesStructureAddThemes"></a> 
 
 ## 8. Организация стилей. Добавляем темы.
-
+[Вернуться к содержанию](#contents)
 
 <a name="stylesStructure"></a> 
 
@@ -2913,6 +2920,7 @@ export default App;
 <a name="classNamesGit"></a> 
 
 ## 9. classNames. Создаем git репозиторий
+[Вернуться к содержанию](#contents)
 
 `src` => создаем папку `helpers` => создаем файл `classNames.ts`
 
@@ -3080,6 +3088,7 @@ export function classNames(cls: string, mods: Mods = {}, additional: string[] = 
 <a name="arhitectureBeginingTheory"></a> 
 
 ## 10. Архитектура. Введение. Теория
+[Вернуться к содержанию](#contents)
 
 Мы будем пользоваться методологией `feature sliced`
 
@@ -3093,6 +3102,7 @@ export function classNames(cls: string, mods: Mods = {}, additional: string[] = 
 <a name="arhitectureBeginingPractice"></a> 
 
 ## 11. Архитектура. Начинаем внедрять. Основы.
+[Вернуться к содержанию](#contents)
 
 Создаем в src папки: app, widgets, features, shared, entities
 
@@ -3497,6 +3507,7 @@ export default App;
 <a name="appRouterCongig"></a> 
 
 ## 12. AppRouter. Конфиг для роутера.
+[Вернуться к содержанию](#contents)
 
 Давайте наведем порядок в компоненте `App` - это корень нашего приложения и он должен быть максимально чистым
 
@@ -3805,6 +3816,7 @@ export default AppRouter;
 <a name="navbarSnippetsFirstUiKit"></a> 
 
 ## 13. Navbar.Шаблоны для разработки. Первый UI Kit элемент
+[Вернуться к содержанию](#contents)
 
 Мы вынесли `AppRouter` из `App.tsx`, теперь вынесем навигационную модель, `Нeader`, `Navbar` и кнопку по переключению тем
 
@@ -4564,6 +4576,7 @@ export enum AppLinkTheme {
 <a name="svgLoaderFileLoaderButton"></a> 
 
 ## 14. Svg loader. File loader. Button UI kit
+[Вернуться к содержанию](#contents)
 
 Сегодня мы перенесем кнопку для переключения темы в виджеты.
 Т к это никакая не сущность и никакая не бизнес-фича
@@ -5400,6 +5413,7 @@ export const ThemeSwitcher = ({className}: ThemeSwitcherProps) => {
 <a name="SidebarLayout"></a> 
 
 ## 15. Sidebar.Layout
+[Вернуться к содержанию](#contents)
 
 Сегодня создаем левую менюшку, которую можно развернуть, свернуть
 
