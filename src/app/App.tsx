@@ -1,26 +1,37 @@
 import React, { Suspense } from 'react'
-import { Routes, Route, Link } from 'react-router-dom';
-
 import { AppRouter } from './providers/router';
 import { useTheme } from 'app/providers/ThemeProvider/';
 import { Navbar } from 'widgets/Navbar';
 import { classNames } from 'shared/lib/classNames/classNames';
 import './styles/index.scss';
 import { Sidebar } from 'widgets/Sidebar';
-// import { Sidebar } from 'widgets/Sidebar/ui/Sidebar/Sidebar';
+import { useTranslation } from 'react-i18next';
 
 
+
+const Component = () => {
+  const { t, i18n } = useTranslation();
+
+  return (
+    <div>{t('Тестовый перевод')}</div>
+  )
+}
 
 const App = () => {
   const {theme, toggleTheme} = useTheme();
 
   return (
     <div className={classNames('app', {}, [theme])}>
-      <Navbar />
-      <div className='content-page'>
-        <Sidebar />
-        <AppRouter />
-      </div>
+      <Suspense fallback="">
+
+        <Navbar />
+        <Component />
+        <div className='content-page'>
+          <Sidebar />
+          <AppRouter />
+        </div>
+
+      </Suspense>
     </div>
   )
 }

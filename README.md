@@ -93,7 +93,18 @@
 - [14.4 Настройка Webpack для png, jpg, jpeg, gif](#pngJpegGifFilesWebpackSettings)
 - [14.5 Замечание: woff и woff2 - шрифты в fileLoader](#woffWoff2WebpackSettings)
 - [14.6 Настройка TypeSript: svg, png, jpg, jpeg](#svgPngJpegTypeSriptSettings)
-- 
+- - [Правка Theme, ThemeProvider](#14.6fixThemeProvider)
+- [14.7 Button - shared компонент](#ButtonIsSharedComponent)
+- [14.8 Итог](#Conclusion14)
+
+[15. Sidebar.Layout](#SidebarLayout)
+- [15.1 Cоздание Sidebar](#SidebarCreating)
+- [15.2 Обустраиваем Sidebar в App.tsx](#SidebarAppTsx)
+- [15.2 Обустраиваем Sidebar в App.tsx](#SidebarAppTsx)
+- [15.3 Collapsed: сворачивание Sidebar'а](#SidebarCollapsed)
+- [15.4 Перенос ThemeSwitcher из Navbar в Sidebar](#ThemeSwitcherFromNavbarToSidebar)
+
+[16. i18n. Интернационализация. Define plugin. Плагин переводов.](#i18nDefinePluginTranslationPlugin)
 
 
 
@@ -5026,8 +5037,6 @@ export function buildLoaders({isDev}: BuildOptions): webpack.RuleSetRule[] {
 Итак, на данный момент мы научили `Webpack` работать с `svg, png, jpg, jpeg, gif, woff` и `woff2`
 
 
-<!-- [14.6 Настройка TypeSript: svg, png, jpg, jpeg](#svgPngJpegTypeSriptSettings) -->
-
 <a name="svgPngJpegTypeSriptSettings"></a> 
 
 ### 14.6 Настройка TypeSript: svg, png, jpg, jpeg
@@ -5173,6 +5182,8 @@ svgLoader преобразовывает обычные иконки в react-к
 Добавим условие для иконки в зависмости от темы
 <!-- 9:59 -->
 
+<a name="14.6fixThemeProvider"></a> 
+
 #### Правка Theme, ThemeProvider
 
 ```
@@ -5244,6 +5255,9 @@ export const ThemeSwitcher = ({className}: ThemeSwitcherProps) => {
 ```
 
 `npm run start` - все работает - toggle переключает темы
+<!-- [14.7 Button - shared компонент](#ButtonIsSharedComponent) -->
+
+<a name="ButtonIsSharedComponent"></a> 
 
 ### 14.7 Button - shared компонент
 
@@ -5373,12 +5387,16 @@ export const ThemeSwitcher = ({className}: ThemeSwitcherProps) => {
 }
 ```
 
+<a name="Conclusion14"></a> 
+
 ### 14.8 Итог
 В этом ролике мы сделали навигационную панель
 компонент для переключения тем
 научились работать с svg
 научились импортировать png jpeg jpg файлы с помощью fileloader'а
 
+
+<a name="SidebarLayout"></a> 
 
 ## 15. Sidebar.Layout
 
@@ -5389,7 +5407,10 @@ widgets => папка Sidebar => undex.ts-файл и папка ui
 поскольку Sidebar - это уже более сложный компонент, здесь мб много компонентов. 
 То мы файлы будем создавать не напрямую в папке ui, а создаем подпапку Sidebar (рядом могут лежать SidebarHeader, SidebarFooter) и в ней создаем файл Sidebar.tsx и Sidebar.module.scss
 
-### 15.? Cоздание Sidebar
+
+<a name="SidebarCreating"></a> 
+
+### 15.1 Cоздание Sidebar
 
 `collapsed`
 
@@ -5485,7 +5506,11 @@ export {
 }
 ```
 
-### 15.? Обустраиваем Sidebar в App.tsx
+<!-- [15.2 Обустраиваем Sidebar в App.tsx](#SidebarAppTsx) -->
+
+<a name="SidebarAppTsx"></a> 
+
+### 15.2 Обустраиваем Sidebar в App.tsx
 
 Зайдем в App.tsx и вставим туда наш Sidebar (оборачиваем его в div и пихаем туда же роутер)
 
@@ -5609,7 +5634,9 @@ export default AppRouter;
 }
 ```
 
-### 15.? Collapsed: сворачивание Sidebar'а
+<a name="SidebarCollapsed"></a> 
+
+### 15.3 Collapsed: сворачивание Sidebar'а
 
 //Sidebar.module.scss
 
@@ -5698,7 +5725,9 @@ export default AppRouter;
 }
 ```
 
-### 15.? Перенос ThemeSwitcher из Navbar в sidebar
+<a name="ThemeSwitcherFromNavbarToSidebar"></a> 
+
+### 15.4 Перенос ThemeSwitcher из Navbar в Sidebar
 
 ```
 //Navbar.tsx
@@ -5798,6 +5827,9 @@ export const Sidebar = ({className}: SidebarProps) => {
 }
 ```
 
+<!-- [16. i18n. Интернационализация. Define plugin. Плагин переводов.](#i18nDefinePluginTranslationPlugin) -->
+
+<a name="i18nDefinePluginTranslationPlugin"></a> 
 
 ## 16. i18n. Интернационализация. Define plugin. Плагин переводов.
 
@@ -5807,6 +5839,8 @@ export const Sidebar = ({className}: SidebarProps) => {
 Тычем в первую [ссылку](https://react.i18next.com/)
 
 Перейдем во вкладку [Get started](https://react.i18next.com/getting-started)
+
+### 16.1 Документация. Примеры для старта i18n
 
 По документации:
 ` npm install react-i18next i18next --save`
@@ -5945,6 +5979,8 @@ i18n
 export default i18n;
 ```
 
+### 16.? Добавляем в наш проект i18n
+
 Видим подсвеченные `i18next-http-backend` и `i18next-browser-languagedetector`.
 
 Cверху в документации есть команда загрузки этих скриптов:
@@ -5992,36 +6028,356 @@ i18n поддерживает большое количество плагино
 Нам хотелось бы заменить эту конструкцию на что-то вроде 
 `debug: isDev ? true : false,`
 
+
+
 Но как это сделать непосредственно в коде самого приложения?
+
+### 16.? DefinePlugun - для прокидывания переменных сборки в приложение
 
 Для этого у webpack'а есть плагин DefinePlugun -  с помощью него в приложении можно прокидывать глобальные переменные
 
-Гуглим: `DefinePlugun`
+Идем в buildPlugins.ts (config => build => buildPlugins.ts)
+```
+import path from 'path';
+import webpack from 'webpack';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import { BuildOptions } from './types/config';
 
-Тычем на первую ссылку
+export function buildPlugins({paths}: BuildOptions):webpack.WebpackPluginInstance[] {
+  return [
+    new HtmlWebpackPlugin({
+      template: paths.html,
+    }),
+    new webpack.ProgressPlugin(),
+    new MiniCssExtractPlugin({
+      filename: 'css/[name].[contenthash:8].css',
+      // chankFilename: 'css/[name].[contenthash:8].css',
+    }),
 
-Идем в buildPlugins.ts
+    
+    new webpack.DefinePlugin({
 
+    })
+  ]
+}
+```
+
+Гуглим: `DefinePlugin`
+
+Тычем на [первую ссылку](https://webpack.js.org/plugins/define-plugin/)
 <!-- 2:18 -->
 
+Пролистываем чуть ниже и видим примеры испольщования этого плагина:
+
+```
+new webpack.DefinePlugin({
+  PRODUCTION: JSON.stringify(true),
+  VERSION: JSON.stringify('5fa3b9'),
+  BROWSER_SUPPORTS_HTML5: true,
+  TWO: '1+1',
+  'typeof window': JSON.stringify('object'),
+  'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+});
+```
+По сути таким образом прокидываются какие-то глобальные переменные: версия, production или development
+
+В buildPlugins: достаем переменную isDev из BuildOptions в аргументах и прописываем ее с DefinePlugin таким образом:
+
+```
+//buildPlugins.ts
+...
+export function buildPlugins({paths, isDev}: BuildOptions):webpack.WebpackPluginInstance[] {
+
+return [
+    ...,
+    new webpack.DefinePlugin({
+      __IS_DEV__: JSON.stringify(isDev),
+    }),
+
+  ]
+}
+```
+`__IS_DEV__` - обычно глобальные переменные сборки я называю вот так большими с нижними подчеркиваниями, чтобы их четко отделять от переменных в самом приложении
+```
+//buildPlugins.ts
+import path from 'path';
+import webpack from 'webpack';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import { BuildOptions } from './types/config';
+
+export function buildPlugins({paths, isDev}: BuildOptions):webpack.WebpackPluginInstance[] {
+
+  return [
+    new HtmlWebpackPlugin({
+      template: paths.html,
+    }),
+    new webpack.ProgressPlugin(),
+    new MiniCssExtractPlugin({
+      filename: 'css/[name].[contenthash:8].css',
+      // chankFilename: 'css/[name].[contenthash:8].css',
+    }),
+
+
+    new webpack.DefinePlugin({
+      __IS_DEV__: JSON.stringify(isDev),
+    }),
+  ]
+}
+```
+По сути мы присвоили значение isDev переменной `__IS_DEV__` и она теперь доступна в коде.
+
+Идемв shared => config => i18n => i18n.ts
+
+```
+//i18n.ts
+
+  ...
+
+  // debug: true,
+  debug: __IS_DEV__ ? true : false,
+
+  ...
+```
+Видим, что ts ругается
+![webpackVarTsError.jpg](/images/webpackVarTsError.jpg)
+
+Все дело в том, что TypeScript ничего про наш config не знает и с ним он никак не связан
+
+B опять же мы в глобальном файле с дкларациями должны эту константу `__IS_DEV__` объявить 
+Идем в app => types => global.d.ts
+
+`declare const __IS_DEV__: boolean;`
 
 
 
+```
+//global.d.ts
+
+declare module '*.scss' {
+  interface IClassNames {
+    [className: string]: string
+  }
+  const classNames: IClassNames;
+  export = classNames;
+}
+
+declare module "*.png";
+declare module "*.jpg";
+declare module "*.jpeg";
+declare module "*.svg" {
+  import React from "react";
+  const SVG: React.VFC<React.SVGProps<SVGSVGElement>>;
+  export default SVG;
+}
+
+declare const __IS_DEV__: boolean;
+```
+
+Вернемся к файлику i18n.ts и видим, что теперь TypeScript не ругается
+
+Таким образом debug интернационализации будет работать только в dev режиме, если мы сделаем production сборку, то в консоль никакого спама не будет
+
+
+### 16.? mkdhjkdhfkjdhkfhkdf
+
+Возвращаемся к [документации](https://react.i18next.com/latest/using-with-hooks)
+
+Конфигурацию мы добавили, теперь ее нужно импортировать в index.tsx файлик (src => index.tsx)
+
+Вот этот, самый верхний из всех
+![indexTsxI18n.jpg](/images/indexTsxI18n.jpg)
+
+```
+//index.tsx 
+import { render } from "react-dom";
+import { BrowserRouter } from "react-router-dom";
+import App from "./app/App";
+import { ThemeProvider } from "app/providers/ThemeProvider";
+
+
+render(
+  <BrowserRouter>
+    <ThemeProvider>
+      <App/>
+    </ThemeProvider>
+  </BrowserRouter>,
+  document.getElementById('root')
+)
+```
+
+`import i18n from "shared/config/i18n/i18n";`
+
+```
+import { render } from "react-dom";
+import { BrowserRouter } from "react-router-dom";
+import App from "./app/App";
+import { ThemeProvider } from "app/providers/ThemeProvider";
+
+import i18n from "shared/config/i18n/i18n";
+
+
+render(
+  <BrowserRouter>
+    <ThemeProvider>
+      <App/>
+    </ThemeProvider>
+  </BrowserRouter>,
+  document.getElementById('root')
+)
+```
+
+Теперь проверим, что все, что мы сейчас наподключали работает
+Протестируем в App.tsx (app => App.tsx)
+
+<!-- 4:27 -->
+Вернемся к [документации](https://react.i18next.com/latest/using-with-hooks)
+
+Пролистаем чуть ниже [до хука](https://react.i18next.com/latest/using-with-hooks#translate-your-content)
+
+Мы видим, что используется хук `useTranslation`
+`const { t, i18n } = useTranslation();`
+
+И то, что компоненты, в которых используются переводы нужно оборачивать в Suspence
+Поскольку переводы будут чанками подгружаться асинхронно
+
+```
+import React, { Suspense } from 'react';
+import { useTranslation } from 'react-i18next';
+
+function MyComponent() {
+  const { t, i18n } = useTranslation();
+
+  return <h1>{t('Welcome to React')}</h1>
+}
+
+// i18n translations might still be loaded by the http backend
+// use react's Suspense
+export default function App() {
+  return (
+    <Suspense fallback="loading">
+      <MyComponent />
+    </Suspense>
+  );
+}
+```
+
+Это можно сделать глобально, обернув все в компоненте App в Suspense один раз
+Переходим в App.tsx
+
+```
+//App.tsx
+import React, { Suspense } from 'react'
+import { AppRouter } from './providers/router';
+import { useTheme } from 'app/providers/ThemeProvider/';
+import { Navbar } from 'widgets/Navbar';
+import { classNames } from 'shared/lib/classNames/classNames';
+import './styles/index.scss';
+import { Sidebar } from 'widgets/Sidebar';
 
 
 
+const App = () => {
+  const {theme, toggleTheme} = useTheme();
+
+  return (
+    <div className={classNames('app', {}, [theme])}>
+      <Navbar />
+      <div className='content-page'>
+        <Sidebar />
+        <AppRouter />
+      </div>
+    </div>
+  )
+}
+
+export default App;
+```
+
+Оборачиваем в suspense. оставим пустой fallback, потому что файлы с переводами должны весить мало в нашем приложении
+```
+import React, { Suspense } from 'react'
+...
+
+const App = () => {
+  const {theme, toggleTheme} = useTheme();
+
+  return (
+    <div className={classNames('app', {}, [theme])}>
+      <Suspense fallback="">
+
+        <Navbar />
+        <div className='content-page'>
+          <Sidebar />
+          <AppRouter />
+        </div>
+        
+      </Suspense>
+    </div>
+  )
+}
+
+export default App;
+
+```
+
+Добавим компонент с useTranslation
+Для того, чтобы переводы работали, нужно использовать функцию t и в нее передавать ключ для перевода
+
+```
+import { useTranslation } from 'react-i18next';
+
+const Component = () => {
+  const { t, i18n } = useTranslation();
+
+  return (
+    <div>{t('Тестовый перевод')}</div>
+  )
+}
+```
+
+Пока оставим так, как и добавим этот компонент в App
+
+```
+const App = () => {
+  const {theme, toggleTheme} = useTheme();
+
+  return (
+    <div className={classNames('app', {}, [theme])}>
+      <Suspense fallback="">
+
+        <Navbar />
+        <Component />
+        <div className='content-page'>
+          <Sidebar />
+          <AppRouter />
+        </div>
+
+      </Suspense>
+    </div>
+  )
+}
+
+export default App;
+```
+
+===
+
+<!-- 6:10 -->
+### 16.? Как перевести? И где хранить переводы?
+
+Опять листаем [документацию](https://react.i18next.com/latest/using-with-hooks#translation-files)
+
+Видим, что нужно в папке public => создать папку locales и там по коду языка поместить файлик translation.json
+`Create a new file public/locales/<language_code>/translation.json with the following sample content.`
 
 
+Итак в папке public => создаем папку locales => в ней создаем две папки en и ru => и в каждой папке создаем свой файлик translation.json
 
+Вот так
 
-
-
-
-
-
-
-
-
+![i18nLocales.jpg](/images/i18nLocales.jpg)
 
 
 
