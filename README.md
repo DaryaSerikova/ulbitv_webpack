@@ -855,6 +855,7 @@ export default config;
 - [buildLoaders](#buildLoaders)
 - [buildResolvers](#buildResolvers)
 - [buildWebpackConfig.ts - общая функция конфгурации с опциями](#buildWebpackConfig)
+===
 
 Продолжаем конфигурировать наше приложение. И на текущий момент, конфиг начинает разрастаться. 
 Хотя по сути мы только начали конфигурировать наше приложение: есть всего 2 плагина и 1 loader.
@@ -1187,6 +1188,8 @@ const config: webpack.Configuration = buildWebpackConfig({
 - [inline-source-map](#inlineSourceMap) - карта исходного кода для поиска ошибок в едином объединенном файле html
 - [webpack-dev-server](#webpackDevServer) - автооткрывание страницы
 
+===
+
 Сейчас мы будем настраивать dev-server. \
 Но сначала поймем, для чего он нам нужен.\
 
@@ -1480,6 +1483,7 @@ config => build => buildWebpackConfig.ts
 - [react](#react) - ts: typescriptLoader(уже обрабатывает), js: babel-loader
 - [scss](#scss) - style-loader, css-loader, sass-loader
 
+===
 
 [react](#react)
 
@@ -1709,6 +1713,8 @@ module.exports = {
 - [5.5 Cоздание глобального файла стилей index.scss](#globalStylesFile)
 - [5.6 Написание условия модульности. Различия между .scss и .module.scss ](#scssAndModulesDeviding)
 - [5.7 Итог](#conclusion5)
+
+===
 
 Давайте попробуем сделать сборку в режиме dev. 
 `npm run build:dev`
@@ -2217,6 +2223,8 @@ Cобираем `npm run build:prod`. Сборка успешна.
 - [7.4 Практика. Lazy и Suspence](#lazySuspence). Асинхронная подгрузка каждой из страниц отдельно.
 - [7.5 Итог](#conclusion7)
 
+===
+
 <a name="routingAdding"></a> 
 
 ### 7.1 Добавление роутинга
@@ -2492,6 +2500,8 @@ export const MainPageAsync = lazy(() => new Promise(resolve => {
 - [8.4 Context для Theme](#contextForTheme): ThemeContext, ThemeProvider, оборачивание приложения в контекст
 - [8.5 хук useTheme](#useThemeHook): чтобы было по феншую
 - [8.6 Итог](#conclusion8)
+
+===
 
 <a name="stylesStructure"></a> 
 
@@ -2976,6 +2986,8 @@ export default App;
 - [9.1 Создание функции classNames](#classNamesFuncCreating)
 - [9.2[404NotFound]](#9.2[404NotFound])
 - [9.3 Cоздание .gitignore](#gitignoreCreating)
+
+===
 
 `src` => создаем папку `helpers` => создаем файл `classNames.ts`
 
@@ -5580,7 +5592,7 @@ export {
 
 <a name="SidebarAppTsx"></a> 
 
-### 15.2 Обустраиваем Sidebar в App.tsx
+### 15.2 Обустраиваем Sidebar в App.tsx. Добавляем .page-wrapper в AppRouter
 
 Зайдем в App.tsx и вставим туда наш Sidebar (оборачиваем его в div и пихаем туда же роутер)
 
@@ -5679,7 +5691,7 @@ export default AppRouter;
 ```
   element={
     <div className='page-wrapper'>
-      element
+      {element}
     </div>
   }
 ```
@@ -6252,7 +6264,7 @@ declare const __IS_DEV__: boolean;
 Таким образом debug интернационализации будет работать только в dev режиме, если мы сделаем production сборку, то в консоль никакого спама не будет
 
 
-### 16.? mkdhjkdhfkjdhkfhkdf
+### 16.? Подключаем i18n к глобальному index.tsx.
 
 Возвращаемся к [документации](https://react.i18next.com/latest/using-with-hooks)
 
@@ -6279,7 +6291,7 @@ render(
 )
 ```
 
-`import i18n from "shared/config/i18n/i18n";`
+`import "shared/config/i18n/i18n";`
 
 ```
 import { render } from "react-dom";
@@ -6287,7 +6299,7 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./app/App";
 import { ThemeProvider } from "app/providers/ThemeProvider";
 
-import i18n from "shared/config/i18n/i18n";
+import "shared/config/i18n/i18n";
 
 
 render(
@@ -6304,6 +6316,9 @@ render(
 Протестируем в App.tsx (app => App.tsx)
 
 <!-- 4:27 -->
+
+### 16.? Хук useTranslation(): оборачиваем App в Suspense, добавляем компонент с useTranslation и locales
+
 Вернемся к [документации](https://react.i18next.com/latest/using-with-hooks)
 
 Пролистаем чуть ниже [до хука](https://react.i18next.com/latest/using-with-hooks#translate-your-content)
@@ -6334,7 +6349,7 @@ export default function App() {
   );
 }
 ```
-
+#### Оборачиваем App в Suspense
 Это можно сделать глобально, обернув все в компоненте App в Suspense один раз
 Переходим в App.tsx
 
@@ -6394,6 +6409,8 @@ export default App;
 
 ```
 
+#### Добавим компонент с useTranslation
+
 Добавим компонент с useTranslation
 Для того, чтобы переводы работали, нужно использовать функцию t и в нее передавать ключ для перевода
 
@@ -6437,7 +6454,7 @@ export default App;
 ===
 
 <!-- 6:10 -->
-### 16.? Как перевести? И где хранить переводы?
+### locales: Как перевести? И где хранить переводы?
 
 Опять листаем [документацию](https://react.i18next.com/latest/using-with-hooks#translation-files)
 
@@ -6452,7 +6469,266 @@ export default App;
 ![i18nLocales.jpg](/images/i18nLocales.jpg)
 
 
+```
+//public => locales => ru => translation.json
+{
+  "Тестовый пример": "Тестовый пример",
+  "Перевод": "Перевод"
+}
+```
 
+```
+//public => locales => en => translation.json
+{
+  "Тестовый пример": "test example",
+  "Перевод": "Translation"
+}
+```
+
+Теперь. Мы хотим добавить кнопку по переключению языков и для этого нам нужно: добавить кнопку и создать функцию по переключению языка
+
+1. Добавим кнопку `<button>{t('Перевод')}</button>` в App.tsx:
+
+```
+//App.tsx
+
+const Component = () => {
+  const { t, i18n } = useTranslation();
+
+  return (
+    <div>
+
+      <button>{t('Перевод')}</button>
+
+      {t('Тестовый пример')}
+    </div>
+  )
+}
+```
+
+2. Создадим функцию по переключению языка
+
+У объекта i18n есть функция changeLanguage
+`i18n.language` - текщий выбранный язык
+
+```
+  const toggle = () => {
+    i18n.changeLanguage(i18n.language === 'ru' ? 'en' : 'ru');
+  }
+```
+
+Если текущий выбранный язык русский, то ставим английский, иначе - русский
+
+
+Добавляем в onClick полученную функцию
+`<button onClick={toggle}>{t('Перевод')}</button>`
+
+
+```
+const Component = () => {
+  const { t, i18n } = useTranslation();
+
+  const toggle = () => {
+    i18n.changeLanguage(i18n.language === 'ru' ? 'en' : 'ru');
+  }
+
+  return (
+    <div>
+      <button onClick={toggle}>{t('Перевод')}</button>
+      {t('Тестовый пример')}
+    </div>
+  )
+}
+```
+
+Проверим как работает
+![i18nRu.jpg](/images/i18nRu.jpg)
+![i18nEn.jpg](/images/i18nEn.jpg)
+
+
+<!-- 8:30 -->
+=== 
+Мб важно
+### i18next-http-backend
+Гуглим: `i18next-http-backend`
+Тычем в [первую ссылку](https://github.com/i18next/i18next-http-backend#backend-options)
+`loadPath: '/locales/{{lng}}/{{ns}}.json',`
+
+shared => config => i18n => i18n.ts
+i18n.ts
+
+```
+backend: {
+  loadPath: '/locales/{{lng}}/{{ns}}.json',
+}
+```
+
+```
+//shared => config => i18n => i18n.ts
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+
+import Backend from 'i18next-http-backend';
+import LanguageDetector from 'i18next-browser-languagedetector';
+
+
+i18n
+  .use(Backend)
+  .use(LanguageDetector)
+  .use(initReactI18next)
+  .init({
+    fallbackLng: 'en',
+    // debug: __IS_DEV__ ? true : false,
+    debug: __IS_DEV__ ,
+
+    interpolation: {
+      escapeValue: false, // not needed for react as it escapes by default
+    },
+
+    backend: {
+      loadPath: '/locales/{{lng}}/{{ns}}.json',
+    }
+  });
+
+
+export default i18n;
+```
+===
+<!-- 9:40 -->
+
+Заходим в консоль и там куча спама от debag'а, т к мы в dev-режиме
+![i18nSpam1.jpg](/images/i18nSpam1.jpg)
+![i18nSpam2.jpg](/images/i18nSpam2.jpg)
+
+И еще при нажатии на toggle в консоли можно увидеть, как меняется язык
+
+Откроем вкладку Network и обновим страничку, заходим в preview, видим translation.json с английским языком.
+![i18nNetwork1.jpg](/images/i18nNetwork1.jpg)
+
+Переключаем язык и видим, что подгрузился еще один чанк translation.json, открываем у него preview и видим, что это translation.json с русским языком.
+
+![i18nNetwork2.jpg](/images/i18nNetwork2.jpg)
+![i18nNetwork3.jpg](/images/i18nNetwork3.jpg)
+
+Как мы видим перевод к нам прилетает отдельным чанком
+Притом при смене языка мы можем увидеть, что переводы прилетают не все вместе, а за счет backend plagin'а, они прилетают по отдельности в разных чанках. чтобы не тянуть сразу все переводы в приложение
+За этим важно следить, потому что если вы переводите на 5 языков в приложении, то у вас будет соотвественно будет 5 файлов и они уже могут весить немало.
+
+<!-- 10:25 -->
+### 16.? Перевод всего приложения
+Давайте теперь переведем все наше приложение
+
+MainPage.tsx
+
+```
+//MainPage.tsx до
+
+import React from 'react'
+
+const MainPage = () => {
+  return (
+    <div>MainPage</div>
+  )
+}
+
+export default MainPage;
+```
+
+Добавляем useTranslation
+```
+//MainPage.tsx после
+
+import React from 'react'
+import { useTranslation } from 'react-i18next';
+
+const MainPage = () => {
+
+  const {t} = useTranslation();
+
+  return (
+    <div>
+      {t('Главная страница')}
+    </div>
+  )
+}
+
+export default MainPage;
+```
+
+Теперь нужно добавить эти ключи в соотвествующие файлики с переводами
+```
+//ru => translation.json
+{
+  "Тестовый пример": "Тестовый пример",
+  "Перевод": "Перевод",
+
+  "О сайте": "О сайте",
+  "Главная страница": "Главная страница"
+}
+```
+
+```
+//en => translation.json
+{
+  "Тестовый пример": "test example",
+  "Перевод": "Translation",
+
+  "О сайте": "About us",
+  "Главная страница":"Main page"
+}
+```
+Теперь проверим toggle - все ок, работает
+
+### Декомпозиция translation.json на чанки
+
+Посмотрим еще раз Network
+![i18nNetwork1.jpg](/images/i18nNetwork1.jpg)
+
+Мы видим, что сейчас все переводы, которые у нас есть. Они в одном файлике.
+Причем мы находимся на MainPage, а здесь переводы со страницы другой страницы
+То есть сейчас мб ситуация, когда человек пришел почитать статьи, а ему тянутся переводы страницы профиля. И из-за этого у него приложение прогружается дольше.
+
+Декомпозируем это все на чанки
+
+Для каждой из папок создаем одноименные файлики для каждой из страниц и оствляем в ней только тот перевод, который необходим
+
+Для en 
+```
+//en => translation.json
+{
+  "Тестовый пример": "test example",
+  "Перевод": "Translation",
+
+  "Главная страница":"Main page"
+}
+```
+
+```
+//en => about.json
+{
+  "О сайте": "About us"
+}
+```
+
+Для ru 
+```
+//ru => about.json
+{
+  "О сайте": "О сайте"
+}
+```
+
+```
+//ru => translation.json
+{
+  "Тестовый пример": "Тестовый пример",
+  "Перевод": "Перевод",
+
+  "Главная страница": "Главная страница"
+}
+```
+
+Теперь отправляемся в AboutPage.tsx
 
 
 

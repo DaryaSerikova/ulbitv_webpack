@@ -14,7 +14,7 @@ const AppRouter = () => {
             path={path}
             element={
               <div className='page-wrapper'>
-                element
+                {element}
               </div>
             }
           />
