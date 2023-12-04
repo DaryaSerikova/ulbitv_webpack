@@ -106,6 +106,19 @@
 - [15.4 Перенос ThemeSwitcher из Navbar в Sidebar](#ThemeSwitcherFromNavbarToSidebar)
 
 [16. i18n. Интернационализация. Define plugin. Плагин переводов.](#i18nDefinePluginTranslationPlugin)
+- [16.1 Документация. Примеры для старта i18n](#DocsExamplesStartI18n): Basic sample, Quick start, Step by step
+- [16.2 Добавляем в наш проект i18n](#addI18n)
+- [16.3 DefinePlugun - для прокидывания переменных сборки в приложение](#DefinePlugun)
+- [16.4 Подключаем i18n к глобальному index.tsx.](#i18nConnectWithGlobalIndexTsx)
+- [16.5 Хук useTranslation()](#useTranslation): оборачиваем App в Suspense, добавляем компонент с useTranslation и locales
+- 
+- 
+- 
+
+
+[17. Webpack hot module replacement](#webpackHotModuleReplacement)
+
+[18. Настраиваем ESLint. Исправляем ошибки.](#setupEsLintFixErrors)
 
 
 
@@ -5926,6 +5939,10 @@ export const Sidebar = ({className}: SidebarProps) => {
 
 Перейдем во вкладку [Get started](https://react.i18next.com/getting-started)
 
+<!-- [16.1 Документация. Примеры для старта i18n](#DocsExamplesStartI18n) -->
+
+<a name="DocsExamplesStartI18n"></a> 
+
 ### 16.1 Документация. Примеры для старта i18n
 
 По документации:
@@ -6064,8 +6081,11 @@ i18n
 
 export default i18n;
 ```
+<!-- [16.2 Добавляем в наш проект i18n](#addI18n) -->
 
-### 16.? Добавляем в наш проект i18n
+<a name="addI18n"></a> 
+
+### 16.2 Добавляем в наш проект i18n
 
 Видим подсвеченные `i18next-http-backend` и `i18next-browser-languagedetector`.
 
@@ -6118,7 +6138,9 @@ i18n поддерживает большое количество плагино
 
 Но как это сделать непосредственно в коде самого приложения?
 
-### 16.? DefinePlugun - для прокидывания переменных сборки в приложение
+<a name="DefinePlugun"></a> 
+
+### 16.3 DefinePlugun - для прокидывания переменных сборки в приложение
 
 Для этого у webpack'а есть плагин DefinePlugun -  с помощью него в приложении можно прокидывать глобальные переменные
 
@@ -6265,8 +6287,9 @@ declare const __IS_DEV__: boolean;
 
 Таким образом debug интернационализации будет работать только в dev режиме, если мы сделаем production сборку, то в консоль никакого спама не будет
 
+<a name="i18nConnectWithGlobalIndexTsx"></a> 
 
-### 16.? Подключаем i18n к глобальному index.tsx.
+### 16.4 Подключаем i18n к глобальному index.tsx.
 
 Возвращаемся к [документации](https://react.i18next.com/latest/using-with-hooks)
 
@@ -6319,7 +6342,11 @@ render(
 
 <!-- 4:27 -->
 
-### 16.? Хук useTranslation(): оборачиваем App в Suspense, добавляем компонент с useTranslation и locales
+<!-- [16.5 Хук useTranslation(): оборачиваем App в Suspense, добавляем компонент с useTranslation и locales](#useTranslation) -->
+
+<a name="useTranslation"></a> 
+
+### 16.5 Хук useTranslation(): оборачиваем App в Suspense, добавляем компонент с useTranslation и locales
 
 Вернемся к [документации](https://react.i18next.com/latest/using-with-hooks)
 
@@ -6937,6 +6964,9 @@ Alt+Enter появляется такое меню и
 
 Добавили переводы, научились их использовать, разбивать на чанки, 
 
+<!-- [17. Webpack hot module replacement](#webpackHotModuleReplacement) -->
+
+<a name="webpackHotModuleReplacement"></a> 
 
 ## 17. Webpack hot module replacement
 
@@ -7336,5 +7366,12 @@ npm i -D babel-plugin-i18next-extract@0.8.3
 
 ===
 
+
+<!-- [18. Настраиваем ESLint. Исправляем ошибки.](#setupEsLintFixErrors) -->
+
+<a name="setupEsLintFixErrors"></a> 
+
 ## 18. Настраиваем ESLint. Исправляем ошибки.
+
+
 
