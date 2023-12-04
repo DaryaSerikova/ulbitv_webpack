@@ -15,10 +15,10 @@ export function buildPlugins({paths, isDev}: BuildOptions):webpack.WebpackPlugin
       filename: 'css/[name].[contenthash:8].css',
       // chankFilename: 'css/[name].[contenthash:8].css',
     }),
-
-
     new webpack.DefinePlugin({
       __IS_DEV__: JSON.stringify(isDev),
     }),
+
+    new webpack.HotModuleReplacementPlugin(),
   ]
 }

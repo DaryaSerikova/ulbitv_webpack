@@ -9,20 +9,20 @@ import { useTranslation } from 'react-i18next';
 
 
 
-const Component = () => {
-  const { t, i18n } = useTranslation();
+// const Component = () => {
+//   const { t, i18n } = useTranslation();
 
-  const toggle = () => {
-    i18n.changeLanguage(i18n.language === 'ru' ? 'en' : 'ru');
-  }
+//   const toggle = () => {
+//     i18n.changeLanguage(i18n.language === 'ru' ? 'en' : 'ru');
+//   }
 
-  return (
-    <div>
-      <button onClick={toggle}>{t('Перевод')}</button>
-      {t('Тестовый пример')}
-    </div>
-  )
-}
+//   return (
+//     <div>
+//       <button onClick={toggle}>{t('Перевод')}</button>
+//       {t('Тестовый пример')}
+//     </div>
+//   )
+// }
 
 const App = () => {
   const {theme, toggleTheme} = useTheme();
@@ -32,7 +32,7 @@ const App = () => {
       <Suspense fallback="">
 
         <Navbar />
-        <Component />
+        {/* <Component /> */}
         <div className='content-page'>
           <Sidebar />
           <AppRouter />

@@ -5434,11 +5434,13 @@ export const Button: FC<ButtonProps> = (props) => {
 //Button.module.scss
 .Button {
   cursor: pointer;
+  color: var(--primary-color);
+
 }
 
 .clear {
   padding: 0;
-  margin: 0;
+  <!-- margin: 0; -->
   border: none;
   background: none;
   outline: none;
@@ -6728,10 +6730,611 @@ export default MainPage;
 }
 ```
 
-Теперь отправляемся в AboutPage.tsx
+Теперь отправляемся в AboutPage.tsx и пишем nameSpace 'about'
+`const {t} = useTranslation()`
+`const {t} = useTranslation('about')`
+
+
+```
+import React from 'react'
+import { useTranslation } from 'react-i18next';
+
+const AboutPage = () => {
+
+  const {t} = useTranslation('about')
+
+  return (
+    <div>
+      {t('О сайте')}
+    </div>
+  )
+}
+
+export default AboutPage;
+
+```
+По дефолту namespace - translation и подгружаться будет translation.json
+Если написать для конкретной страницы, например, 'about', то подгрузится отдельный чанк about.json
+Аналогично делаем с main.
+Для каждой отдельной большой страницы стоит делать отдельный namaspace
+
+#### Ошибка неисправлена: i18next-http-backend
+Лично у меня появилась в этот момент проблема.
+Все загружается чанками для каждой страницы, но. Для каждой страницы подгружаются сразу 2 языка, т е два about, а должен один
+
+Иду дальше, чтобы не терять время
+Будущая я будет в бешенстве
+===
+
+
+У нас есть функция по переключению языка (наш toggle) и было бы хорошо вынести его в отдельный компонент
+```
+// кусок из App.tsx
+
+  const toggle = () => {
+    i18n.changeLanguage(i18n.language === 'ru' ? 'en' : 'ru');
+  }
+```
+Он [LangSwitcher] будет похож на ThemeSwitcher и я думаю, что ему тоже больше место в widget'е, чем в shared 
+
+shared/widgets
+
+- shared => ui => создаем папку LangSwitcher => создаем файлы LangSwitcher.tsx LangSwitcher.module.scss
+- widgets => создаем папку LangSwitcher => создаем файлы LangSwitcher.tsx LangSwitcher.module.scss
+
+Я выбрала 2ой вариант, т к уже в widgets положила ThemeSwitcher
+
+```
+//Вырежем этот кусок из App.tsx
+const Component = () => {
+  const { t, i18n } = useTranslation();
+
+  const toggle = () => {
+    i18n.changeLanguage(i18n.language === 'ru' ? 'en' : 'ru');
+  }
+
+  return (
+    <div>
+      <button onClick={toggle}>{t('Перевод')}</button>
+      {t('Тестовый пример')}
+    </div>
+  )
+}
+```
+
+И вставляем кусок из App.tsx в LangSwitcher.tsx и чутка редактируем
+```
+import React from 'react';
+import { classNames } from 'shared/lib/classNames/classNames';
+import cls from './LangSwitcher.module.scss';
+import { useTranslation } from 'react-i18next';
+
+interface LangSwitcherProps {
+  className?: string;
+}
+
+export const LangSwitcher = ({className}: LangSwitcherProps) => {
+  const { t, i18n } = useTranslation();
+
+  const toggle = () => {
+    i18n.changeLanguage(i18n.language === 'ru' ? 'en' : 'ru');
+  }
+
+  return (
+    <div className={classNames(cls.langswitcher, {}, [className])}>
+      <button onClick={toggle}>{t('Перевод')}</button>
+    </div>
+  )
+}
+```
+
+
+Заменяем обычную кнопку на нашу с темой CLEAR
+
+```
+import React from 'react';
+import { classNames } from 'shared/lib/classNames/classNames';
+import cls from './LangSwitcher.module.scss';
+import { useTranslation } from 'react-i18next';
+import { Button, ThemeButton } from 'shared/ui/Button/Button';
+
+interface LangSwitcherProps {
+  className?: string;
+}
+
+export const LangSwitcher = ({className}: LangSwitcherProps) => {
+  const { t, i18n } = useTranslation();
+
+  const toggle = () => {
+    i18n.changeLanguage(i18n.language === 'ru' ? 'en' : 'ru');
+  }
+
+  return (
+    <Button
+      className={classNames(cls.langswitcher, {}, [className])}
+      theme={ThemeButton.CLEAR}
+      onClick={toggle}
+    >
+      {t('Перевод')}
+    </Button>
+  )
+}
+```
+
+`{t('Перевод')}` заменили на `{t('Язык')}` 
+
+```
+//ru
+{
+  "Тестовый пример": "Тестовый пример",
+  "Перевод": "Перевод",
+  "Язык": "Русский"
+}
+```
+
+```
+//en
+{
+  "Тестовый пример": "test example",
+  "Перевод": "Translation",
+  "Язык": "English"
+}
+```
+
+Идем в SideBar
+```
+import React, { useState } from 'react';
+import { classNames } from 'shared/lib/classNames/classNames';
+import cls from './Sidebar.module.scss';
+import { ThemeSwitcher } from 'widgets/ThemeSwitcher';
+import { LangSwitcher } from 'widgets/LangSwitcher/LangSwitcher';
+
+interface SidebarProps {
+  className?: string;
+}
+
+export const Sidebar = ({className}: SidebarProps) => {
+  const [collapsed, setCollapsed] = useState(false);
+  
+  const onToggle = () => {
+    setCollapsed(prev => !prev);
+  }
+
+  return (
+    <div 
+      className={classNames(cls.Sidebar, {[cls.collapsed]: collapsed}, [className])}
+    >
+      <button onClick={onToggle}>toggle</button>
+
+      <div className={cls.switchers}>
+        <ThemeSwitcher/>
+
+        <LangSwitcher className={cls.lang}/>
+        {/* Переключатель языков */}
+        
+      </div>
+    </div>
+  )
+}
+```
+
+
+```
+//Sidebar.module.scss
+.lang {
+  margin-left: 20px;
+}
+```
+
+
+### Плагин i18n в Webshtorm/VSCode
+
+Подсвечивает 
+
+Alt+Enter появляется такое меню и 
 
 
 
+Добавили переводы, научились их использовать, разбивать на чанки, 
 
 
+## 17. Webpack hot module replacement
+
+
+### 17.1 Webpack hot module replacement
+Гуглим: `webpack hot module replacement`
+Тычем в первую [ссылку](https://webpack.js.org/concepts/hot-module-replacement/)
+
+Эта технололоогия позволяет обновить приложение после изменений в коде не обновляя страницу
+
+Перед тем как добавлять плагин добавим свойство `hot: true,`
+config => build => buildDevServer
+
+```
+import { BuildOptions } from "./types/config";
+import { Configuration as DevServerConfiguration } from "webpack-dev-server";
+
+export function buildDevServer(options: BuildOptions): DevServerConfiguration {
+  return {
+    port: options.port,
+    open: true,
+    historyApiFallback: true,
+
+    hot: true,
+  }
+}
+```
+
+Затем идем в config => build => buildPlugins
+Добавим плагин `new webpack.HotModuleReplacementPlugin(),`
+```
+import path from 'path';
+import webpack from 'webpack';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import { BuildOptions } from './types/config';
+
+export function buildPlugins({paths, isDev}: BuildOptions):webpack.WebpackPluginInstance[] {
+
+  return [
+    new HtmlWebpackPlugin({
+      template: paths.html,
+    }),
+    new webpack.ProgressPlugin(),
+    new MiniCssExtractPlugin({
+      filename: 'css/[name].[contenthash:8].css',
+      // chankFilename: 'css/[name].[contenthash:8].css',
+    }),
+    new webpack.DefinePlugin({
+      __IS_DEV__: JSON.stringify(isDev),
+    }),
+
+    new webpack.HotModuleReplacementPlugin(),
+  ]
+}
+```
+
+Вроде как HotModuleReplacementPlugin в 5ом вебпаке работает и так, но добавление плагина должно все сделать лучше
+
+### 17.2 ReactRefreshWebpackPlugin
+По ходу разработки приложения я заметил, что этот HotModuleReplacementPlugin плохо работает с react-компонентами и я нашел вот такое вот решение
+
+<!-- 1:36 -->
+```
+if (isDev) {
+  plugins.push(new ReactRefreshWebpackPlugin());
+  plugins.push(new webpack.HotModuleReplacementPlugin());
+
+  ...
+}
+```
+
+Мы поставим его только в середине курса
+
+### 17.3 Итог
+Мы научились автоматически обновлять приложение после изменений в коде
+Это удобно для модалок. многоэтапных форм
+
+
+## 18 Babel. Extract plugin[opional]
+
+Какие есть возможности у вебпака, babel'а на примере плагина для i18n
+
+Это никак не влияет на дальнейшую разработку. Для общего развития
+
+лолтррл
+Эта штука позволяет автоматически выносить при сборке ключи в отдельный файлик
+
+Но для начала нам нужно настроить babel
+
+### Настройка babel'а
+babel - это транспилятор, который позволяет приобразовывать из одних стандартов в другие стандарты
+
+гуглим: `babel`
+тычкс в [первую ссылку](https://babeljs.io/)
+
+1. Выбрать для чего настройка
+тычем в tab Webpack
+вкладка: [Setup](https://babeljs.io/setup#installation) 
+
+2. Установить babel-loader @babel/core
+```
+npm install --save-dev babel-loader @babel/core
+```
+
+babel-loader 8.2.3(Oct 21, 2021), v8.2.4(Mar 22, 2022) v8.2.5 (Apr 20, 2022)
+
+@babel/core v7.16.12(Jan 22, 2022), v7.17.0(Feb 3, 2022), v7.17.1(Feb 4, 2022), v7.17.2(Feb 8, 2022), v7.17.3(Feb 15, 2022), v7.17.4(Feb 16, 2022), v7.17.5(Feb 17, 2022), v7.17.6(Feb 22, 2022), v7.17.7(Mar 15, 2022), v7.17.8(Mar 19, 2022), v7.17.9(Apr 6, 2022)
+
+<!-- выбираю babel-loader 8.2.3(Oct 21, 2021), @babel/core v7.17.6(Feb 22, 2022) -->
+<!-- npm i -D babel-loader@8.2.3 @babel/core@7.17.6 не сработало -->
+babel-loader v8.2.4(Mar 22, 2022), @babel/core v7.17.8(Mar 19, 2022)
+
+
+
+```
+npm i -D babel-loader@8.2.4 @babel/core@7.17.8
+```
+
+
+3. Использование (Usage)
+
+И мы сразу же видим пример использования с вебпаком:
+```
+{
+  module: {
+    rules: [
+      {
+        test: /\.m?js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: ['@babel/preset-env']
+          }
+        }
+      }
+    ]
+  }
+}
+```
+
+config => build => buildLoaders 
+Берем этот кусок
+```
+  {
+    test: /\.m?js$/,
+    exclude: /node_modules/,
+    use: {
+      loader: "babel-loader",
+      options: {
+        presets: ['@babel/preset-env']
+      }
+    }
+  }
+```
+
+в нем меняем `test: /\.m?js$/,` на `test: /\.(js|ts|jsx|tsx)$/,`
+
+
+И добавляем в buildLoaders:
+```
+  const babelLoader = {
+    test: /\.(js|ts|jsx|tsx)$/,
+    exclude: /node_modules/,
+    use: {
+      loader: "babel-loader",
+      options: {
+        presets: ['@babel/preset-env']
+      }
+    }
+  }
+```
+
+4. Cоздать babel.config.json конфигурационный файл. Установка пакета @babel/preset-env
+
+Пакет @babel/preset-env включает в себя преобразования для новых стандартов EcmaScript - это ES6 и выше. Он преобразует их в старые стандарты и мы можем работать в старых браузерах, ничего ломаться у нас не будет
+
+
+```
+npm install @babel/preset-env --save-dev
+```
+7.15.8
+пальцем в небо
+```
+npm i -D @babel/preset-env@7.15.8
+```
+
+Далее создаем babel.config.json на уровне с .gitignore
+
+```
+//babel.config.json
+{
+  "presets": ["@babel/preset-env"]
+}
+```
+
+5. Добавить babelLoader в return
+
+```
+  //buildLoaders.ts
+  ...
+
+  return [
+    fileLoader,
+    svgLoader,
+    
+    babelLoader,
+
+    typescriptLoader,
+    cssLoaders,
+  ]
+```
+
+`npm run build:prod`
+
+
+### Важное замечание для JS + React
+
+ЭТО НЕ ДЛЯ ЭТОГО ПРОЕКТА
+
+Если б мы не использовали TypeScript, то для работы с React, для работы с JSX нам бы babel пришлось настраивать в любом случае
+
+Т е если бы в buildLoaders у нас бы не было `typescriptLoader,`
+
+Откроеем документацию, вкладка Docs, слева Presets =>
+[@babel/preset-react](https://babeljs.io/docs/babel-preset-react)
+
+В этом случае нам нужно было бы добавить еще и его
+
+`npm install --save-dev @babel/preset-react`
+
+```
+//babel.config.json
+{
+  "presets": ["@babel/preset-react"]
+}
+```
+
+### Порядок лоадеров
+Нужно соблюдать порядок это важно, иначе сборка упадет с ошибкой
+
+### Warning: большой размер бандла
+
+`npm run build:prod`
+
+Запускаем сборку на проде и видим, что у нас ворнинг: большой размер бандла 245КБ
+![bigSizeBandle.jpg](/images/bigSizeBandle.jpg)
+
+Сам react весит 120Кб
+
+245Кб для пары страничек - это дофига
+Все проанализировал.
+Закомментирвал импорт i18n и сделал сборку еще раз
+иии бандл стал весить 168Кб
+Т е i18n весит почти 80Кб - но жто библиотека важная и ничего критичного в этом нет
+===
+
+### babel-plugin-i18next-extract
+
+Итак минимальную настройку для babel мы уже сделали
+Давайте посмотрим теперь на сам плагин, который мы хотели изначально подключить
+
+заходим на сайт i18n и слева ищем вкладку [Plugins and Utils](https://www.i18next.com/overview/plugins-and-utils)
+
+Листаем вниз до [extraction tools](https://www.i18next.com/overview/plugins-and-utils#extraction-tools)
+
+Находим среди них [`babel-plugin-i18next-extract`](https://github.com/gilbsgilbs/babel-plugin-i18next-extract) тычем в него
+
+Там под словом Documentation первая ссылка [https://i18next-extract.netlify.app/#/](https://i18next-extract.netlify.app/#/)
+
+Видим там Installation
+```
+npm i --save-dev babel-plugin-i18next-extract
+```
+babel-plugin-i18next-extract 0.8.3
+
+```
+npm i -D babel-plugin-i18next-extract@0.8.3
+```
+
+Листаем вниз, видим, что нужно добавить в конфиг(babel.config.json) код ниже и добавить плагин в webpack-сборку (buildLaders)
+```
+{
+  "plugins": [
+    "i18next-extract",
+    // […] your other plugins […]
+  ]
+}
+```
+Добавляем в конфиг(babel.config.json)
+```
+//babel.config.json
+{
+  "presets": ["@babel/preset-env"],
+  "plugins": [
+    "i18next-extract",
+    // […] your other plugins […]
+  ]
+}
+```
+
+Теперь добавим плагин в webpack-сборку (buildLaders, babelLoader)
+
+Видим в документации
+```
+{
+  "plugins": [
+    ["i18next-extract", {"nsSeparator": "~"}],
+    // […] your other plugins […]
+  ]
+}
+```
+Копируем в buildLaders, babelLoader
+
+```
+//buildLaders.ts
+  const babelLoader = {
+    test: /\.(js|ts|jsx|tsx)$/,
+    exclude: /node_modules/,
+    use: {
+      loader: "babel-loader",
+      options: {
+        presets: ['@babel/preset-env'],
+
+        "plugins": [
+          ["i18next-extract", {"nsSeparator": "~"}],
+        ],
+      }
+    }
+  }
+```
+
+### Настройки плагина: locales, keyAsDefaultValue
+
+Здесь можно его настраивать. Пока у нас лежжит одна настойка `{"nsSeparator": "~"}`
+
+Возвращаемся к [документации](https://i18next-extract.netlify.app/#/)
+
+Ищем слева [Configuration](https://i18next-extract.netlify.app/#/configuration)
+Это страничка со списком разных настроек
+
+#### locales
+
+Добавим в наши настройки locales - это важная настройка
+`locales: ['ru', 'en'],`
+И удалим `{"nsSeparator": "~"}`
+
+
+#### keyAsDefaultValue
+
+[keyAsDefaultValue](https://i18next-extract.netlify.app/#/configuration?id=keyasdefaultvalue)
+Т к у нас ключи на русском, он нам подходит
+Этот плагин будет вытаскивать не только ключи из кода. но и автоматически будет в качестве значения вставлять ключ
+`keyAsDefaultValue: true,`
+
+```
+//buildLoaders.ts
+  ...
+
+  const babelLoader = {
+    test: /\.(js|ts|jsx|tsx)$/,
+    exclude: /node_modules/,
+    use: {
+      loader: "babel-loader",
+      options: {
+        presets: ['@babel/preset-env'],
+
+        "plugins": [
+          ["i18next-extract", 
+          {
+            locales: ['ru', 'en'],
+            keyAsDefaultValue: true,
+          }],
+        ],
+      }
+    }
+  }
+  
+  ...
+
+```
+
+Попробуем запустить приложение
+`npm run start`
+
+Видим папку exstractedTranslations в ней две папки en и ru с одинаковыми файлами translation.json:
+```
+{
+  "Главная страница": "Главная страница",
+  "О сайте": "О сайте",
+  "Язык": "Язык"
+}
+```
+
+Штука прикольная, но я бы ее использовать в продакшен не стал, потому что много что непонятно, как , например, отделять уже сделанные переводы от новых и прочее..
+
+===
+
+## 18. Настраиваем ESLint. Исправляем ошибки.
 
